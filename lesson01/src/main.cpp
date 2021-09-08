@@ -3,7 +3,7 @@
 
 // таким образом подключаются наши функции
 #include "simple_sum.h"
-
+#include "some_math.h"
 int main() {
     // таким образом выводятся сообщения в консоль
     // std::cout = "standard console output" = поток информации в консоль
