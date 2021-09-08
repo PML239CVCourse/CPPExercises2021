@@ -1,8 +1,19 @@
 #include "some_math.h"
+#include <bits/stdc++.h>
 
 int fibbonachiRecursive(int n) {
-    // TODO 03 реализуйте функцию которая считает числа Фибоначчи - https://ru.wikipedia.org/wiki/%D0%A7%D0%B8%D1%81%D0%BB%D0%B0_%D0%A4%D0%B8%D0%B1%D0%BE%D0%BD%D0%B0%D1%87%D1%87%D0%B8
-    return 0;
+    vector<int> fib;
+    fib.push_back(0);
+    fib.push_back(1);
+
+
+    int x;
+    for (int i = 2; i < n+1; i++) {
+        x = fib[fib.size() - 1] + fib[fib.size() - 2];
+        fib.push_back(x);
+    }
+
+    return fib[n];
 }
 
 int fibbonachiFast(int n) {
