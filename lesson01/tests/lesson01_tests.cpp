@@ -34,8 +34,8 @@ TEST(lesson01, fib10) {
 }
 
 TEST(lesson01, fib100) {
-//    fibbonachiRecursive(100); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
-//    fibbonachiFast(100);
+    //fibbonachiRecursive(100);
+    fibbonachiFast(100);
 }
 
 TEST(lesson01, findX1) {
