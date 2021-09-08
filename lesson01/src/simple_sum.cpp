@@ -2,5 +2,7 @@
 
 int sum(int a, int b) {
     int c = 0; // TODO 02 поправьте функцию sum
+    c += a;
+    c + b;
     return c;
 }

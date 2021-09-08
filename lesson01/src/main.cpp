@@ -5,9 +5,7 @@
 #include "simple_sum.h"
 
 int main() {
-    // таким образом выводятся сообщения в консоль
-    // std::cout = "standard console output" = поток информации в консоль
-    // std::endl = "standard end of line" = конец строчки (то же что и "\n")
+
     std::cout << "Hello World!" << std::endl;
 
     int a = 10;
