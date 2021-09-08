@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-
+#include <float.h>
 #include "../src/some_math.h"
 
 // TODO 00 Если вы видите ошибку Process finished with exit code -1073741515 (0xC0000135):
@@ -34,7 +34,7 @@ TEST(lesson01, fib10) {
 }
 
 TEST(lesson01, fib100) {
-//    fibbonachiRecursive(100); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
+    fibbonachiRecursive(50); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
 //    fibbonachiFast(100);
 }
 
@@ -75,5 +75,23 @@ TEST(lesson01, solveSquare1) {
     GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
     double x0 = xs[0];
     GTEST_ASSERT_EQ(x0, 1.5); // сверяем что найденный корень правильный
+    xs = solveSquare(0.0, 0.0, -6.0);
+    GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
+    x0 = xs[0];
+    GTEST_ASSERT_EQ(x0, DBL_MAX); // сверяем что найденный корень правильный
+    xs = solveSquare(0.0, 0.0, 0.0);
+    GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
+    x0 = xs[0];
+    GTEST_ASSERT_EQ(x0, -DBL_MAX); // сверяем что найденный корень правильный
+    xs = solveSquare(1.0, 0.0, 1.0);
+    GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
+    x0 = xs[0];
+    GTEST_ASSERT_EQ(x0, DBL_MAX); // сверяем что найденный корень правильный
+    xs = solveSquare(1.0, 0.0, -1.0);
+    GTEST_ASSERT_EQ(xs.size(), 2); // сверяем что найден ровно один корень
+    x0 = xs[0];
+    double x1 = xs[1];
+    GTEST_ASSERT_EQ(x0, -1); // сверяем что найденный корень правильный
+    GTEST_ASSERT_EQ(x1, 1); // сверяем что найденный корень правильный
 }
 

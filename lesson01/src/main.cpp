@@ -1,8 +1,10 @@
 #include <iostream> // таким образом подключаются системные библиотеки (эта нужна для вывода в консоль)
 #include <vector> // подключаем библиотеку для поддержки вектора (массива динамического размера)
 
+
 // таким образом подключаются наши функции
 #include "simple_sum.h"
+#include "some_math.h"
 
 int main() {
     // таким образом выводятся сообщения в консоль
@@ -22,7 +24,7 @@ int main() {
     std::cout << "a+b=" << a << "+" << b << "=" << res << std::endl;
 
     // TODO 06 выведите в консоль чему равно fibbonachiFast(b), не забудьте что нужно добавить не хватающий инклюд - some_math.h в которой объявлена эта функция
-    // std::cout << "fib(b)=" <<
+    std::cout << "fib(b)=" << fibbonachiFast(b) << std::endl;
 
     std::vector<double> values;
     std::cout << "values size: " << values.size() << std::endl;
@@ -36,15 +38,26 @@ int main() {
     // TODO 07 выведите в консоль каждый элемент из динамического массива
     for (int i = 0; i < values.size(); ++i) {
         double x = values[i];
+        std::cout << x << std::endl;
     }
 
     // TODO 08 считывайте числа из консоли (и добавляйте их в вектор) до тех пор пока не будет введен ноль, после чего просуммируйте считанные числа и выведите сумму
-    // while () {
-    //     ...
-    //     if (...) {
-    //         break;
-    //     }
-    // }
+    std::vector<int> mas;
+    while (true) {
+         int x;
+         std::cin >> x;
+         mas.push_back(x);
+         if (x == 0) {
+             break;
+         }
+    }
+    int sum = 0;
+    for (int i = 0; i < mas.size(); ++i) {
+        sum += mas[i];
+    }
+    std::cout << sum << std::endl;
+    //    std::cout << DBL_MAX << std::endl;
+    //std::cout << solveSquare(1,0, -1)[0] << " " << solveSquare(0,0, 0)[1] << std::endl;
 
     return 0;
 }
