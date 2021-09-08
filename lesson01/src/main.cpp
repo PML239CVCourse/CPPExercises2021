@@ -22,7 +22,7 @@ int main() {
     std::cout << "a+b=" << a << "+" << b << "=" << res << std::endl;
 
     // TODO 06 выведите в консоль чему равно fibbonachiFast(b), не забудьте что нужно добавить не хватающий инклюд - some_math.h в которой объявлена эта функция
-    // std::cout << "fib(b)=" <<
+     std::cout << "fib(b)=" << fibbonachiFast(b);
 
     std::vector<double> values;
     std::cout << "values size: " << values.size() << std::endl;
