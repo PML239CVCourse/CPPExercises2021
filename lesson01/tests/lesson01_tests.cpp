@@ -35,7 +35,7 @@ TEST(lesson01, fib10) {
 
 TEST(lesson01, fib100) {
 //    fibbonachiRecursive(100); // TODO 05 обратите внимание что рекурсивный Фибоначчи очень медленный, переделайте его на быстрый вариант, замените его здесь и убедитесь что стало быстрее
-//    fibbonachiFast(100);
+    fibbonachiFast(100);
 }
 
 TEST(lesson01, findX1) {
@@ -75,5 +75,31 @@ TEST(lesson01, solveSquare1) {
     GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
     double x0 = xs[0];
     GTEST_ASSERT_EQ(x0, 1.5); // сверяем что найденный корень правильный
+}
+
+TEST(lesson01, solveSquare2) {
+    std::vector<double> xs = solveSquare(1.0, -6.0, 5.0);
+    GTEST_ASSERT_EQ(xs.size(), 2);
+    GTEST_ASSERT_EQ(xs[0], 1);
+    GTEST_ASSERT_EQ(xs[1], 5);
+}
+
+TEST(lesson01, solveSquare3) {
+    std::vector<double> xs = solveSquare(1.0, -6.0, 9.0);
+    GTEST_ASSERT_EQ(xs.size(), 1);
+    GTEST_ASSERT_EQ(xs[0], 3);
+}
+
+TEST(lesson01, solveSquare4) {
+    std::vector<double> xs = solveSquare(2.0, 9.0, 7.0);
+    GTEST_ASSERT_EQ(xs.size(), 2);
+    GTEST_ASSERT_EQ(xs[0], -3.5);
+    GTEST_ASSERT_EQ(xs[1], -1);
+}
+
+TEST(lesson01, solveSquare5) {
+    std::vector<double> xs = solveSquare(1.0, 3.0, 10.0);
+    GTEST_ASSERT_EQ(xs.size(), 1);
+    GTEST_ASSERT_EQ(xs[0], std::numeric_limits<double>::max());
 }
 
