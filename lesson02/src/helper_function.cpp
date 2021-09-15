@@ -1,7 +1,7 @@
 #include "helper_function.h"
 
 #include <iostream>
-
+using namespace std;
 
 void print2DArray(std::vector<std::vector<int>> array2d) {
     for (int j = 0; j < array2d.size(); ++j) { // пробегаем по каждой строке
@@ -11,7 +11,9 @@ void print2DArray(std::vector<std::vector<int>> array2d) {
         for (int i = 0; i < n; ++i) {
             int value = array2d[j][i]; // взяли j-ую строку, а из нее - i-ый элемент
             // выведите в консоль это число
+            cout<< value<<' ';
         }
+        cout<<endl;
 
         // TODO 25 не забудьте что надо делать перевод строки после каждого выведенного ряда чисел
     }
