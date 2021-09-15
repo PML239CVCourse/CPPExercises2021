@@ -11,8 +11,9 @@ void print2DArray(std::vector<std::vector<int>> array2d) {
         for (int i = 0; i < n; ++i) {
             int value = array2d[j][i]; // взяли j-ую строку, а из нее - i-ый элемент
             // выведите в консоль это число
+            std::cout << value << " ";
         }
-
+        std::cout << std::endl;
         // TODO 25 не забудьте что надо делать перевод строки после каждого выведенного ряда чисел
     }
 }
