@@ -3,4 +3,4 @@
 #include <vector>
 
 
-void print2DArray(std::vector<std::vector<int>> array2d);
+void print2DArray(std::vector<std::vector<int>>& array2d);
