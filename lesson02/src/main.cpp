@@ -94,14 +94,42 @@ void task3() {
     while (true) {
         int i;
         int j;
+        std::cin >> i;
+        std::cin >> j;
         if ((i < 0)||(j < 0)) break;
-        vector2d[i][j]++;
+        vector2d[i-1][j-1]++;
+        std::cout << "print2DArray(vector2d):" << std::endl;
+        print2DArray(vector2d);
         // TODO 38 считав очередное i, j - увеличьте ячейку в думерном массиве находящуюся в j-ой колонке, в i-ом ряду
         // TODO 39 выведите в консоль текущее состояние двумерного массива
         // TODO 40 добавьте проверку что если пользователь заполнил единицами хотя бы один ряд - то выводится сообщение "OX-XO-XO" и программа завершается
+        bool q = true;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (vector2d[i][j] != 1) q = false;
+            }
+            if (q) {
+                std::cout << "OX-XO-XO" << std::endl;
+                break;
+            }
+        }
+        if (q) break;
+
+        bool g = true;
+
+        for (int j = 0; j < cols; j++) {
+            for (int i = 0; i < rows; i++) {
+                if (vector2d[i][j] != 1) g = false;
+            }
+            if (g) {
+                std::cout << "AX-XA-XA" << std::endl;
+                break;
+            }
+        }
+        if (g) break;
         // TODO 41 добавьте проверку что если пользователь заполнил единицами хотя бы одну колонку - то выводится сообщение "AX-XA-XA" и программа завершается
     }
-
 }
 
 
