@@ -71,35 +71,65 @@ void task3() {
 
     // TODO 32 попросите пользователя ввести два натуральных числа rows, cols (число рядов и число колонок) (от 1 до 20 включительно каждое)
     std::cout<< " enter numbers:";
-    int a,cools;
-    std::cin>> a;
+    int rows,cools;
+    std::cin>> rows;
     std::cin>> cools;
     // TODO 33 проверьте с помощью rassert что оба числа в корректном диапазоне (от 1 до 20), проверьте что если ввести плохое число - проверка срабатывает и пишет ошибку (можете использовать как число, так и сообщение)
-rassert( a >=1, 1);
-rassert( cools >=1, 2);
-rassert( a <=20, 3);
-rassert( cools <=20, 4);
+    rassert( rows >=1, 1);
+    rassert( cools >=1, 2);
+    rassert( rows <=20, 3);
+    rassert( cools <=20, 4);
 
     // TODO 34 создайте двумерный массив состоящий из rows векторов
-    std::vector<std::vector<int>> rows;
+    std::vector<std::vector<int>> array2d;
 
     // TODO 35 сделайте так чтобы каждый из этих rows векторов был размера cols (используйте resize)
-rows.resize(cools);
+    array2d.resize(rows);
+    for(int i =0; i<array2d.size();i++){
+        array2d[i].resize(cools);
+    }
     // TODO 36 как думаете какие элементы сейчас лежат в двумерном массиве? проверьте выведя его в консоль
-    printRows(rows);
+    std::cout << "print2DArray(array2d):" << std::endl;
+    print2DArray(array2d);
     // TODO 37 ваша программа должна считывать пары чисел i, j в вечном цикле до тех пор пока i и j не отрицательны
-//    while (true) {
-//        int i;
-//        int j;
-//        // TODO 38 считав очередное i, j - увеличьте ячейку в думерном массиве находящуюся в j-ой колонке, в i-ом ряду
-//        // TODO 39 выведите в консоль текущее состояние двумерного массива
-//        // TODO 40 добавьте проверку что если пользователь заполнил единицами хотя бы один ряд - то выводится сообщение "OX-XO-XO" и программа завершается
-//        // TODO 41 добавьте проверку что если пользователь заполнил единицами хотя бы одну колонку - то выводится сообщение "AX-XA-XA" и программа завершается
-//    }
+    while (true) {
+        int i;
+        int j;
+        std::cout << "i=";
+        std::cin >> j;
+
+        std::cout << "j=";
+        std::cin >> i;
+        if(i<0 || j<0){break;}
+        //        // TODO 38 считав очередное i, j - увеличьте ячейку в думерном массиве находящуюся в j-ой колонке, в i-ом ряду
+        array2d[i][j] +=1;
+        //        // TODO 39 выведите в консоль текущее состояние двумерного массива
+        std::cout << "print2DArray(array2d):" << std::endl;
+        print2DArray(array2d);
+        for(int i = 0; i < array2d.size(); i++){
+            bool trr = true;
+            for(int j = 0; j < array2d[i].size(); j++){
+                if(array2d[i][j] != 1){trr = false;}
+            }
+            if(trr){std::cout<<"OX-XO-XO"<<std::endl; break;}
+
+        }
+
+        // TODO 41 добавьте проверку что если пользователь заполнил единицами хотя бы одну колонку - то выводится сообщение "AX-XA-XA" и программа завершается
+
+        for(int j = 0; j < array2d[0].size(); j++){
+            int t = 1;
+            for(int i = 0; i < array2d.size(); i ++){
+                if(array2d[i][j] != 1){t = 0;}
+            }
+            if(t){std::cout<<"AX-XA-XA"<<std::endl; break;}
+
+
+        }
+
+    }
 
 }
-
-
 int main() {
     try {
         //task1(); // TODO 13 когда выполните первое задание - закомментируйте эту строку чтобы эта функция перестала вызываться (добавьте перед нею двойной слэш - / или просто нажмите Ctrl+/)
