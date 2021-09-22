@@ -84,9 +84,13 @@ void task3() {
     std::vector<std::vector<int>> array2d;
     array2d.resize(rows);
     // TODO 35 сделайте так чтобы каждый из этих rows векторов был размера cols (используйте resize)
-
+    for(int i=0; i<rows; ++i){
+        std::vector<int> row;
+        row.resize(cols);
+        array2d.push_back(row);
+    }
     // TODO 36 как думаете какие элементы сейчас лежат в двумерном массиве? проверьте выведя его в консоль
-
+    print2DArray(array2d);
     // TODO 37 ваша программа должна считывать пары чисел i, j в вечном цикле до тех пор пока i и j не отрицательны
 //    while (true) {
 //        int i;
