@@ -94,7 +94,7 @@ void task3() {
     while (true) {
         int i;
         int j;
-        std::cin >> i >> j;
+        std::cin >> j >> i;
         mas[i][j]++;
         if (i < 0 || j < 0){
             break;
