@@ -11,8 +11,8 @@ void task1() {
     rassert(!imgUnicorn.empty(), 3428374817241); // проверяем что картинка загрузилась (что она не пустая)
 
     // TODO выведите в консоль разрешение картинки (ширина x высота)
-    int width = 0; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
-    int height = 0;
+    int width = imgUnicorn.rows; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
+    int height = imgUnicorn.cols;
     std::cout << "Unicorn image loaded: " << width << "x" << height << std::endl;
 
     // создаем папку в которую будем сохранять результаты - lesson03/resultsData/
@@ -21,11 +21,11 @@ void task1() {
         std::filesystem::create_directory(resultsDir); // то создаем ее
     }
 
-    cv::Mat blueUnicorn = makeAllBlackPixelsBlue(imgUnicorn); // TODO реализуйте функцию которая каждый пиксель картинки который близок к белому - делает синим
+    cv::Mat blueUnicorn = makeAllBlackPixelsBlue(imgUnicorn.clone()); // TODO реализуйте функцию которая каждый пиксель картинки который близок к черному - делает синим
     std::string filename = resultsDir + "01_blue_unicorn.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
     cv::imwrite(filename, blueUnicorn);
 
-    cv::Mat invertedUnicorn = invertImageColors(imgUnicorn); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
+    cv::Mat invertedUnicorn = invertImageColors(imgUnicorn.clone()); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
     // TODO сохраните резльутат в ту же папку, но файл назовите "02_inv_unicorn.jpg"
 
 //    cv::Mat castle; // TODO считайте с диска картинку с замком - castle.png
@@ -59,7 +59,7 @@ void task2() {
 
         // кроме сохранения картинок на диск (что часто гораздо удобнее конечно, т.к. между ними легко переключаться)
         // иногда удобно рисовать картинку в окне:
-        cv::imshow("lesson03 window", imgUnicorn);
+        cv::imshow("lesson03 window", imgUnicorn.clone());
         // TODO сделайте функцию которая будет все черные пиксели (фон) заменять на случайный цвет (аккуратно, будет хаотично и ярко мигать, не делайте если вам это противопоказано)
     }
 }
