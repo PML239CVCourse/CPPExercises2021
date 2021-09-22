@@ -10,10 +10,22 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     // чем больше значение одного из трех чисел - тем насыщеннее его оттенок
     // всего их диапазон значений - от 0 до 255 включительно
     // т.е. один байт, поэтому мы используем ниже тип unsigned char - целое однобайтовое неотрицательное число
+
     cv::Vec3b color = image.at<cv::Vec3b>(13, 5); // взяли и узнали что за цвет в пикселе в 14-ом ряду (т.к. индексация с нуля) и 6-ой колонке
     unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
     unsigned char green = color[1];
     unsigned char red = color[2];
+
+    for(int i = 0; i < image.rows; i++){
+        for(int j = 0; j < image.cols; j++){
+            cv::Vec3b color = image.at<cv::Vec3b>(i, j);
+             blue = color[0];
+             green = color[1];
+             red = color[2];
+             if (blue == 0 && red == 0 && green == 0) image.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 0, 0);
+        }
+    }
+
 
     // как получить белый цвет? как получить черный цвет? как получить желтый цвет?
     // поэкспериментируйте! например можете всю картинку заполнить каким-то одним цветом
@@ -32,6 +44,19 @@ cv::Mat invertImageColors(cv::Mat image) {
     // т.е. пусть ночь станет днем, а сумрак рассеется
     // иначе говоря замените каждое значение яркости x на (255-x) (т.к находится в диапазоне от 0 до 255)
 
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+
+    for(int i = 0; i < image.rows; i++){
+        for(int j = 0; j < image.cols; j++){
+            cv::Vec3b color = image.at<cv::Vec3b>(i, j);
+            blue = color[0];
+            green = color[1];
+            red = color[2];
+            image.at<cv::Vec3b>(i, j) = cv::Vec3b(255-blue, 255 - green, 255 - red);
+        }
+    }
     return image;
 }
 
