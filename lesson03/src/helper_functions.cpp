@@ -24,6 +24,22 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     // какой пиксель изменился? почему он не чисто красный?
     image.at<cv::Vec3b>(13, 5) = cv::Vec3b(blue, green, red);
 
+    for(int i = 0; i < image.rows(); i++){
+        for(int i = 0; i < image.rows(); i++){
+            cv::Vec3b color = image.at<cv::Vec3b>(i, j);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+
+            if(blue == 0 && red == 0 && green == 0){
+                blue = 255;
+                image.at<cv::Vec3b>(13, 5) = cv::Vec3b(blue, green, red);
+            }
+        }
+    }
+
+
+
     return image;
 }
 
