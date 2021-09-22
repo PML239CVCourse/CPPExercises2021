@@ -14,7 +14,14 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
     unsigned char green = color[1];
     unsigned char red = color[2];
-
+    for(int i=0; i<image.cols; i++) {
+        for(int j=0; j<image.rows; j++) {
+            cv::Vec3b color = image.at<cv::Vec3b>(j, i);
+            if (color[0] == 0 && color[1] == 0 && color[2] == 0) {
+                image.at<cv::Vec3b>(j,i) = cv::Vec3b(255, 0, 0);
+            }
+        }
+    }
     // как получить белый цвет? как получить черный цвет? как получить желтый цвет?
     // поэкспериментируйте! например можете всю картинку заполнить каким-то одним цветом
 

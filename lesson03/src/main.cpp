@@ -13,6 +13,8 @@ void task1() {
     // TODO выведите в консоль разрешение картинки (ширина x высота)
     int width = 0; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
     int height = 0;
+    width = imgUnicorn.rows;
+    height = imgUnicorn.cols;
     std::cout << "Unicorn image loaded: " << width << "x" << height << std::endl;
 
     // создаем папку в которую будем сохранять результаты - lesson03/resultsData/
@@ -25,8 +27,10 @@ void task1() {
     std::string filename = resultsDir + "01_blue_unicorn.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
     cv::imwrite(filename, blueUnicorn);
 
-    cv::Mat invertedUnicorn = invertImageColors(imgUnicorn); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
+    cv::Mat invertedUnicorn = invertImageColors(imgUnicorn,); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
     // TODO сохраните резльутат в ту же папку, но файл назовите "02_inv_unicorn.jpg"
+    std::string filename = resultsDir + "02_blue_unicorn.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
+    cv::imwrite(filename, blueUnicorn);
 
 //    cv::Mat castle; // TODO считайте с диска картинку с замком - castle.png
 //    cv::Mat unicornInCastle = addBackgroundInsteadOfBlackPixels(imgUnicorn, castle); // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
