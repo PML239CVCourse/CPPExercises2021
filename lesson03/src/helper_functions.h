@@ -9,3 +9,9 @@ cv::Mat invertImageColors(cv::Mat image);
 cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background);
 
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground);
+
+cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackgroundNTimes(cv::Mat object, cv::Mat largeBackground);
+
+cv::Mat fillBackground(cv::Mat object, cv::Mat largeBackground);
+
+cv::Mat doTask4(cv::Mat object, cv::Mat largeBackground, cv::Vec3b color, double dis);
