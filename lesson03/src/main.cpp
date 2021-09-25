@@ -80,6 +80,25 @@ struct MyVideoContent {
     cv::Mat frame;
     int lastClickX;
     int lastClickY;
+
+    void Click(int x, int y){
+        lastClickX = x;
+        lastClickY = y;
+    }
+
+    cv::Mat Paint(std::vector<std::vector<int>> q){
+        for (int i = 0; i < q.size(); ++i) {
+            frame.at<cv::Vec3b>(q[i][1],q[i][0]) = cv::Vec3b(0, 0, 255);
+        }
+        return frame;
+    }
+
+    std::vector<int> Get(){
+        std::vector<int> a;
+        a.push_back(lastClickX);
+        a.push_back(lastClickY);
+        return a;
+    }
 };
 
 void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoContent) {
@@ -91,6 +110,7 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
         std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+        content.Click(x,y);
     }
 }
 
@@ -113,15 +133,24 @@ void task3() {
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
     // просто перейдите к ее объявлению - удерживая Ctrl сделайте клик левой кнопкой мыши по MyVideoContent - и вас телепортирует к ее определению
 
+    std::vector<std::vector<int>> mas;
+    std::vector<int> m;
+    m.push_back(0);
+    m.push_back(0);
+    mas.push_back(m);
     while (video.isOpened()) { // пока видео не закрылось - бежим по нему
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
-        cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
+        cv::imshow("video", content.Paint(mas)); // покаызваем очередной кадр в окошке
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
 
+        mas.push_back(content.Get());
         int key = cv::waitKey(10);
+        if (key == 32 || key == 27){
+            break;
+        }
         // TODO добавьте завершение программы в случае если нажат пробел
         // TODO добавьте завершение программы в случае если нажат Escape (придумайте как нагуглить)
 
@@ -146,9 +175,9 @@ void task4() {
 
 int main() {
     try {
-        task1();
+//        task1();
 //        task2();
-//        task3();
+        task3();
 //        task4();
         return 0;
     } catch (const std::exception &e) {

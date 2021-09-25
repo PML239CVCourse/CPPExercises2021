@@ -148,6 +148,6 @@ cv::Mat rast(cv::Mat object, cv::Mat largeBackground) {
                 }
             }
         }
-    }
+
     return largeBackground;
 }
