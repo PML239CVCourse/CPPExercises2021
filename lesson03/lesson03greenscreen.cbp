@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="lesson03greenscreen"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;CMake Files\libs\;CMake Files\libs\3rdparty\;CMake Files\libs\3rdparty\libgtest\;CMake Files\libs\3rdparty\libgtest\googletest\;CMake Files\libs\3rdparty\libgtest\googletest\cmake\;CMake Files\libs\utils\;CMake Files\lesson01\;CMake Files\lesson02\;CMake Files\lesson03\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\Downloads\;CMake Files\..\..\Downloads\opencv\;CMake Files\..\..\Downloads\opencv\build\;CMake Files\..\..\Downloads\opencv\build\x64\;CMake Files\..\..\Downloads\opencv\build\x64\vc14\;CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lesson03greenscreen">
+				<Option output="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/lesson03greenscreen.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils"/>
+					<Add directory="C:/Users/NITRO/Downloads/opencv/build/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 lesson03greenscreen"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="lesson03greenscreen/fast">
+				<Option output="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/lesson03greenscreen.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add directory="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils"/>
+					<Add directory="C:/Users/NITRO/Downloads/opencv/build/include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\ATLMFC\include"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\include"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\winrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.19041.0\cppwinrt"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 lesson03greenscreen/fast"/>
+					<CompileFile command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f C:\Users\NITRO\CLionProjects\CPPExercises2021(1)\lesson03\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/src/helper_functions.cpp">
+			<Option target="lesson03greenscreen"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/src/helper_functions.h">
+			<Option target="lesson03greenscreen"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/src/main.cpp">
+			<Option target="lesson03greenscreen"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libs\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/3rdparty/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libs\3rdparty\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/3rdparty/libgtest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libs\3rdparty\libgtest\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/3rdparty/libgtest/googletest/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libs\3rdparty\libgtest\googletest\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/3rdparty/libgtest/googletest/cmake/internal_utils.cmake">
+			<Option virtualFolder="CMake Files\libs\3rdparty\libgtest\googletest\cmake\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\libs\utils\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lesson01\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson02/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lesson02\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson03/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\lesson03\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/../../Downloads/opencv/build/x64/vc14/lib/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/../../Downloads/opencv/build/x64/vc14/lib/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/../../Downloads/opencv/build/x64/vc14/lib/OpenCVModules-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/../../Downloads/opencv/build/x64/vc14/lib/OpenCVModules-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\"/>
+		</Unit>
+		<Unit filename="C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/../../Downloads/opencv/build/x64/vc14/lib/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\Downloads\opencv\build\x64\vc14\lib\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

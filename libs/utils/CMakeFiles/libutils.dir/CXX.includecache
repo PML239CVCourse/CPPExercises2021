@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils/libutils/rasserts.cpp
+rasserts.h
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils/libutils/rasserts.h
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/libs/utils/libutils/rasserts.h
+stdexcept
+-
+sstream
+-
+

@@ -1,0 +1,3 @@
+"C:\Program Files\JetBrains\CLion 2021.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\gtest_main.dir/objects.a
+C:\PROGRA~2\MINGW-~1\I686-7~1.0-P\mingw32\bin\ar.exe cr CMakeFiles\gtest_main.dir/objects.a @CMakeFiles\gtest_main.dir\objects1.rsp
+C:\PROGRA~2\MINGW-~1\I686-7~1.0-P\mingw32\bin\G__~1.EXE -g -shared -o ..\..\..\..\bin\libgtest_maind.dll -Wl,--out-implib,..\..\..\..\lib\libgtest_maind.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\gtest_main.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\gtest_main.dir\linklibs.rsp

@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/main.cpp
+iostream
+-
+vector
+-
+simple_sum.h
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/simple_sum.h
+bits/stdc++.h
+-
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/simple_sum.cpp
+simple_sum.h
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/simple_sum.h
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/simple_sum.h
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/some_math.cpp
+some_math.h
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/some_math.h
+bits/stdc++.h
+-
+
+C:/Users/NITRO/CLionProjects/CPPExercises2021(1)/lesson01/src/some_math.h
+vector
+-
+bits/stdc++.h
+-
+
