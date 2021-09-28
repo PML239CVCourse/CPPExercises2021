@@ -2,6 +2,7 @@
 #include <vector> // подключаем библиотеку для поддержки вектора (массива динамического размера)
 
 // таким образом подключаются наши функции
+#include "some_math.h"
 #include "simple_sum.h"
 
 int main() {
@@ -22,7 +23,7 @@ int main() {
     std::cout << "a+b=" << a << "+" << b << "=" << res << std::endl;
 
     // TODO 06 выведите в консоль чему равно fibbonachiFast(b), не забудьте что нужно добавить не хватающий инклюд - some_math.h в которой объявлена эта функция
-    // std::cout << "fib(b)=" <<
+    std::cout << "fib(b)=" << fibbonachiFast(b) << std::endl;
 
     std::vector<double> values;
     std::cout << "values size: " << values.size() << std::endl;
@@ -36,15 +37,25 @@ int main() {
     // TODO 07 выведите в консоль каждый элемент из динамического массива
     for (int i = 0; i < values.size(); ++i) {
         double x = values[i];
+        std::cout << x;
     }
 
     // TODO 08 считывайте числа из консоли (и добавляйте их в вектор) до тех пор пока не будет введен ноль, после чего просуммируйте считанные числа и выведите сумму
-    // while () {
-    //     ...
-    //     if (...) {
-    //         break;
-    //     }
-    // }
+    int x;
+    int sum = 0;
+    std::vector<int> n;
+    std::cin >> x;
+    while (x!=0) {
+        n.push_back(x);
+        std::cin>> x;
+        if (x == 0) {
+            break;
+        }
+    }
+    for (int i =0; i<n.size(); ++i) {
+        sum+=n[i];
+    }
+    std::cout<<sum<< std::endl;
 
     return 0;
 }
