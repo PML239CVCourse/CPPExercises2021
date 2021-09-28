@@ -22,44 +22,53 @@ void task1() {
   }
    std::cout << "current size is " << a.size() << std::endl; // печатаем в консоль текущий размер
 //    // TODO 12 до запуска подумайте какой бы размер массива должен быть? добавьте сюда проверку через rassert что размер вектора тот что вы бы ожидали
+    rassert(a.size() == 5, "unexpected size" );
 }
 
 void task2() {
     std::vector<std::vector<int>> array2d; // это динамический массив в котором каждый элемент - тоже динамический массив
     rassert(array2d.size() == 0, "vector a should of size 0!");
     // TODO 21 добавьте rassert проверяющий размер этого двумерного вектора, как вы считаете какого размера он должен быть?
+    rassert(array2d.size()==0, "unexpected size");
 
     std::vector<int> row0; // первый ряд чисел для нашего двумерного массива (row = ряд)
     row0.push_back(5);
     row0.push_back(8);
     row0.push_back(10);
-    rassert(row0.size() == 3, "vector a should of size 3!");
     // TODO 22 добавьте rassert проверяющий размер этого вектора row0
+    rassert(row0.size() == 3, "vector a should of size 3!");
 
     array2d.push_back(row0);
-    rassert(array2d.size() == 1, "vector a should of size 1!");
     // TODO 23 добавьте rassert проверяющий размер этого двумерного вектора array2d, как вы считаете какого размера он должен быть?
+    rassert(array2d.size() == 1, "vector a should of size 1!");
 
     std::cout << "print2DArray(array2d):" << std::endl;
     print2DArray(array2d); // TODO 24,25: откройте соседний файл - helper_function.cpp и реализуйте там эту функцию, можете туда быстро попасть через телепорт - держите нажатым CTRL->и кликните по этой функции
 
     // чтобы продолжить выполнение задания - раскомментируйте следующие строчки - проще всего это сделать выделив их все мышкой, а затем нажать Ctrl+/ (так же можно и комментировать строки)
     // теперь давайте добавим еще один ряд чисел но другим способом:
-//  std::vector<int> row1;
-//    row1.resize(3)
-//    row1[0] = 23;
-//    row1[1] = 24;
-//    row1[2] = 42;
-//    array2d.push_back(row1);
-//    rassert(array2d.size() == 5, "vector a should of size 5!");
-//    rassert(a.size() == 5, "vector a should of size 5!");
-//    // TODO 26 добавьте два rassert-а - чтобы удостовериться что размеры двух динамических массивов которые мы только что изменили - совпадают с вашим ожиданием
-//
-//    std::cout << "print2DArray(array2d):" << std::endl;
-//    print2DArray(array2d);
+    std::vector<int> row1;
+    row1.resize(3)
+    row1[0] = 23;
+    row1[1] = 24;
+    row1[2] = 42;
+    array2d.push_back(row1);
+    // TODO 26 добавьте два rassert-а - чтобы удостовериться что размеры двух динамических массивов которые мы только что изменили - совпадают с вашим ожиданием
+    rassert(array2d.size() == 5, "vector a should of size 5!");
+    rassert(row0.size() == 5, "vector a should of size 5!");
+
+
+    std::cout << "print2DArray(array2d):" << std::endl;
+    print2DArray(array2d);
 
     // TODO 27 добавьте еще один ряд чисел, но на этот раз из 10 чисел от 0 до 9 включительно (воспользуйтесь for-ом)
-    // ...
+    std::vector<int>row2;
+    row2.resize(10);
+    for (int i = 0; i< 10; ++i) {
+        row2[i] = i;
+    }
+    array2d.push_back(row2);
+    std::cout << "print2DArray(array2d):" << std::endl;
     print2DArray(array2d);
 }
 
@@ -77,9 +86,54 @@ void task3() {
     // TODO 36 как думаете какие элементы сейчас лежат в двумерном массиве? проверьте выведя его в консоль
 
     // TODO 37 ваша программа должна считывать пары чисел i, j в вечном цикле до тех пор пока i и j не отрицательны
-//    while (true) {
-//        int i;
-//        int j;
+
+    std::cout<<"2 numbers, please"<<std::endl;
+    int rows;
+    int cols;
+    std::cin>> rows >> cols;
+    rassert(rows>=1 && rows <=20, "wrong rows");
+    rassert(cols>=1 && cols <=20, "wrong cols");
+    std::vector<std::vector<int>>array;
+    array.resize(rows);
+
+    for (int i = 0; i< rows; i++) {
+        array[i].resize(cols);
+    }
+    std::cout << "print2DArray(array2d):" << std::endl;
+    print2DArray(array);
+
+    while (true) {
+        int i;
+        int j;
+        std::cin >> i;
+        std::cin >> j;
+        if (i<0||j<0){
+            break;
+        }
+        bool f = true;
+        array[i][j]++;
+        print2DArray(array);
+        for (int k = 0; k < array.size(); ++k) {
+            for (int l = 0; l < array[0].size(); ++l) {
+                if (array[k][l] == 0){
+                    f = false;
+                    break;
+                }
+            }
+        }
+        for (int k = 0; k < array[0].size(); ++k) {
+            for (int l = 0; l < array.size(); ++l) {
+                if (array[k][l] == 0){
+                    f = false;
+                    break;
+                }
+
+            }
+        }
+        if (f){
+            std::cout << "АХ-ХА-ХА" << std::endl;
+        }
+
 //        // TODO 38 считав очередное i, j - увеличьте ячейку в думерном массиве находящуюся в j-ой строке, в i-ой колонке (т.е. j - по оси вниз, i - по оси вправо)
 //        // TODO 39 выведите в консоль текущее состояние двумерного массива
 //        // TODO 40 добавьте проверку что если пользователь заполнил единицами хотя бы один ряд - то выводится сообщение "OX-XO-XO" и программа завершается
@@ -92,8 +146,8 @@ void task3() {
 int main() {
     try {
   //      task1(); // TODO 13 когда выполните первое задание - закомментируйте эту строку чтобы эта функция перестала вызываться (добавьте перед нею двойной слэш - / или просто нажмите Ctrl+/)
-       task2(); // TODO 20 раскомментируйте эту строку чтобы начать выполнять второе задание (или просто поставьте каретку в эту строку и нажмите Ctrl+/)
-//        task3(); // TODO 30 закомментируйте предыдущие две строки и раскоментируйте эту чтобы начать выполнять третье задание
+    //   task2(); // TODO 20 раскомментируйте эту строку чтобы начать выполнять второе задание (или просто поставьте каретку в эту строку и нажмите Ctrl+/)
+        task3(); // TODO 30 закомментируйте предыдущие две строки и раскоментируйте эту чтобы начать выполнять третье задание
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
