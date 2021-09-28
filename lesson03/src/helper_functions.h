@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opencv2/highgui.hpp> // подключили часть библиотеки OpenCV, теперь мы можем работать с картинками (знаем про тип cv::Mat)
+#include <tuple>
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image);
 

@@ -1,18 +1,20 @@
 #include <iostream>
 #include <filesystem> // это нам понадобится чтобы создать папку для результатов
 #include <libutils/rasserts.h>
-
+#include "opencv2/core/cvdef.h"
 #include "helper_functions.h"
 
 #include <opencv2/highgui.hpp> // подключили часть библиотеки OpenCV, теперь мы можем читать и сохранять картинки
 
 void task1() {
-    cv::Mat imgUnicorn = cv::imread("lesson03/data/unicorn.jpg");  // загружаем картинку с единорогом
+    cv::Mat imgUnicorn = cv::imread("lesson03/data/unicorn.png");  // загружаем картинку с единорогом
+    //cv::Mat imgUnicorn = cv::imread("C:\\Users\\dmitr\\CLionProjects\\CPPExercises2021\\lesson03\\data\\unicorn.png");
+
     rassert(!imgUnicorn.empty(), 3428374817241); // проверяем что картинка загрузилась (что она не пустая)
 
     // TODO выведите в консоль разрешение картинки (ширина x высота)
-    int width = imgUnicorn.cols(); // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
-    int height = imgUnicorn.rows();;
+    int width = imgUnicorn.cols; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
+    int height = imgUnicorn.rows;;
     std::cout << "Unicorn image loaded: " << width << "x" << height << std::endl;
 
     // создаем папку в которую будем сохранять результаты - lesson03/resultsData/
@@ -27,6 +29,8 @@ void task1() {
 
     cv::Mat invertedUnicorn = invertImageColors(imgUnicorn.clone()); // TODO реализуйте функцию которая каждый цвет картинки инвертирует
     // TODO сохраните резльутат в ту же папку, но файл назовите "02_inv_unicorn.jpg"
+    std::string filename2 = resultsDir + "02_inv_unicorn.jpg";
+    cv::imwrite(filename2, invertedUnicorn);
 
 //    cv::Mat castle; // TODO считайте с диска картинку с замком - castle.png
 //    cv::Mat unicornInCastle = addBackgroundInsteadOfBlackPixels(imgUnicorn, castle); // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
