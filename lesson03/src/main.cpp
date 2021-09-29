@@ -97,14 +97,14 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
         std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
-        content.lastClickY = y;
-        content.lastClickX = x;
     }
+    content.lastClickY = y;
+    content.lastClickX = x;
 }
 
 void task3() {
     // давайте теперь вместо картинок подключим видеопоток с веб камеры:
-    cv::VideoCapture video(0);
+    cv::VideoCapture video(1);
     // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
     // альтернативно если у вас совсем нет вебки - то попробуйте запустить с видеофайла, но у меня не заработало - из-за "there is API version mismath: plugin API level (0) != OpenCV API level (1)"
     // скачайте какое-нибудь видео с https://www.videezy.com/free-video/chroma-key
@@ -124,7 +124,9 @@ void task3() {
     std::vector<std::pair<int,int>> ClickCoord = {{0,0}};
     content.lastClickX = 0;
     content.lastClickY = 0;
+    bool invert = false;
     while (video.isOpened() && cv::waitKey(updateDelay) != ' ' && cv::waitKey(updateDelay) != 27) { // пока видео не закрылось - бежим по нему
+
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
@@ -139,12 +141,40 @@ void task3() {
         if(std::make_pair(content.lastClickX, content.lastClickY) != ClickCoord.back())
             ClickCoord.emplace_back(std::make_pair(content.lastClickX, content.lastClickY));
         // TODO и перед отрисовкой очередного кадра - заполняйте все уже прокликанные пиксели красным цветом
-        cv::imshow("video", addRedOn(content.frame, ClickCoord));
+        if(invert)
+            cv::imshow("video", invertImageColors(addRedOn(content.frame, ClickCoord)));
+        else
+            cv::imshow("video", addRedOn(content.frame, ClickCoord));
         // TODO сделайте по правому клику мышки переключение в режим "цвета каждого кадра инвертированы" (можете просто воспользоваться функцией invertImageColors)
+        if(cv::waitKey(5) == 'l')
+            invert = invert ? false : true;
     }
 }
 
 void task4() {
+    cv::VideoCapture video(1);
+    rassert(video.isOpened(), 3423948392481);
+    MyVideoContent content;
+    int updateDelay = 10;
+    std::vector<std::pair<int,int>> ClickCoord = {{0,0}};
+    content.lastClickX = 0;
+    content.lastClickY = 0;
+    cv::setMouseCallback("video", onMouseClick, &content);
+
+    cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg");
+    cv::Mat newCastle = changeLarge(largeCastle, content.frame.cols, content.frame.rows);
+
+    while (video.isOpened() && cv::waitKey(updateDelay) != ' ' && cv::waitKey(updateDelay) != 27) {
+        bool isSuccess = video.read(content.frame);
+        rassert(isSuccess, 348792347819);
+        rassert(!content.frame.empty(), 3452314124643);
+        cv::setMouseCallback("video", onMouseClick, &content);
+
+        if(std::make_pair(content.lastClickX, content.lastClickY) != ClickCoord.back())
+            ClickCoord.emplace_back(std::make_pair(content.lastClickX, content.lastClickY));
+
+        cv::imshow("video", addBackGround(content.frame, largeCastle, ClickCoord));
+    }
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
     // при клике мышки - определяется цвет пикселя в который пользователь кликнул, теперь этот цвет считается прозрачным (как было с черным цветом у единорога)
     // и теперь перед отрисовкой очередного кадра надо подложить вместо прозрачных пикселей - пиксель из отмасштабированной картинки замка (castle_large.jpg)
@@ -160,8 +190,8 @@ int main() {
     try {
 //        task1();
 //        task2();
-        task3();
-//        task4();
+//        task3();
+        task4();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;

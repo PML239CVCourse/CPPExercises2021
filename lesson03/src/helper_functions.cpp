@@ -1,7 +1,7 @@
 #include "helper_functions.h"
 
 #include <libutils/rasserts.h>
-
+#include <queue>
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     // TODO реализуйте функцию которая каждый черный пиксель картинки сделает синим
@@ -178,4 +178,50 @@ cv::Mat addRedOn(cv::Mat& image, std::vector<std::pair<int,int>> &ClickCoord){
         image.at<cv::Vec3b>(i.second, i.first) = cv::Vec3b(0, 0, 255);
     }
     return image;
+}
+
+cv::Mat changeLarge(cv::Mat& image, int width, int height){
+    cv::Scalar tcolor(0, 0, 0);
+    cv::Mat largeImage(height, width, CV_8UC3, tcolor);
+    int iwidth = image.cols;
+    int iheight = image.rows;
+    cv::Vec3b color = image.at<cv::Vec3b>(13, 5);
+    unsigned char &blue = color[0];
+    unsigned char &green = color[1];
+    unsigned char &red = color[2];
+    for(int j = 0; j < height; ++j){
+        for(int i = 0; i < width; ++i){
+            int tj = j*iheight/height;
+            int ti = i*iwidth/width;
+            color = image.at<cv::Vec3b>(tj, ti);
+            if(!(blue < 11 && green < 11 && red < 11)){
+                largeImage.at<cv::Vec3b>(j, i) = color;
+            }
+        }
+    }
+    return largeImage;
+}
+
+cv::Mat addBackGround(cv::Mat& image, cv::Mat& BackGround, std::vector<std::pair<int,int>> &ClickCoord){
+    for(auto& i : ClickCoord){
+        std::vector<std::pair<int,int>> np = addSimilarPixel(image.clone(), i);
+        for(auto& j : np) {
+            image.at<cv::Vec3b>(i.second, i.first) = BackGround.at<cv::Vec3b>(i.second, i.first);
+        }
+    }
+    return image;
+}
+
+std::vector<std::pair<int,int>> addSimilarPixel(cv::Mat image, std::pair<int,int> pixel){
+    std::queue<std::pair<int,int>> q;
+    cv::Vec3b color = image.at<cv::Vec3b>(pixel.second, pixel.first);
+    unsigned char blue = color[0];
+    unsigned char green = color[1];
+    unsigned char red = color[2];
+    cv::Vec3b tcol(255 - color[0], 255 - color[1], 255 - color[2]);
+    q.push(pixel);
+    while(!q.empty()){
+        std::pair<int,int> t = q.back();
+        q.pop();
+    }
 }
