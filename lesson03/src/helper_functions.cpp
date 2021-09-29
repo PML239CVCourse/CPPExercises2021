@@ -152,16 +152,18 @@ cv::Mat f(cv::Mat object,cv::Mat lB){
     return lB;
 }
 
-cv::Mat f20(cv::Mat object){
-    for( int i = 0; i < object.cols; i++){
-        for( int j = 0; j < object.rows; j++){
+cv::Mat f1(cv::Mat object) {
+    for (int i = 0; i < object.cols; i++) {
+        for (int j = 0; j < object.rows; j++) {
             cv::Vec3b color_object = object.at<cv::Vec3b>(j, i);
 
 
-            if(color_object[0] == 0 && color_object[1] == 0 && color_object[2] == 0){
-                object.at<cv::Vec3b>(j, i) = cv::Vec3b(rand()%255, rand()%255, rand()%255);
+            if (color_object[0] == 0 && color_object[1] == 0 && color_object[2] == 0) {
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(rand() % 255, rand() % 255, rand() % 255);
             }
 
 
         }
     }
+    return object;
+}

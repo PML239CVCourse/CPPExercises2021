@@ -6,7 +6,7 @@
 
 #include <opencv2/highgui.hpp> // подключили часть библиотеки OpenCV, теперь мы можем читать и сохранять картинки
 
-void task1() {
+/*void task1() {
     cv::Mat imgUnicorn = cv::imread("lesson03/data/unicorn.png");  // загружаем картинку с единорогом
     rassert(!imgUnicorn.empty(), 3428374817241); // проверяем что картинка загрузилась (что она не пустая)
 
@@ -66,7 +66,7 @@ void task1() {
     cv::Mat unicornBig = f(imgUnicorn.clone(),largeCastle.clone());
     std::string filename5 = resultsDir + "06_unicorn_full.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
     cv::imwrite(filename5, unicornBig);
-}
+}*/
 
 void task2() {
     cv::Mat imgUnicorn = cv::imread("lesson03/data/unicorn.png");
@@ -79,7 +79,7 @@ void task2() {
 
         // кроме сохранения картинок на диск (что часто гораздо удобнее конечно, т.к. между ними легко переключаться)
         // иногда удобно        // поэтому если мы выполняемся до тех пор пока эта функция не вернет код 32 (а это код кнопки "пробел"), то достаточно будет нажать на пробел чтобы закончить работу программы рисовать картинку в окне:
-        cv::imshow("lesson03 window", f20(imgUnicorn.clone()));
+        cv::imshow("lesson03 window", f1(imgUnicorn.clone()));
         // TODO сделайте функцию которая будет все черные пиксели (фон) заменять на случайный цвет (аккуратно, будет хаотично и ярко мигать, не делайте если вам это противопоказано)
     }
 }
@@ -88,18 +88,28 @@ struct MyVideoContent {
     cv::Mat frame;
     int lastClickX;
     int lastClickY;
-};
 
+};
+std::vector<int> coordinate;
+std::vector<cv::Vec3b> color;
+bool n = true;
 void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoContent) {
     MyVideoContent &content = *((MyVideoContent*) pointerToMyVideoContent);
     // не обращайте внимание на предыдущую строку, главное что важно заметить:
     // content.frame - доступ к тому кадру что был только что отображен на экране
     // content.lastClickX - переменная которая вам тоже наверняка пригодится
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
-
+    cv::Mat cadr = content.frame;
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
+        coordinate.push_back(y);
+        coordinate.push_back(x);
+color.push_back(cadr.at<cv::Vec3b>(y,x));
         std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
     }
+    if(event == cv::EVENT_RBUTTONDOWN){
+        n = !n;
+    }
+
 }
 
 void task3() {
@@ -126,10 +136,21 @@ void task3() {
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
-        cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
+         // покаызваем очередной кадр в окошке
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
-
+        cv::Mat cadr1 = content.frame;
+        for(int i = 0; i < coordinate.size(); i+=2){
+            cadr1.at<cv::Vec3b>(coordinate[i],coordinate[i+1]) = cv::Vec3b(0,0,255);
+        }
+        if (!n){
+            cv::imshow("video", invertImageColors(cadr1));
+        } else {
+        cv::imshow("video", cadr1);
+            }
         int key = cv::waitKey(10);
+        if(key == 32 || key == 27){
+            break;
+        }
         // TODO добавьте завершение программы в случае если нажат пробел
         // TODO добавьте завершение программы в случае если нажат Escape (придумайте как нагуглить)
 
@@ -141,6 +162,57 @@ void task3() {
 }
 
 void task4() {
+    cv::VideoCapture video(0);
+    // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
+    // альтернативно если у вас совсем нет вебки - то попробуйте запустить с видеофайла, но у меня не заработало - из-за "there is API version mismath: plugin API level (0) != OpenCV API level (1)"
+    // скачайте какое-нибудь видео с https://www.videezy.com/free-video/chroma-key
+    // например https://www.videezy.com/elements-and-effects/5594-interactive-hand-gesture-sliding-finger-studio-green-screen
+    // если вы увидите кучу ошибок в консоли навроде "DynamicLib::libraryLoad load opencv_videoio_ffmpeg451_64.dll => FAILED", то скопируйте файл C:\...\opencv\build\x64\vc14\bin\opencv_videoio_ffmpeg451_64.dll в папку с проектом
+    // и укажите путь к этому видео тут:
+//    cv::VideoCapture video("lesson03/data/Spin_1.mp4");
+
+    rassert(video.isOpened(), 3423948392481); // проверяем что видео получилось открыть
+
+    MyVideoContent content; // здесь мы будем хранить всякие полезности - например последний видео кадр, координаты последнего клика и т.п.
+    // content.frame - доступ к тому кадру что был только что отображен на экране
+    // content.lastClickX - переменная которая вам тоже наверняка пригодится
+    // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
+    // просто перейдите к ее объявлению - удерживая Ctrl сделайте клик левой кнопкой мыши по MyVideoContent - и вас телепортирует к ее определению
+
+    while (video.isOpened()) { // пока видео не закрылось - бежим по нему
+        bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+        rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+        rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
+     bool f = true;
+     int a;
+     int b;
+     if (f){
+         a = content.frame.rows;
+         b = content.frame.cols;
+     f= !f;
+     }
+
+        int width = a;
+        int height = b;
+        cv::Scalar color(0, 0, 0);
+        cv::Mat myNewImage(height, width, CV_8UC3, color);
+
+        // покаызваем очередной кадр в окошке
+        cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
+        cv::Mat cadr1 = content.frame;
+        for(int i = 0; i < coordinate.size(); i+=2){
+            cadr1.at<cv::Vec3b>(coordinate[i],coordinate[i+1]) = cv::Vec3b(0,0,255);
+        }
+        if (!n){
+            cv::imshow("video", invertImageColors(cadr1));
+        } else {
+            cv::imshow("video", cadr1);
+        }
+        int key = cv::waitKey(10);
+        if(key == 32 || key == 27){
+            break;
+        }
+    }
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
     // при клике мышки - определяется цвет пикселя в который пользователь кликнул, теперь этот цвет считается прозрачным (как было с черным цветом у единорога)
     // и теперь перед отрисовкой очередного кадра надо подложить вместо прозрачных пикселей - пиксель из отмасштабированной картинки замка (castle_large.jpg)
@@ -155,9 +227,9 @@ void task4() {
 int main() {
     try {
     //    task1();
-       task2();
-//        task3();
-//        task4();
+    //   task2();
+     //     task3();
+       task4();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
