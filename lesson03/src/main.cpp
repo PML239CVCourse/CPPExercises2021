@@ -38,9 +38,12 @@ void task1() {
     std::string filename3 = resultsDir + "03_unicorn_castle.jpg";
     cv::imwrite(filename3, unicornInCastle);
 
-//    cv::Mat largeCastle; // TODO считайте с диска картинку с большим замком - castle_large.png
-//    cv::Mat unicornInLargeCastle = addBackgroundInsteadOfBlackPixelsLargeBackground(imgUnicorn, largeCastle); // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
+    cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg"); // TODO считайте с диска картинку с большим замком - castle_large.png
+    rassert(!largeCastle.empty(), 600457631);
+    cv::Mat unicornInLargeCastle = addBackgroundInsteadOfBlackPixelsLargeBackground(imgUnicorn.clone(), largeCastle.clone()); // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
     // TODO сохраните результат - "04_unicorn_large_castle.jpg"
+    std::string filename4 = resultsDir + "04_unicorn_large_castle.jpg";
+    cv::imwrite(filename4, unicornInLargeCastle);
 
     // TODO сделайте то же самое, но теперь пусть единорог рисуется N раз (случайно выбранная переменная от 0 до 100)
     // функцию вам придется объявить самостоятельно, включая:

@@ -96,8 +96,25 @@ cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background) {
 
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground) {
     // теперь вам гарантируется что largeBackground гораздо больше - добавьте проверок этого инварианта (rassert-ов)
-
+    rassert(object.cols <= largeBackground.cols, 341241251251351);
+    rassert(object.rows <= largeBackground.rows, 87697656853457);
     // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
+    int a = object.rows;
+    int b = object.cols;
+    int c = largeBackground.rows;
+    int d = largeBackground.cols;
+    for(int i = (c-a)/2; i < c - (c-a)/2; ++i){
+        for(int j = (d-b)/2; j < d - (d-b)/2; ++j){
+            cv::Vec3b color = object.at<cv::Vec3b>(i, j);
+            unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+            if(blue < 5 && green < 5 && red < 5){
+
+            }
+        }
+
+    }
 
     return largeBackground;
 }
