@@ -99,9 +99,9 @@ void task3() {
 
 }
 
-
+using namespace std;
 int main() {
-    try {
+    /*try {
     //    task1();
     //    task2();
         task3();
@@ -109,5 +109,46 @@ int main() {
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
         return 1;
+    }*/
+    long cnt_all = 0;
+    long cnt_fail = 0;
+    while(true){
+        vector<int> q(4);
+        for(int i  =0;i<4;i++)
+            if(rand()%10<1)
+                q[i]=1;
+        int cnt = 0;
+        cout<<cnt<< " ";
+        for(int i = 0;i<4;i++)
+            cnt+=q[i];
+        if(cnt==1)
+        {
+            if(rand()%10<2)
+                cnt_fail++;
+            cnt_all++;
+        }
+        if(cnt==0)
+        {
+            cnt_all++;
+        }
+        if(cnt==2)
+        {
+            if(rand()%10<5)
+                cnt_fail++;
+            cnt_all++;
+        }
+        if(cnt==3)
+        {
+            if(rand()%10<7)
+                cnt_fail++;
+            cnt_all++;
+        }
+        if(cnt==4)
+        {
+            if(rand()%10<9)
+                cnt_fail++;
+            cnt_all++;
+        }
+        cout<<cnt_all<<" "<<(double)cnt_fail/(double)cnt_all<<endl;
     }
 }
