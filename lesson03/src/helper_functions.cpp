@@ -116,8 +116,8 @@ cv::Mat addNImage(cv::Mat object, cv::Mat largeBackground , int n){
     unsigned char &red = color[2];
     for(int tle = 0; tle < n; ++tle){
 
-        int dj = tle; //rand() % (bheight/2- oheight/2 - 1);
-        int di = tle; //rand() % (bwidth/2-owidth/2 - 1);
+        int dj = rand() % (bheight-oheight-5);
+        int di = rand() % (bwidth-owidth-5);
 
         for(int j = 0; j < oheight; ++j){
             for(int i = 0; i < owidth; ++i){
@@ -129,4 +129,53 @@ cv::Mat addNImage(cv::Mat object, cv::Mat largeBackground , int n){
         }
     }
     return largeBackground;
+}
+
+cv::Mat NewSize(cv::Mat  object, cv::Mat largeBackground){
+    int owidth = object.cols;
+    int oheight = object.rows;
+    int bwidth = largeBackground.cols;
+    int bheight = largeBackground.rows;
+    cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
+    unsigned char &blue = color[0];
+    unsigned char &green = color[1];
+    unsigned char &red = color[2];
+    //cv::Scalar tcolor(0, 0, 0);
+    //cv::Mat largeObject(bheight, bwidth, CV_8UC3, tcolor);
+    for(int j = 0; j < bheight; ++j){
+        for(int i = 0; i < bwidth; ++i){
+            int tj = j*oheight/bheight;
+            int ti = i*owidth/bwidth;
+            color = object.at<cv::Vec3b>(tj, ti);
+            if(!(blue < 11 && green < 11 && red < 11)){
+                largeBackground.at<cv::Vec3b>(j, i) = color;
+            }
+        }
+    }
+    return largeBackground;
+}
+
+cv::Mat BlackToRand(cv::Mat image){
+    cv::Vec3b color = image.at<cv::Vec3b>(0, 0);
+    unsigned char &blue = color[0];
+    unsigned char &green = color[1];
+    unsigned char &red = color[2];
+    int width = image.cols;
+    int height = image.rows;
+    for(int j = 0; j < height; ++j){
+        for(int i = 0; i < width; ++i){
+            color = image.at<cv::Vec3b>(j, i);
+            if((blue < 5 && green < 5 && red < 5)){
+                image.at<cv::Vec3b>(j, i) = cv::Vec3b(rand()%256, rand()%256, rand()%256);
+            }
+        }
+    }
+    return image;
+}
+
+cv::Mat addRedOn(cv::Mat& image, std::vector<std::pair<int,int>> &ClickCoord){
+    for(auto& i : ClickCoord){
+        image.at<cv::Vec3b>(i.second, i.first) = cv::Vec3b(0, 0, 255);
+    }
+    return image;
 }

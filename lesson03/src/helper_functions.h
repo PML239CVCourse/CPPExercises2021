@@ -11,3 +11,10 @@ cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background);
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground);
 
 cv::Mat addNImage(cv::Mat object, cv::Mat largeBackground, int n);
+
+cv::Mat NewSize(cv::Mat  object, cv::Mat largeBackground);
+
+cv::Mat BlackToRand(cv::Mat image);
+
+cv::Mat addRedOn(cv::Mat& image, std::vector<std::pair<int,int>> &ClickCoord);
+
