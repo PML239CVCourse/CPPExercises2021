@@ -65,18 +65,60 @@ cv::Mat invertImageColors(cv::Mat image) {
 }
 
 cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background) {
+    rassert(object.cols == background.cols, 341241251251351);
+    rassert(object.rows == background.rows, 341241251251351);
     // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
     // т.е. что-то вроде накладного фона получится
+    using namespace std;
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+            cv::Vec3b color_bg = background.at<cv::Vec3b>(i, j);
+            unsigned blue = color_obj[0];
+            unsigned green = color_obj[1];
+            unsigned red = color_obj[2];
+            if(blue == 0 && green == 0 && red == 0){
+                blue = color_bg[0];
+                green = color_bg[1];
+                red = color_bg[2];
+            }
+            object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+    }
+
 
     // гарантируется что размеры картинок совпадают - проверьте это через rassert, вот например сверка ширины:
     rassert(object.cols == background.cols, 341241251251351);
+    rassert(object.rows == background.rows, 341241251251351);
 
     return object;
 }
 
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground) {
     // теперь вам гарантируется что largeBackground гораздо больше - добавьте проверок этого инварианта (rassert-ов)
+    using namespace std;
+    rassert(object.cols < largeBackground.cols, 341241251251351);
+    rassert(object.rows < largeBackground.rows, 341241251251351);
 
+    int obj_beg_height = (largeBackground.rows - object.rows) / 2;
+    int obj_beg_width = (largeBackground.cols - object.cols) / 2;
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+            cv::Vec3b color_bg = largeBackground.at<cv::Vec3b>(obj_beg_height + i, obj_beg_width + j);
+
+            unsigned blue = color_obj[0];
+            unsigned green = color_obj[1];
+            unsigned red = color_obj[2];
+
+            if(blue == 0 && green == 0 && red == 0){
+                blue = color_bg[0];
+                green = color_bg[1];
+                red = color_bg[2];
+            }
+            largeBackground.at<cv::Vec3b>(obj_beg_height + i, obj_beg_width + j) = cv::Vec3b(blue, green, red);
+        }
+    }
     // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
 
     return largeBackground;
