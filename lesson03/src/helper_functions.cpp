@@ -204,24 +204,27 @@ cv::Mat changeLarge(cv::Mat& image, int width, int height){
 
 cv::Mat addBackGround(cv::Mat& image, cv::Mat& BackGround, std::vector<std::pair<int,int>> &ClickCoord){
     for(auto& i : ClickCoord){
-        std::vector<std::pair<int,int>> np = addSimilarPixel(image.clone(), i);
-        for(auto& j : np) {
-            image.at<cv::Vec3b>(i.second, i.first) = BackGround.at<cv::Vec3b>(i.second, i.first);
-        }
+        image.at<cv::Vec3b>(i.second, i.first) = BackGround.at<cv::Vec3b>(i.second, i.first);
     }
     return image;
 }
 
-std::vector<std::pair<int,int>> addSimilarPixel(cv::Mat image, std::pair<int,int> pixel){
-    std::queue<std::pair<int,int>> q;
-    cv::Vec3b color = image.at<cv::Vec3b>(pixel.second, pixel.first);
-    unsigned char blue = color[0];
-    unsigned char green = color[1];
-    unsigned char red = color[2];
-    cv::Vec3b tcol(255 - color[0], 255 - color[1], 255 - color[2]);
-    q.push(pixel);
-    while(!q.empty()){
-        std::pair<int,int> t = q.back();
-        q.pop();
+
+cv::Mat allColIsBack(cv::Mat& image, cv::Mat& BackGround, std::vector<cv::Vec3b> colors){
+    int width = image.cols;
+    int height = image.rows;
+    cv::Vec3b color = image.at<cv::Vec3b>(13, 5);
+    unsigned char &blue = color[0];
+    unsigned char &green = color[1];
+    unsigned char &red = color[2];
+    for(int j = 0; j < height; ++j){
+        for(int i = 0; i < width; ++i){
+            color = image.at<cv::Vec3b>(j, i);
+            for(auto& tcol : colors){
+                if(abs(tcol[0] - blue) < DELTA && abs(tcol[1] - green) < DELTA && abs(tcol[2] - red) < DELTA)
+                    image.at<cv::Vec3b>(j, i) = BackGround.at<cv::Vec3b>(j, i);
+            }
+        }
     }
+    return image;
 }

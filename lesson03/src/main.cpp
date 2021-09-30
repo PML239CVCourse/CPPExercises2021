@@ -97,9 +97,9 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
         std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+        content.lastClickY = y;
+        content.lastClickX = x;
     }
-    content.lastClickY = y;
-    content.lastClickX = x;
 }
 
 void task3() {
@@ -157,6 +157,7 @@ void task4() {
     MyVideoContent content;
     int updateDelay = 10;
     std::vector<std::pair<int,int>> ClickCoord = {{0,0}};
+    std::vector<cv::Vec3b> colors;
     content.lastClickX = 0;
     content.lastClickY = 0;
     cv::setMouseCallback("video", onMouseClick, &content);
@@ -170,10 +171,12 @@ void task4() {
         rassert(!content.frame.empty(), 3452314124643);
         cv::setMouseCallback("video", onMouseClick, &content);
 
-        if(std::make_pair(content.lastClickX, content.lastClickY) != ClickCoord.back())
+        if(std::make_pair(content.lastClickX, content.lastClickY) != ClickCoord.back()) {
             ClickCoord.emplace_back(std::make_pair(content.lastClickX, content.lastClickY));
+            colors.emplace_back(content.frame.at<cv::Vec3b>(content.lastClickY, content.lastClickX));
+        }
 
-        cv::imshow("video", addBackGround(content.frame, largeCastle, ClickCoord));
+        cv::imshow("video", allColIsBack(content.frame, largeCastle, colors));
     }
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
     // при клике мышки - определяется цвет пикселя в который пользователь кликнул, теперь этот цвет считается прозрачным (как было с черным цветом у единорога)
