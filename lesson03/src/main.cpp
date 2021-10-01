@@ -55,7 +55,7 @@ void task1() {
     // 6) результат сохраните - "05_unicorns_otake.jpg"
 
     // TODO растяните картинку единорога так, чтобы она заполнила полностью большую картинку с замком "06_unicorn_upscale.jpg"
-    cv::Mat gigant = sosibibu(imgUnicorn.clone(), largeCastle.clone());
+    cv::Mat gigant = rast(imgUnicorn.clone(), largeCastle.clone());
     std::string filename5 = resultsDir + "06_unicorn_gigant.jpg"; // удобно в начале файла писать число, чтобы файлы были в том порядке в котором мы их создали
     cv::imwrite(filename5, gigant);
 }
@@ -68,36 +68,79 @@ void task2() {
     int updateDelay = 10; // указываем сколько времени ждать нажатия кнопки клавиатуры - в миллисекундах
     while (cv::waitKey(updateDelay) != 32) {
         // поэтому если мы выполняемся до тех пор пока эта функция не вернет код 32 (а это код кнопки "пробел"), то достаточно будет нажать на пробел чтобы закончить работу программы
-
+        cv::Mat baba = epilepsia(imgUnicorn.clone());
         // кроме сохранения картинок на диск (что часто гораздо удобнее конечно, т.к. между ними легко переключаться)
         // иногда удобно рисовать картинку в окне:
-        cv::imshow("lesson03 window", imgUnicorn);
+        cv::imshow("lesson03 window", baba);
         // TODO сделайте функцию которая будет все черные пиксели (фон) заменять на случайный цвет (аккуратно, будет хаотично и ярко мигать, не делайте если вам это противопоказано)
     }
 }
 
 struct MyVideoContent {
+    std::vector<std::vector<int>> pix;
     cv::Mat frame;
-    int lastClickX;
-    int lastClickY;
+    cv::Mat fon;
+    cv::Mat frame1 = cv::imread("lesson03/data/castle_large.jpg");
+    int lastClickX = 0;
+    int lastClickY = 0;
+    bool kaka = false;
+    bool pack = false;
 
     void Click(int x, int y){
         lastClickX = x;
         lastClickY = y;
     }
 
+    void SetFon(cv::Mat fon1){
+        fon = fon1;
+    }
+
     cv::Mat Paint(std::vector<std::vector<int>> q){
-        for (int i = 0; i < q.size(); ++i) {
-            frame.at<cv::Vec3b>(q[i][1],q[i][0]) = cv::Vec3b(0, 0, 255);
+        for (int i = 0; i < pix.size(); ++i) {
+            if (kaka) {
+                frame.at<cv::Vec3b>(q[i][1], q[i][0]) = cv::Vec3b(255, 255, 0);
+            }
+            else{
+                frame.at<cv::Vec3b>(q[i][1], q[i][0]) = cv::Vec3b(0, 0, 255);
+            }
+        }
+        if (kaka){
+            return invertImageColors(frame);
+        }
+        else{
+            return frame;
+        }
+    }
+
+    cv::Mat Paint1(){
+//        std::cout << pix.size();
+        for (int i = 0; i < pix.size(); ++i) {
+            if (kaka) {
+                frame = rast1(frame,frame1,pix[i]);
+            }
         }
         return frame;
     }
 
     std::vector<int> Get(){
         std::vector<int> a;
+//        std::cout << "Left click at x=" << lastClickX << ", y=" << lastClickY << std::endl;
         a.push_back(lastClickX);
         a.push_back(lastClickY);
         return a;
+    }
+
+    void Dpix(std::vector<int> a){
+
+    }
+
+    void Dokaka(){
+        if (kaka){
+            kaka = false;
+        }
+        else{
+            kaka = true;
+        }
     }
 };
 
@@ -108,15 +151,32 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
     // content.lastClickX - переменная которая вам тоже наверняка пригодится
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
 
+    cv::Vec3b color;
+    std::vector<int> b;
+    b.push_back(0);
+    b.push_back(0);
+    b.push_back(0);
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
-        std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+//        std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+        std::vector<int> a = content.Get();
+        color = content.frame.at<cv::Vec3b>(a[1],a[0]);
+        b[0] = (int)color[0];
+        b[1] = (int)color[1];
+        b[2] = (int)color[2];
+//        std::cout << b[0] << " " << b[1] << " " << b[2] << std::endl;
+        content.Dpix(b);
         content.Click(x,y);
+    }
+
+    if (event == cv::EVENT_RBUTTONDOWN){
+        content.Dokaka();
     }
 }
 
 void task3() {
+    int bo;
+    bo = 0;
     // давайте теперь вместо картинок подключим видеопоток с веб камеры:
-    cv::VideoCapture video(0);
     // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
     // альтернативно если у вас совсем нет вебки - то попробуйте запустить с видеофайла, но у меня не заработало - из-за "there is API version mismath: plugin API level (0) != OpenCV API level (1)"
     // скачайте какое-нибудь видео с https://www.videezy.com/free-video/chroma-key
@@ -125,7 +185,10 @@ void task3() {
     // и укажите путь к этому видео тут:
 //    cv::VideoCapture video("lesson03/data/Spin_1.mp4");
 
+//    if (bo == 0) {
+    cv::VideoCapture video(0);
     rassert(video.isOpened(), 3423948392481); // проверяем что видео получилось открыть
+//    }
 
     MyVideoContent content; // здесь мы будем хранить всякие полезности - например последний видео кадр, координаты последнего клика и т.п.
     // content.frame - доступ к тому кадру что был только что отображен на экране
@@ -138,22 +201,94 @@ void task3() {
     m.push_back(0);
     m.push_back(0);
     mas.push_back(m);
-    while (video.isOpened()) { // пока видео не закрылось - бежим по нему
-        bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+    rassert(mas.size() == 1, 111);
+    rassert(mas[0][0] == 0, 111);
+//    for (int i = 0; i < mas.size(); ++i) {
+//        for (int j = 0; j < 2; ++j) {
+//            std::cout << mas[i][j] << "    " << std:: endl;
+//        }
+//        std::cout << std::endl;
+//    }
+//    std::cin >> bo;
+
+    int q = 0;
+    while (true) { // пока видео не закрылось - бежим по нему
+        bool isSuccess;
+        if (bo == 0){
+            isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+        }
+        else{
+            isSuccess = true;
+            cv::Mat Foto;
+            switch (q) {
+                case 0:
+                    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 1:
+                    Foto = cv::imread("lesson03/Camera Roll/2.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 2:
+                    Foto = cv::imread("lesson03/Camera Roll/3.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 3:
+                    Foto = cv::imread("lesson03/Camera Roll/4.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 4:
+                    Foto = cv::imread("lesson03/Camera Roll/5.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 5:
+                    Foto = cv::imread("lesson03/Camera Roll/6.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 6:
+                    Foto = cv::imread("lesson03/Camera Roll/7.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 7:
+                    Foto = cv::imread("lesson03/Camera Roll/8.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 8:
+                    Foto = cv::imread("lesson03/Camera Roll/9.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                default:
+                    Foto = cv::imread("lesson03/Camera Roll/10.jpg");
+                    rassert(!Foto.empty(), 123);
+                    q = 0;
+                    break;
+            }
+            //cv::Mat Foto = cv::imread("lesson03/cam/1.jpg");
+            rassert(!Foto.empty(), 123);
+            content.frame = Foto;
+            q++;
+        }
+        //std::cout << 1 << std::endl;
+
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
         cv::imshow("video", content.Paint(mas)); // покаызваем очередной кадр в окошке
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
 
+//        for (int i = 0; i < mas.size(); ++i) {
+//            for (int j = 0; j < 2; ++j) {
+//                std::cout << mas[i][j] << "    " << std:: endl;
+//            }
+//            std::cout << std::endl;
+//        }
         mas.push_back(content.Get());
         int key = cv::waitKey(10);
         if (key == 32 || key == 27){
             break;
         }
         // TODO добавьте завершение программы в случае если нажат пробел
-        // TODO добавьте завершение программы в случае если нажат Escape (придумайте как нагуглить)
-
+        // TODO добавьте завершение программы в случае если нажат
         // TODO сохраняйте в вектор (std::vector<int>) координаты всех кликов мышки
         // TODO и перед отрисовкой очередного кадра - заполняйте все уже прокликанные пиксели красным цветом
 
@@ -162,6 +297,116 @@ void task3() {
 }
 
 void task4() {
+    int bo;
+//    std::cin >> bo;
+    bo = 0;
+//    if (bo == 0) {
+    cv::VideoCapture video(0);
+    rassert(video.isOpened(), 3423948392481); // проверяем что видео получилось открыть
+//    }
+
+    MyVideoContent content;
+
+    std::vector<int> b;
+    b.push_back(0);
+    b.push_back(0);
+    b.push_back(0);
+    std::vector<std::vector<int>> mas;
+    std::vector<std::vector<int>> pix;
+    std::vector<int> m;
+    m.push_back(0);
+    m.push_back(0);
+    mas.push_back(m);
+    cv::Vec3b color;
+    rassert(mas.size() == 1, 111);
+    rassert(mas[0][0] == 0, 111);
+
+    cv::Mat Foto;
+    int q = 0;
+    bool isSuccess = false;
+    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
+    isSuccess = video.read(content.frame);
+    Foto = content.frame;
+    rassert(!Foto.empty(), 123);
+    content.frame = Foto;
+    q++;
+    cv::Mat largeCastle = baba(cv::imread("lesson03/data/castle_large.jpg"), content.frame);
+    while (true){
+        cv::imshow("video", largeCastle);
+        int k = cv::waitKey(10);
+        if (k == 32 || k == 27){
+            break;
+        }
+    }
+    while (true) { // пока видео не закрылось - бежим по нему
+        if (bo == 0){//640 480
+            isSuccess = video.read(content.frame);
+        }
+        else{
+            switch (q) {
+                case 0:
+                    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 1:
+                    Foto = cv::imread("lesson03/Camera Roll/2.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 2:
+                    Foto = cv::imread("lesson03/Camera Roll/3.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 3:
+                    Foto = cv::imread("lesson03/Camera Roll/4.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 4:
+                    Foto = cv::imread("lesson03/Camera Roll/5.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 5:
+                    Foto = cv::imread("lesson03/Camera Roll/6.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 6:
+                    Foto = cv::imread("lesson03/Camera Roll/7.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 7:
+                    Foto = cv::imread("lesson03/Camera Roll/8.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                case 8:
+                    Foto = cv::imread("lesson03/Camera Roll/9.jpg");
+                    rassert(!Foto.empty(), 123);
+                    break;
+                default:
+                    Foto = cv::imread("lesson03/Camera Roll/10.jpg");
+                    rassert(!Foto.empty(), 123);
+                    q = 0;
+                    break;
+            }
+            std::cout << 1;
+            rassert(!Foto.empty(), 123);
+            content.frame = Foto;
+            q++;
+        }
+//        std::cout << 1;
+
+        rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+        rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
+
+//        mas.push_back(content.Get());
+        cv::imshow("video", content.Paint1()); // покаызваем очередной кадр в окошке
+        cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
+        int key = cv::waitKey(10);
+        if (key == 32 || key == 27){
+            break;
+        }
+        if (key == 1){
+            content.SetFon(content.frame);
+        }
+    }
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
     // при клике мышки - определяется цвет пикселя в который пользователь кликнул, теперь этот цвет считается прозрачным (как было с черным цветом у единорога)
     // и теперь перед отрисовкой очередного кадра надо подложить вместо прозрачных пикселей - пиксель из отмасштабированной картинки замка (castle_large.jpg)
@@ -173,12 +418,25 @@ void task4() {
     // а может сделать тот же трюк с вебкой - выйти из вебки в момент запуска программы, и первый кадр использовать как кадр-эталон с фоном который надо удалять (делать прозрачным)
 }
 
+void test(){
+    cv::Mat imgUnicorn = cv::imread("lesson03/data/unicorn.png");
+    while (true){
+        cv::imshow("video", imgUnicorn); // покаызваем очередной кадр в окошке
+        int key = cv::waitKey(10);
+        std::cout << key << std::endl;
+        if (key == 32 || key == 27){
+            break;
+        }
+    }
+}
+
 int main() {
     try {
 //        task1();
 //        task2();
         task3();
 //        task4();
+//        test();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;

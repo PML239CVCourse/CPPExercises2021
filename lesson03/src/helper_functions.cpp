@@ -1,6 +1,7 @@
 #include "helper_functions.h"
 
 #include <libutils/rasserts.h>
+#include <iostream>
 
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
@@ -19,7 +20,7 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
     // чем больше значение одного из трех чисел - тем насыщеннее его оттенок
     // всего их диапазон значений - от 0 до 255 включительно
     // т.е. один байт, поэтому мы используем ниже тип unsigned char - целое однобайтовое неотрицательное число
-     // взяли и узнали что за цвет в пикселе в 14-ом ряду (т.к. индексация с нуля) и 6-ой колонке
+    // взяли и узнали что за цвет в пикселе в 14-ом ряду (т.к. индексация с нуля) и 6-ой колонке
     unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
     unsigned char green = color[1];
     unsigned char red = color[2];
@@ -128,26 +129,104 @@ cv::Mat sosibibu(cv::Mat object, cv::Mat largeBackground) {
     return largeBackground;
 }
 
+
+cv::Mat epilepsia(cv::Mat object){
+    cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
+    for (int i = 0; i < object.cols; ++i) {
+        for (int j = 0; j < object.rows; j++){
+            color = object.at<cv::Vec3b>(j, i);
+            if (color[0] == 0 && color[1] == 0 && color[2] == 0){
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(rand(), rand(), rand());
+            }
+        }
+    }
+    return object;
+}
+
 cv::Mat rast(cv::Mat object, cv::Mat largeBackground) {
+    rassert(!object.empty(), 123);
+    rassert(!largeBackground.empty(), 321);
     int high = largeBackground.rows;
     int w = largeBackground.cols;
     int high1 = object.rows;
     int w1 = object.cols;
     cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
     cv::Vec3b color1 = largeBackground.at<cv::Vec3b>(13, 5);
-        int x0 = rand()%(w-w1);
-        int y0 = rand()%(high-high1);
-        for (int i = 0; i < largeBackground.cols; ++i) {
-            for (int j = 0; j < largeBackground.rows; j++){
-                color1 = largeBackground.at<cv::Vec3b>(j, i);
-                if (i > x0 && i < x0+w1 && j > y0 && j < y0+high1){
-                    color = object.at<cv::Vec3b>(j-y0, i-x0);
-                    if (!(color[0] == 0 && color[1] == 0 && color[2] == 0)){
-                        largeBackground.at<cv::Vec3b>(j, i) = cv::Vec3b(color[0], color[1], color[2]);
-                    }
-                }
+    double kx = (double)w/(double)w1;
+    double ky = (double)high/(double)high1;
+//    std::cout << largeBackground.cols << "   " << largeBackground.rows << std::endl;
+    for (int i = 0; i < largeBackground.cols; ++i) {
+        for (int j = 0; j < largeBackground.rows; j++) {
+//            std::cout << i << "   " << j << std::endl;
+//            std::cout << (int)((double)i/kx) << "   " << (int)((double)j/kx) << std::endl;
+            color1 = largeBackground.at<cv::Vec3b>(j, i);
+            color = object.at<cv::Vec3b>((int) ((double) j / ky), (int) ((double) i / kx));
+            if (!(color[0] == 0 && color[1] == 0 && color[2] == 0)) {
+                largeBackground.at<cv::Vec3b>(j, i) = cv::Vec3b(color[0], color[1], color[2]);
             }
         }
-
+    }
     return largeBackground;
+}
+
+cv::Mat baba(cv::Mat largeBackground, cv::Mat object){
+    int high = largeBackground.rows;
+    int w = largeBackground.cols;
+    int high1 = object.rows;
+    int w1 = object.cols;
+    double kx = (double)w1/(double)w;
+    double ky = (double)high1/(double)high;
+    cv::Vec3b color1 = largeBackground.at<cv::Vec3b>(13, 5);
+    cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
+    for (int i = 0; i < object.cols; ++i) {
+        for (int j = 0; j < object.rows; j++) {
+            color1 = largeBackground.at<cv::Vec3b>((int) ((double) j / ky), (int) ((double) i / kx));
+            object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0], color1[1], color1[2]);
+        }
+    }
+    return object;
+}
+
+cv::Mat rast1(cv::Mat object, cv::Mat largeBackground, std::vector<int> pix) {
+    rassert(!object.empty(), 123);
+    rassert(!largeBackground.empty(), 321);
+    cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
+    cv::Vec3b color1 = largeBackground.at<cv::Vec3b>(13, 5);
+//    std::cout << pix[0] << "     +-     " << std::endl;
+    for (int i = 0; i < largeBackground.cols; ++i) {
+        for (int j = 0; j < largeBackground.rows; j++) {
+//            color1 = largeBackground.at<cv::Vec3b>(j, i);
+//            color = object.at<cv::Vec3b>(j, i);
+            int ret = 15;
+//            for (int k = 0; k < pix.size(); ++k) {
+            if (((int) color[0] < pix[0]+ret && (int) color[1] < pix[1]+ret && (int) color[2] < pix[2]+ret)&&((int) color[0] > pix[0]-ret && (int) color[1] > pix[1]-ret && (int) color[2] > pix[2]-ret)) {
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0], color1[1], color1[2]);
+            }
+//            }
+        }
+    }
+    return object;
+}
+
+cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon) {
+    rassert(!object.empty(), 123);
+    rassert(!largeBackground.empty(), 321);
+    cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
+    cv::Vec3b color1 = largeBackground.at<cv::Vec3b>(13, 5);
+    cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
+    //std::cout << pix[0] << "     +-     " << std::endl;
+    for (int i = 0; i < largeBackground.cols; ++i) {
+        for (int j = 0; j < largeBackground.rows; j++) {
+            color1 = largeBackground.at<cv::Vec3b>(j, i);
+            color = object.at<cv::Vec3b>(j, i);
+            colorf = fon.at<cv::Vec3b>(j,i);
+            int ret = 15;
+//            for (int k = 0; k < pix.size(); ++k) {
+            if (((int) color[0] < (int)colorf[0]+ret && (int) color[1] < (int)colorf[1]+ret && (int) color[2] < (int)colorf[2]+ret)&&((int) color[0] > (int)colorf[0]-ret && (int) color[1] > (int)colorf[1]-ret && (int) color[2] > (int)colorf[2]-ret)) {
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0], color1[1], color1[2]);
+            }
+//            }
+        }
+    }
+    return object;
 }

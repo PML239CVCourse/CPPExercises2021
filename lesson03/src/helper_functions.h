@@ -13,3 +13,11 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
 cv::Mat sosibibu(cv::Mat object, cv::Mat largeBackground);
 
 cv::Mat rast(cv::Mat object, cv::Mat largeBackground);
+
+cv::Mat epilepsia(cv::Mat object);
+
+cv::Mat rast1(cv::Mat object, cv::Mat largeBackground, std::vector<int> pix);
+
+cv::Mat baba(cv::Mat largeBackground, cv::Mat object);
+
+cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon);
