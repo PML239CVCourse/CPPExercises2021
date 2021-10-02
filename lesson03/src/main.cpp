@@ -79,8 +79,10 @@ void task2() {
 struct MyVideoContent {
     std::vector<std::vector<int>> pix;
     cv::Mat frame;
+    cv::Mat ans;
     cv::Mat fon;
-    cv::Mat frame1 = cv::imread("lesson03/data/castle_large.jpg");
+    cv::Mat frame1;
+    cv::Mat mat;
     int lastClickX = 0;
     int lastClickY = 0;
     bool kaka = false;
@@ -91,12 +93,17 @@ struct MyVideoContent {
         lastClickY = y;
     }
 
+    void setF(cv::Mat qwerty){
+        frame1 = qwerty;
+    }
+
     void SetFon(cv::Mat fon1){
         fon = fon1;
     }
 
     cv::Mat Paint(std::vector<std::vector<int>> q){
-        for (int i = 0; i < pix.size(); ++i) {
+        for (int i = 0; i < q.size(); ++i) {
+//            std::cout << q[i][0] << "   " << q[i][1] << std::endl;
             if (kaka) {
                 frame.at<cv::Vec3b>(q[i][1], q[i][0]) = cv::Vec3b(255, 255, 0);
             }
@@ -113,12 +120,48 @@ struct MyVideoContent {
     }
 
     cv::Mat Paint1(){
+        rassert(!frame1.empty(), 123);
 //        std::cout << pix.size();
         for (int i = 0; i < pix.size(); ++i) {
             if (kaka) {
-                frame = rast1(frame,frame1,pix[i]);
+                frame = rast1(frame.clone(),frame1.clone(),pix[i]);
             }
         }
+        return frame;
+    }
+
+    cv::Mat Paint2(){
+        rassert(!frame1.empty(), 123);
+        rassert(!fon.empty(), 123);
+//        std::cout << pix.size();
+        frame = rast2(frame,frame1,fon);
+        return frame;
+    }
+
+    cv::Mat Paint3(){
+        rassert(!frame1.empty(), 123);
+        rassert(!fon.empty(), 123);
+        rassert(mat.rows == frame.rows, "123431234314")
+        rassert(mat.cols == frame.cols, "ПАРАПАПАРА2")
+        std::cout << "1000000000000000000000000000000                     ";
+        for (int i = 0; i < mat.cols; ++i) {
+            for (int j = 0; j < mat.rows; j++) {
+                if (frame.at<cv::Vec3b>(j, i) == fon.at<cv::Vec3b>(j, i)){
+                    mat.at<cv::Scalar>(j, i) = 1.0f;
+                }
+            }
+        }
+        std::cout << 1;
+        for (int i = 0; i < mat.cols; ++i) {
+            for (int j = 0; j < mat.rows; j++) {
+                if (mat.at<cv::float16_t>(j, i) == 1.0f){
+                    ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
+                }
+            }
+        }
+        std::cout << 1;
+//        std::cout << pix.size();
+        //frame = rast2(frame,frame1,fon);
         return frame;
     }
 
@@ -131,7 +174,7 @@ struct MyVideoContent {
     }
 
     void Dpix(std::vector<int> a){
-
+        pix.push_back(a);
     }
 
     void Dokaka(){
@@ -158,6 +201,7 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
     b.push_back(0);
     if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
 //        std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+        content.pack = true;
         std::vector<int> a = content.Get();
         color = content.frame.at<cv::Vec3b>(a[1],a[0]);
         b[0] = (int)color[0];
@@ -203,15 +247,11 @@ void task3() {
     mas.push_back(m);
     rassert(mas.size() == 1, 111);
     rassert(mas[0][0] == 0, 111);
-//    for (int i = 0; i < mas.size(); ++i) {
-//        for (int j = 0; j < 2; ++j) {
-//            std::cout << mas[i][j] << "    " << std:: endl;
-//        }
-//        std::cout << std::endl;
-//    }
-//    std::cin >> bo;
 
     int q = 0;
+    std::vector<int> w;
+    w.push_back(0);
+    w.push_back(0);
     while (true) { // пока видео не закрылось - бежим по нему
         bool isSuccess;
         if (bo == 0){
@@ -278,11 +318,16 @@ void task3() {
 
 //        for (int i = 0; i < mas.size(); ++i) {
 //            for (int j = 0; j < 2; ++j) {
-//                std::cout << mas[i][j] << "    " << std:: endl;
+//                std::cout << mas[i][j] << "    ";
 //            }
 //            std::cout << std::endl;
 //        }
-        mas.push_back(content.Get());
+//        std::cout << mas.size();
+        if (content.pack){
+            mas.push_back(content.Get());
+            content.pack = false;
+        }
+
         int key = cv::waitKey(10);
         if (key == 32 || key == 27){
             break;
@@ -298,6 +343,7 @@ void task3() {
 
 void task4() {
     int bo;
+    bool big = false, small = false, a = false;
 //    std::cin >> bo;
     bo = 0;
 //    if (bo == 0) {
@@ -307,34 +353,54 @@ void task4() {
 
     MyVideoContent content;
 
-    std::vector<int> b;
-    b.push_back(0);
-    b.push_back(0);
-    b.push_back(0);
-    std::vector<std::vector<int>> mas;
-    std::vector<std::vector<int>> pix;
-    std::vector<int> m;
-    m.push_back(0);
-    m.push_back(0);
-    mas.push_back(m);
-    cv::Vec3b color;
-    rassert(mas.size() == 1, 111);
-    rassert(mas[0][0] == 0, 111);
+//    std::vector<int> b;
+//    b.push_back(0);
+//    b.push_back(0);
+//    b.push_back(0);
+//    std::vector<std::vector<int>> mas;
+//    std::vector<std::vector<int>> pix;
+//    std::vector<int> m;
+//    m.push_back(0);
+//    m.push_back(0);
+//    mas.push_back(m);
+//    cv::Vec3b color;
+//    rassert(mas.size() == 1, 111);
+//    rassert(mas[0][0] == 0, 111);
 
     cv::Mat Foto;
     int q = 0;
     bool isSuccess = false;
-    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
-    isSuccess = video.read(content.frame);
-    Foto = content.frame;
-    rassert(!Foto.empty(), 123);
-    content.frame = Foto;
-    q++;
-    cv::Mat largeCastle = baba(cv::imread("lesson03/data/castle_large.jpg"), content.frame);
+//    Foto = cv::imread("lesson03/Foto/1.jpg");
+//    cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg");
+//    while (true){
+//        cv::imshow("video", largeCastle);
+//        int k = cv::waitKey(10);
+//        if (k == 32 || k == 27){
+//            break;
+//        }
+//    }
+//    isSuccess = video.read(content.frame);
+//    Foto = content.frame;
+//    rassert(!largeCastle.empty(), 123);
+//    rassert(!Foto.empty(), 123);
+
+//    content.frame = Foto;
+//    q++;
+//    while (true){
+//        cv::imshow("video", largeCastle);
+//        int k = cv::waitKey(10);
+//        if (k == 32 || k == 27){
+//            break;
+//        }
+//    }
     while (true){
-        cv::imshow("video", largeCastle);
+        if (bo == 0){//640 480
+            isSuccess = video.read(content.frame);
+        }
+        cv::imshow("video", content.frame);
         int k = cv::waitKey(10);
         if (k == 32 || k == 27){
+            content.SetFon(content.frame.clone());
             break;
         }
     }
@@ -343,53 +409,53 @@ void task4() {
             isSuccess = video.read(content.frame);
         }
         else{
-            switch (q) {
-                case 0:
-                    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 1:
-                    Foto = cv::imread("lesson03/Camera Roll/2.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 2:
-                    Foto = cv::imread("lesson03/Camera Roll/3.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 3:
-                    Foto = cv::imread("lesson03/Camera Roll/4.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 4:
-                    Foto = cv::imread("lesson03/Camera Roll/5.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 5:
-                    Foto = cv::imread("lesson03/Camera Roll/6.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 6:
-                    Foto = cv::imread("lesson03/Camera Roll/7.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 7:
-                    Foto = cv::imread("lesson03/Camera Roll/8.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                case 8:
-                    Foto = cv::imread("lesson03/Camera Roll/9.jpg");
-                    rassert(!Foto.empty(), 123);
-                    break;
-                default:
-                    Foto = cv::imread("lesson03/Camera Roll/10.jpg");
-                    rassert(!Foto.empty(), 123);
-                    q = 0;
-                    break;
-            }
-            std::cout << 1;
-            rassert(!Foto.empty(), 123);
-            content.frame = Foto;
-            q++;
+//            switch (q) {
+//                case 0:
+//                    Foto = cv::imread("lesson03/Camera Roll/1.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 1:
+//                    Foto = cv::imread("lesson03/Camera Roll/2.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 2:
+//                    Foto = cv::imread("lesson03/Camera Roll/3.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 3:
+//                    Foto = cv::imread("lesson03/Camera Roll/4.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 4:
+//                    Foto = cv::imread("lesson03/Camera Roll/5.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 5:
+//                    Foto = cv::imread("lesson03/Camera Roll/6.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 6:
+//                    Foto = cv::imread("lesson03/Camera Roll/7.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 7:
+//                    Foto = cv::imread("lesson03/Camera Roll/8.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                case 8:
+//                    Foto = cv::imread("lesson03/Camera Roll/9.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    break;
+//                default:
+//                    Foto = cv::imread("lesson03/Camera Roll/10.jpg");
+//                    rassert(!Foto.empty(), 123);
+//                    q = 0;
+//                    break;
+//            }
+//            std::cout << 1;
+//            rassert(!Foto.empty(), 123);
+//            content.frame = Foto;
+            //q++;
         }
 //        std::cout << 1;
 
@@ -397,14 +463,54 @@ void task4() {
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
 //        mas.push_back(content.Get());
-        cv::imshow("video", content.Paint1()); // покаызваем очередной кадр в окошке
+        if (q == 0){
+            content.setF(baba(cv::imread("lesson03/data/castle_large.jpg"), content.frame.clone()));
+            q++;
+            cv::Mat matata(content.frame.rows, content.frame.cols, CV_32FC1, cv::Scalar(0.0f)); // в этом примере мы решили изначально заполнить картинку числом 1.5
+            content.mat = matata;
+        }
+
+        if (big){
+            cv::imshow("video", content.frame1); // покаызваем очередной кадр в окошке
+        }
+        else if(small){
+            cv::imshow("video", content.Paint2()); // покаызваем очередной кадр в окошке
+        }
+        else if (a){
+            cv::imshow("video", content.Paint3()); // покаызваем очередной кадр в окошке
+        }
+        else{
+            cv::imshow("video", content.Paint1()); // покаызваем очередной кадр в окошке
+        }
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
         int key = cv::waitKey(10);
-        if (key == 32 || key == 27){
-            break;
+//        std::cout << key;
+        if (key == 27){
+            if (big){
+                big = false;
+            }
+            else{
+                big = true;
+            }
         }
-        if (key == 1){
-            content.SetFon(content.frame);
+        else if (key == 49){
+            if (small){
+                small = false;
+            }
+            else{
+                small = true;
+            }
+        }
+        else if (key == 50){
+            if (a){
+                a = false;
+            }
+            else{
+                a = true;
+            }
+        }
+        if (key == 32){
+            break;
         }
     }
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
@@ -434,8 +540,8 @@ int main() {
     try {
 //        task1();
 //        task2();
-        task3();
-//        task4();
+//        task3();
+        task4();
 //        test();
         return 0;
     } catch (const std::exception &e) {

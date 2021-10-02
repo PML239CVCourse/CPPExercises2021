@@ -190,17 +190,21 @@ cv::Mat baba(cv::Mat largeBackground, cv::Mat object){
 cv::Mat rast1(cv::Mat object, cv::Mat largeBackground, std::vector<int> pix) {
     rassert(!object.empty(), 123);
     rassert(!largeBackground.empty(), 321);
+    rassert(largeBackground.rows == object.rows, 321123);
+    rassert(largeBackground.cols == object.cols, 321123);
     cv::Vec3b color = object.at<cv::Vec3b>(13, 5);
     cv::Vec3b color1 = largeBackground.at<cv::Vec3b>(13, 5);
-//    std::cout << pix[0] << "     +-     " << std::endl;
+
+//    std::cout << pix[0] << " " << pix[1] << " " << pix[2] << "     +-     " << std::endl;
     for (int i = 0; i < largeBackground.cols; ++i) {
         for (int j = 0; j < largeBackground.rows; j++) {
-//            color1 = largeBackground.at<cv::Vec3b>(j, i);
-//            color = object.at<cv::Vec3b>(j, i);
+            color1 = largeBackground.at<cv::Vec3b>(j, i);
+            color = object.at<cv::Vec3b>(j, i);
+//            rassert(color == color1, "ПИЗДА");
             int ret = 15;
 //            for (int k = 0; k < pix.size(); ++k) {
             if (((int) color[0] < pix[0]+ret && (int) color[1] < pix[1]+ret && (int) color[2] < pix[2]+ret)&&((int) color[0] > pix[0]-ret && (int) color[1] > pix[1]-ret && (int) color[2] > pix[2]-ret)) {
-                object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0], color1[1], color1[2]);
+                object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0],color1[1],color1[2]);
             }
 //            }
         }
@@ -220,7 +224,7 @@ cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon) {
             color1 = largeBackground.at<cv::Vec3b>(j, i);
             color = object.at<cv::Vec3b>(j, i);
             colorf = fon.at<cv::Vec3b>(j,i);
-            int ret = 15;
+            int ret = 25;
 //            for (int k = 0; k < pix.size(); ++k) {
             if (((int) color[0] < (int)colorf[0]+ret && (int) color[1] < (int)colorf[1]+ret && (int) color[2] < (int)colorf[2]+ret)&&((int) color[0] > (int)colorf[0]-ret && (int) color[1] > (int)colorf[1]-ret && (int) color[2] > (int)colorf[2]-ret)) {
                 object.at<cv::Vec3b>(j, i) = cv::Vec3b(color1[0], color1[1], color1[2]);
