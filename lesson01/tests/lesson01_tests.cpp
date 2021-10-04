@@ -68,27 +68,12 @@ TEST(lesson01, findX6) {
     GTEST_ASSERT_EQ(x, -1.5);
 }
 
+// TODO 21 добавьте много тестов которые проверят работу поиска квадратных корней для всех случаев
 TEST(lesson01, solveSquare1) {
     // 0*x^2 + 4*x - 6 = 0
     std::vector<double> xs = solveSquare(0.0, 4.0, -6.0);
     GTEST_ASSERT_EQ(xs.size(), 1); // сверяем что найден ровно один корень
     double x0 = xs[0];
     GTEST_ASSERT_EQ(x0, 1.5); // сверяем что найденный корень правильный
-}
-TEST(lesson01, solveSquare2) {
-    std::vector<double> xs = solveSquare(1, 0, 0);
-    GTEST_ASSERT_EQ(xs.size(), 2); // сверяем что найден ровно один корень
-    double x0 = xs[0];
-    GTEST_ASSERT_EQ(x0, 1); // сверяем что найденный корень правильный
-    double x1 = xs[1];
-    GTEST_ASSERT_EQ(x1, -1);
-}
-TEST(lesson01, solveSquare3) {
-    std::vector<double> xs = solveSquare(1, 1, 0);
-    GTEST_ASSERT_EQ(xs.size(), 2); // сверяем что найден ровно один корень
-    double x0 = xs[0];
-    GTEST_ASSERT_EQ(x0, 0); // сверяем что найденный корень правильный
-    double x1 = xs[1];
-    GTEST_ASSERT_EQ(x1, -1);
 }
 
