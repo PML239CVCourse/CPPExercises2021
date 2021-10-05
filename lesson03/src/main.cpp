@@ -83,6 +83,7 @@ struct MyVideoContent {
     cv::Mat fon;
     cv::Mat frame1;
     cv::Mat mat;
+    std::vector<std::vector<int>> mas;
     int lastClickX = 0;
     int lastClickY = 0;
     bool kaka = false;
@@ -143,26 +144,38 @@ struct MyVideoContent {
         rassert(!fon.empty(), 123);
         rassert(mat.rows == frame.rows, "123431234314")
         rassert(mat.cols == frame.cols, "ПАРАПАПАРА2")
-        std::cout << "1000000000000000000000000000000                     ";
-        for (int i = 0; i < mat.cols; ++i) {
-            for (int j = 0; j < mat.rows; j++) {
+//        std::cout << "1000000000000000000000000000000                     ";
+        for (int i = 0; i < mas.size(); ++i) {
+            for (int j = 0; j < mas[i].size(); j++) {
                 if (frame.at<cv::Vec3b>(j, i) == fon.at<cv::Vec3b>(j, i)){
-                    mat.at<cv::Scalar>(j, i) = 1.0f;
+                    mas[i][j] = 1;
                 }
             }
         }
-        std::cout << 1;
-        for (int i = 0; i < mat.cols; ++i) {
-            for (int j = 0; j < mat.rows; j++) {
-                if (mat.at<cv::float16_t>(j, i) == 1.0f){
+        ans = frame;
+//        std::cout << 1;
+        for (int i = 0; i < mas.size(); ++i) {
+            for (int j = 0; j < mas[i].size(); j++) {
+                if (mas[i][j] == 1){
                     ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
                 }
             }
         }
-        std::cout << 1;
+//        std::cout << 1;
 //        std::cout << pix.size();
         //frame = rast2(frame,frame1,fon);
         return frame;
+    }
+
+    void Mat(){
+        std::vector<int> q;
+        q.resize(mat.rows);
+        for (int i = 0; i < mat.cols; ++i) {
+            for (int j = 0; j < mat.rows; j++) {
+                q[j] = 0;
+            }
+            mas.push_back(q);
+        }
     }
 
     std::vector<int> Get(){
@@ -352,6 +365,7 @@ void task4() {
 //    }
 
     MyVideoContent content;
+    std::vector<std::vector<int>> mas;
 
 //    std::vector<int> b;
 //    b.push_back(0);
@@ -469,6 +483,7 @@ void task4() {
             cv::Mat matata(content.frame.rows, content.frame.cols, CV_32FC1, cv::Scalar(0.0f)); // в этом примере мы решили изначально заполнить картинку числом 1.5
             content.mat = matata;
         }
+        content.Mat();
 
         if (big){
             cv::imshow("video", content.frame1); // покаызваем очередной кадр в окошке
