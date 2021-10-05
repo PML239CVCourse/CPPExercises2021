@@ -177,3 +177,8 @@ cv::Mat replaceInRandomColors(cv::Mat object){
     }
     return object;
 }
+
+
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat background){
+
+}

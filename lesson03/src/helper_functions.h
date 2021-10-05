@@ -15,3 +15,7 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
 cv::Mat addUnicornAtRandomPlace(cv::Mat object, cv::Mat largeBackground);
 
 cv::Mat replaceInRandomColors(cv::Mat object);
+
+//cv::Mat initPicture(cv::Mat object);
+
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat background);

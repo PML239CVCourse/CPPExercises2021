@@ -133,18 +133,41 @@ void task3() {
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
     // просто перейдите к ее объявлению - удерживая Ctrl сделайте клик левой кнопкой мыши по MyVideoContent - и вас телепортирует к ее определению
 
+    MyVideoContent content_bg;
+
+
+    bool isSuccess_beg = video.read(content.frame); // считываем из видео очередной кадр
+    rassert(isSuccess_beg, 348792347819); // проверяем что считывание прошло успешно
+    rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пусто
+
+
+    cv::Mat init_pict = content.frame;
+
+
+
     while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
-       rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+        rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
+
+        bool isSuccess_bg = video_bg.read(content_bg.frame);
+        rassert(isSuccess_bg, "background error");
+        rassert(!content_bg.frame.empty(), "empty background file");
+
+
+        cv::Mat ready_picture = videoWithBackground(content.frame, content_bg.frame);
 
         cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
 
-        int key = cv::waitKey(10);
+        //int key = cv::waitKey(1);
+        int updateDelay = 10;
         // TODO добавьте завершение программы в случае если нажат пробел
+        if(cv::waitKey(updateDelay) == 32)
+            break;
         // TODO добавьте завершение программы в случае если нажат Escape (придумайте как нагуглить)
-
+        if(cv::waitKey(updateDelay) == 27)
+            break;
         // TODO сохраняйте в вектор (std::vector<int>) координаты всех кликов мышки
         // TODO и перед отрисовкой очередного кадра - заполняйте все уже прокликанные пиксели красным цветом
 
