@@ -234,3 +234,34 @@ cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon) {
     }
     return object;
 }
+
+std::vector<std::vector<int>> Dilate(std::vector<std::vector<int>> mas, int r){
+    std::vector<std::vector<int>> a = mas;
+    rassert(a.size() == mas.size(), 123123)
+    rassert(a[0].size() == mas[0].size(), 123123)
+    int w1 = -r, w2 = r, h1 = -r, h2 = r;
+    for (int i = 0; i < mas.size(); ++i) {
+        for (int j = 0; j < mas[i].size(); j++) {
+            if (mas[i][j] == 1){
+                if (i-w1 <= 0){
+                    w1 = -i;
+                }
+                if(i+w2 >= mas.size()-1){
+                    w2 = mas.size()-1 - i;
+                }
+                if(j-h1 <= 0){
+                    h1 = -j;
+                }
+                if(j+h2 >= mas[i].size()-1){
+                    h2 = mas[i].size()-1 - j;
+                }
+                for (int k = w1; k <= w2; ++k) {
+                    for (int l = h1; l <= h2; ++l) {
+                        a[i+k][j+l] = 1;
+                    }
+                }
+            }
+        }
+    }
+    return a;
+}

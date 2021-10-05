@@ -21,3 +21,5 @@ cv::Mat rast1(cv::Mat object, cv::Mat largeBackground, std::vector<int> pix);
 cv::Mat baba(cv::Mat largeBackground, cv::Mat object);
 
 cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon);
+
+std::vector<std::vector<int>> Dilate(std::vector<std::vector<int>> mas, int r);

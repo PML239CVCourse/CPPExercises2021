@@ -87,7 +87,29 @@ struct MyVideoContent {
     int lastClickX = 0;
     int lastClickY = 0;
     bool kaka = false;
-    bool pack = false;
+    bool pack = false, dil = false, er = false, diller = false, elrond = false;
+
+    void Set(int a){
+        switch (a) {
+            case 3:
+                dil = true, er = false, diller = false, elrond = false;
+                break;
+            case 4:
+                dil = false, er = true, diller = false, elrond = false;
+                break;
+            case 5:
+                dil = false, er = false, diller = true, elrond = false;
+                break;
+            case 6:
+                dil = false, er = false, diller = false, elrond = true;
+                break;
+            case 7:
+                dil = false, er = false, diller = false, elrond = false;
+                break;
+            default:
+                rassert(true, "ПИЗДА")
+        }
+    }
 
     void Click(int x, int y){
         lastClickX = x;
@@ -144,20 +166,28 @@ struct MyVideoContent {
         rassert(!fon.empty(), 123);
         rassert(mat.rows == frame.rows, "123431234314")
         rassert(mat.cols == frame.cols, "ПАРАПАПАРА2")
-//        std::cout << "1000000000000000000000000000000                     ";
+        cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
+        cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
+        int ret = 10;
         for (int i = 0; i < mas.size(); ++i) {
             for (int j = 0; j < mas[i].size(); j++) {
-                if (frame.at<cv::Vec3b>(j, i) == fon.at<cv::Vec3b>(j, i)){
+                color = frame.at<cv::Vec3b>(j, i);
+                colorf = fon.at<cv::Vec3b>(j, i);
+                if (((int) color[0] < (int)colorf[0]+ret && (int) color[1] < (int)colorf[1]+ret && (int) color[2] < (int)colorf[2]+ret)&&((int) color[0] > (int)colorf[0]-ret && (int) color[1] > (int)colorf[1]-ret && (int) color[2] > (int)colorf[2]-ret)){
                     mas[i][j] = 1;
                 }
             }
         }
         ans = frame;
+        if (dil){
+            mas = Dilate(mas, 10);
+        }
 //        std::cout << 1;
         for (int i = 0; i < mas.size(); ++i) {
             for (int j = 0; j < mas[i].size(); j++) {
                 if (mas[i][j] == 1){
                     ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
+                    mas[i][j] = 0;
                 }
             }
         }
@@ -482,8 +512,8 @@ void task4() {
             q++;
             cv::Mat matata(content.frame.rows, content.frame.cols, CV_32FC1, cv::Scalar(0.0f)); // в этом примере мы решили изначально заполнить картинку числом 1.5
             content.mat = matata;
+            content.Mat();
         }
-        content.Mat();
 
         if (big){
             cv::imshow("video", content.frame1); // покаызваем очередной кадр в окошке
@@ -523,6 +553,9 @@ void task4() {
             else{
                 a = true;
             }
+        }
+        else if (key > 50 && key < 56){
+            content.Set(key - 48);
         }
         if (key == 32){
             break;
