@@ -58,6 +58,9 @@ void task1() {
     filename = resultsDir + "05_unicorns_ntake.jpg";
     cv::imwrite(filename, unicornInLargeCastleNTimes);
     // TODO растяните картинку единорога так, чтобы она заполнила полностью большую картинку с замком "06_unicorn_upscale.jpg"
+    cv::Mat wideUnicorn = scaleImage(imgUnicorn.clone(), largeCastle.clone());
+    filename = resultsDir + "06_unicorn_upscale.jpg";
+    cv::imwrite(filename, wideUnicorn);
 }
 
 void task2() {
@@ -163,23 +166,55 @@ void task4() {
     // TODO на базе кода из task3 (скопируйте просто его сюда) сделайте следующее:
     // при клике мышки - определяется цвет пикселя в который пользователь кликнул, теперь этот цвет считается прозрачным (как было с черным цветом у единорога)
     // и теперь перед отрисовкой очередного кадра надо подложить вместо прозрачных пикселей - пиксель из отмасштабированной картинки замка (castle_large.jpg)
+    cv::VideoCapture video(0);
+    MyVideoContent content;
 
-    // TODO попробуйте сделать так чтобы цвет не обязательно совпадал абсолютно для прозрачности (чтобы все пиксели похожие на тот что был кликнут - стали прозрачными, а не только идеально совпадающие)
+    int x = 0;
+    int y = 0;
 
-    // TODO подумайте, а как бы отмаскировать фон целиком несмотря на то что он разноцветный?
-    // а как бы вы справились с тем чтобы из фотографии с единорогом и фоном удалить фон зная как выглядит фон?
-    // а может сделать тот же трюк с вебкой - выйти из вебки в момент запуска программы, и первый кадр использовать как кадр-эталон с фоном который надо удалять (делать прозрачным)
-}
+    cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg");
 
-int main() {
-    try {
-        //task1();
-//        task2();
-        task3();
-//        task4();
-        return 0;
-    } catch (const std::exception &e) {
-        std::cout << "Exception! " << e.what() << std::endl;
-        return 1;
+    int updateDelay = 10;
+    while (cv::waitKey(updateDelay) != 32 && cv::waitKey(updateDelay) != 27 &&
+           video.isOpened()) { // пока видео не закрылось - бежим по нему
+
+        bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+        rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+        rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
+
+        cv::Mat largeCastleScaled = scaleImage(largeCastle.clone(), content.frame.clone());
+
+        //std::cout << content.lastClickX << std::endl;
+        //std::cout << content.lastClickY << std::endl;
+
+        if (isLeftMouseClicked) {
+            x = content.lastClickX;
+            y = content.lastClickY;
+        }
+        cv::Mat newFrame = makePixelsClear(x, y, content.frame, largeCastleScaled);
+        //std::cout << "aaaaaa";
+
+        cv::imshow("video", newFrame); // показываем очередной кадр в окошке
+
+        cv::setMouseCallback("video", onMouseClick, &content);
+
+        int key = cv::waitKey(10);
+        // TODO попробуйте сделать так чтобы цвет не обязательно совпадал абсолютно для прозрачности (чтобы все пиксели похожие на тот что был кликнут - стали прозрачными, а не только идеально совпадающие)
+
+        // TODO подумайте, а как бы отмаскировать фон целиком несмотря на то что он разноцветный?
+        // а как бы вы справились с тем чтобы из фотографии с единорогом и фоном удалить фон зная как выглядит фон?
+        // а может сделать тот же трюк с вебкой - выйти из вебки в момент запуска программы, и первый кадр использовать как кадр-эталон с фоном который надо удалять (делать прозрачным)
     }
 }
+    int main() {
+        try {
+//        task1();
+//        task2();
+//        task3();
+            task4();
+            return 0;
+        } catch (const std::exception &e) {
+            std::cout << "Exception! " << e.what() << std::endl;
+            return 1;
+        }
+    }

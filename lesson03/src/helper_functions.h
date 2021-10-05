@@ -16,3 +16,7 @@ cv::Mat makeAllBlackPixelsRandom(cv::Mat object);
 
 cv::Mat makePixelsRed(std::vector<int> vectorX, std::vector<int> vectorY, cv::Mat frame);
 
+cv::Mat makePixelsClear(int X, int Y, cv::Mat frame, cv::Mat background);
+
+cv::Mat scaleImage(cv::Mat object, cv::Mat largeBackground);
+

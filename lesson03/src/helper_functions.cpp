@@ -150,3 +150,41 @@ cv::Mat makePixelsRed(std::vector<int> vectorX, std::vector<int> vectorY, cv::Ma
     }
     return frame;
 }
+
+cv::Mat scaleImage(cv::Mat object, cv::Mat largeBackground){
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+
+    for(int i = 0; i < largeBackground.rows; i++){
+        for(int j = 0; j < largeBackground.cols; j++){
+            cv::Vec3b color = object.at<cv::Vec3b>((i*object.rows)/largeBackground.rows, (j*object.cols)/largeBackground.cols);
+            blue = color[0];
+            green = color[1];
+            red = color[2];
+            largeBackground.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+    }
+    return largeBackground;
+}
+
+cv::Mat makePixelsClear(int X, int Y, cv::Mat frame, cv::Mat background){
+    if (X > 0 && Y > 0) {
+        cv::Vec3b color = frame.at<cv::Vec3b>(Y, X);
+
+        unsigned char blue = color[0];
+        unsigned char green = color[1];
+        unsigned char red = color[2];
+
+        for(int i = 0; i < frame.rows; i++){
+            for (int j = 0; j < frame.cols; ++j) {
+                cv::Vec3b pixelColor = frame.at<cv::Vec3b>(i, j);
+
+                if ((abs(pixelColor[0] - blue) < 30) && (abs(pixelColor[1] - green) < 30) && (abs(pixelColor[2] - red) < 30)){
+                    frame.at<cv::Vec3b>(i, j) = background.at<cv::Vec3b>(i, j);
+                }
+            }
+        }
+    }
+    return frame;
+}
