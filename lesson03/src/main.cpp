@@ -112,7 +112,7 @@ void task3() {
     // давайте теперь вместо картинок подключим видеопоток с веб камеры:
 
 
-   // cv::VideoCapture video(0);
+    cv::VideoCapture video(1);
 
 
     // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
@@ -121,6 +121,8 @@ void task3() {
     // например https://www.videezy.com/elements-and-effects/5594-interactive-hand-gesture-sliding-finger-studio-green-screen
     // если вы увидите кучу ошибок в консоли навроде "DynamicLib::libraryLoad load opencv_videoio_ffmpeg451_64.dll => FAILED", то скопируйте файл C:\...\opencv\build\x64\vc14\bin\opencv_videoio_ffmpeg451_64.dll в папку с проектом
     // и укажите путь к этому видео тут:
+
+
    cv::VideoCapture video_bg("lesson03/data/Spin_1.mp4");
 
     rassert(video_bg.isOpened(), 3423948392481); // проверяем что видео получилось открыть
@@ -133,7 +135,7 @@ void task3() {
 
     while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
-        rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+       rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
         cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
