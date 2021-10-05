@@ -11,3 +11,5 @@ cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background);
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground);
 
 cv::Mat generateRandomInserts(cv::Mat object, cv::Mat largeBackground);
+
+cv::Mat addRandomBackgroundInsteadOfBlackPixels(cv::Mat object);

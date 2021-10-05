@@ -38,7 +38,6 @@ cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
 }
 
 cv::Mat invertImageColors(cv::Mat image) {
-    // TODO реализуйте функцию которая каждый цвет картинки инвертирует:
     int width = image.cols;
     int height = image.rows;
     for(int i = 0;i<height;i++)
@@ -53,7 +52,6 @@ cv::Mat invertImageColors(cv::Mat image) {
 }
 
 cv::Mat addBackgroundInsteadOfBlackPixels(cv::Mat object, cv::Mat background) {
-    // TODO реализуйте функцию которая все черные пиксели картинки-объекта заменяет на пиксели с картинки-фона
     rassert(object.cols==background.cols,341241251251351);
     rassert(object.rows==background.rows, 95871698716);
     int width = object.cols;
@@ -133,4 +131,26 @@ cv::Mat generateRandomInserts(cv::Mat object, cv::Mat largeBackground) {
             }
     }
     return largeBackground;
+}
+
+cv::Mat addRandomBackgroundInsteadOfBlackPixels(cv::Mat object) {
+    int width = object.cols;
+    int height = object.rows;
+    int background_color[] = {rand()%256,rand()%256,rand()%256};
+    cv::Mat myNewImage(height, width, CV_8UC3, cv::Scalar(0, 0, 0));
+    for(int i = 0;i<height;i++)
+        for(int j =0;j<width;j++){
+            cv::Vec3b object_color = object.at<cv::Vec3b>(i, j);
+            unsigned char blue = object_color[0];
+            unsigned char green = object_color[1];
+            unsigned char red = object_color[2];
+            if(blue<=10&&green<=10&&red<=10){
+                red = background_color[2];
+                green = background_color[1];
+                blue = background_color[0];
+            }
+            myNewImage.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+
+    return myNewImage;
 }
