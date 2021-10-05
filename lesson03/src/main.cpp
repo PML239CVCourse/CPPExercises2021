@@ -182,6 +182,17 @@ struct MyVideoContent {
         if (dil){
             mas = Dilate(mas, 10);
         }
+        if (er){
+            mas = Erode(mas, 10);
+        }
+        if (diller){
+            mas = Dilate(mas, 10);
+            mas = Erode(mas, 10);
+        }
+        if (elrond){
+            mas = Erode(mas, 10);
+            mas = Dilate(mas, 10);
+        }
 //        std::cout << 1;
         for (int i = 0; i < mas.size(); ++i) {
             for (int j = 0; j < mas[i].size(); j++) {

@@ -23,3 +23,5 @@ cv::Mat baba(cv::Mat largeBackground, cv::Mat object);
 cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon);
 
 std::vector<std::vector<int>> Dilate(std::vector<std::vector<int>> mas, int r);
+
+std::vector<std::vector<int>> Erode(std::vector<std::vector<int>> mas, int r);
