@@ -3,7 +3,7 @@
 #include <libutils/rasserts.h>
 #include "opencv2/core/cvdef.h"
 #include "helper_functions.h"
-
+#include <ctime>
 #include <opencv2/highgui.hpp> // подключили часть библиотеки OpenCV, теперь мы можем читать и сохранять картинки
 
 void task1() {
@@ -40,7 +40,7 @@ void task1() {
     cv::imwrite(filename_castle_01, unicornInCastle);
 
 
-    cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg"); // TODO считайте с диска картинку с большим замком - castle_large.png
+   cv::Mat largeCastle = cv::imread("lesson03/data/castle_large.jpg"); // TODO считайте с диска картинку с большим замком - castle_large.png
     cv::Mat unicornInLargeCastle = addBackgroundInsteadOfBlackPixelsLargeBackground(imgUnicorn.clone(), largeCastle.clone()); // TODO реализуйте функцию так, чтобы нарисовался объект ровно по центру на данном фоне, при этом черные пиксели объекта не должны быть нарисованы
     // TODO сохраните результат - "04_unicorn_large_castle.jpg"
     std::string filename_large_castle_01 = resultsDir + "04_unicorn_large_castle.jpg";
@@ -56,10 +56,18 @@ void task1() {
     // 5) при этом каждый единорог рисуется по случайным координатам
     // 6) результат сохраните - "05_unicorns_otake.jpg"
 
+    const int n_max = 100;
+    std::srand(std::time(NULL));
+    cv::Mat largeCastle_rand = cv::imread("lesson03/data/castle_large.jpg");
+    int n = static_cast<int>((std::rand()*1.0*n_max) / RAND_MAX);
+    cv::Mat unicornInLargeCastle_rand;
 
-    int i =
-    cv::Mat unicornInLargeCastleRandom
+    for(int i = 0; i < n; i++){
+        unicornInLargeCastle_rand = addUnicornAtRandomPlace(imgUnicorn.clone(), largeCastle_rand.clone());
+    }
 
+    std::string filename_large_castle_rand = resultsDir + "05_unicorns_otake.jpg";
+    cv::imwrite(filename_large_castle_rand, unicornInLargeCastle_rand);
 
 
     // TODO растяните картинку единорога так, чтобы она заполнила полностью большую картинку с замком "06_unicorn_upscale.jpg"
@@ -76,6 +84,7 @@ void task2() {
 
         // кроме сохранения картинок на диск (что часто гораздо удобнее конечно, т.к. между ними легко переключаться)
         // иногда удобно рисовать картинку в окне:
+        imgUnicorn = replaceInRandomColors(imgUnicorn);
         cv::imshow("lesson03 window", imgUnicorn);
         // TODO сделайте функцию которая будет все черные пиксели (фон) заменять на случайный цвет (аккуратно, будет хаотично и ярко мигать, не делайте если вам это противопоказано)
     }
@@ -101,16 +110,20 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 
 void task3() {
     // давайте теперь вместо картинок подключим видеопоток с веб камеры:
-    cv::VideoCapture video(0);
+
+
+   // cv::VideoCapture video(0);
+
+
     // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
     // альтернативно если у вас совсем нет вебки - то попробуйте запустить с видеофайла, но у меня не заработало - из-за "there is API version mismath: plugin API level (0) != OpenCV API level (1)"
     // скачайте какое-нибудь видео с https://www.videezy.com/free-video/chroma-key
     // например https://www.videezy.com/elements-and-effects/5594-interactive-hand-gesture-sliding-finger-studio-green-screen
     // если вы увидите кучу ошибок в консоли навроде "DynamicLib::libraryLoad load opencv_videoio_ffmpeg451_64.dll => FAILED", то скопируйте файл C:\...\opencv\build\x64\vc14\bin\opencv_videoio_ffmpeg451_64.dll в папку с проектом
     // и укажите путь к этому видео тут:
-//    cv::VideoCapture video("lesson03/data/Spin_1.mp4");
+   cv::VideoCapture video_bg("lesson03/data/Spin_1.mp4");
 
-    rassert(video.isOpened(), 3423948392481); // проверяем что видео получилось открыть
+    rassert(video_bg.isOpened(), 3423948392481); // проверяем что видео получилось открыть
 
     MyVideoContent content; // здесь мы будем хранить всякие полезности - например последний видео кадр, координаты последнего клика и т.п.
     // content.frame - доступ к тому кадру что был только что отображен на экране
@@ -118,7 +131,7 @@ void task3() {
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
     // просто перейдите к ее объявлению - удерживая Ctrl сделайте клик левой кнопкой мыши по MyVideoContent - и вас телепортирует к ее определению
 
-    while (video.isOpened()) { // пока видео не закрылось - бежим по нему
+    while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
@@ -151,10 +164,10 @@ void task4() {
 
 int main() {
     try {
-        task1();
-//        task2();
-//        task3();
-//        task4();
+        //task1();
+        //task2();
+        task3();
+       //task4();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;

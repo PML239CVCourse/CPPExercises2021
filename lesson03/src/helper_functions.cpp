@@ -123,3 +123,57 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
 
     return largeBackground;
 }
+
+
+cv::Mat addUnicornAtRandomPlace(cv::Mat object, cv::Mat largeBackground){
+
+    using namespace std;
+    rassert(object.cols < largeBackground.cols, 341241251251351);
+    rassert(object.rows < largeBackground.rows, 341241251251351);
+
+    int obj_beg_height_possible = largeBackground.rows - object.rows;
+    int obj_beg_width_possible = largeBackground.cols - object.cols;
+    int obj_beg_height = static_cast<int>((std::rand()*1.0*obj_beg_height_possible) / RAND_MAX);
+    int obj_beg_width = static_cast<int>((std::rand()*1.0*obj_beg_width_possible) / RAND_MAX);
+
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+            cv::Vec3b color_bg = largeBackground.at<cv::Vec3b>(obj_beg_height + i, obj_beg_width + j);
+
+            unsigned blue = color_obj[0];
+            unsigned green = color_obj[1];
+            unsigned red = color_obj[2];
+
+            if(blue == 0 && green == 0 && red == 0){
+                blue = color_bg[0];
+                green = color_bg[1];
+                red = color_bg[2];
+            }
+            largeBackground.at<cv::Vec3b>(obj_beg_height + i, obj_beg_width + j) = cv::Vec3b(blue, green, red);
+        }
+    }
+    return largeBackground;
+}
+
+cv::Mat replaceInRandomColors(cv::Mat object){
+    const int max_color_value = 255;
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+
+            unsigned blue = color_obj[0];
+            unsigned green = color_obj[1];
+            unsigned red = color_obj[2];
+
+            if(blue == 0 && green == 0 && red == 0){
+                blue = static_cast<int>((std::rand()*1.0*max_color_value) / RAND_MAX);
+                green = static_cast<int>((std::rand()*1.0*max_color_value) / RAND_MAX);
+                red = static_cast<int>((std::rand()*1.0*max_color_value) / RAND_MAX);
+            }
+
+            object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+    }
+    return object;
+}
