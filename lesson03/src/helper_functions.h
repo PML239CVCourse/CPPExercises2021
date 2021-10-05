@@ -3,6 +3,7 @@
 #include <opencv2/highgui.hpp> // подключили часть библиотеки OpenCV, теперь мы можем работать с картинками (знаем про тип cv::Mat)
 #include <tuple>
 #include <ctime>
+#include <math.h>
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image);
 
@@ -18,4 +19,4 @@ cv::Mat replaceInRandomColors(cv::Mat object);
 
 //cv::Mat initPicture(cv::Mat object);
 
-cv::Mat videoWithBackground(cv::Mat object, cv::Mat background);
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat background, cv::Mat init_pict);

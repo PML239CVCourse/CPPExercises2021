@@ -179,6 +179,33 @@ cv::Mat replaceInRandomColors(cv::Mat object){
 }
 
 
-cv::Mat videoWithBackground(cv::Mat object, cv::Mat background){
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat background, cv::Mat init_pict){
+    using namespace std;
+    //rassert(object.cols > background.cols || object.rows > background.rows, "wrong size of the background");
 
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+            unsigned blue = color_obj[0];
+            unsigned green = color_obj[1];
+            unsigned red = color_obj[2];
+
+            cv::Vec3b color_obj_init = init_pict.at<cv::Vec3b>(i, j);
+            unsigned blue_init = color_obj_init[0];
+            unsigned green_init = color_obj_init[1];
+            unsigned red_init = color_obj_init[2];
+
+            const int diff_between_colors = 0;
+
+            if((abs((int)blue - (int)blue_init) <= diff_between_colors) && (abs((int)green - (int)green_init) <= diff_between_colors)
+            && (abs((int)red - (int)red_init) <= diff_between_colors)){
+                green = 255;
+                red = 0;
+                blue = 0;
+            }
+
+            object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+    }
+    return object;
 }

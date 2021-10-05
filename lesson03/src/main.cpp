@@ -142,6 +142,9 @@ void task3() {
 
 
     cv::Mat init_pict = content.frame;
+    std::string resultsDir = "lesson03/resultsData/";
+    std::string picture_before_vid = resultsDir + "init_picture.jpg";
+    cv::imwrite(picture_before_vid, init_pict);
 
 
 
@@ -155,9 +158,12 @@ void task3() {
         rassert(!content_bg.frame.empty(), "empty background file");
 
 
-        cv::Mat ready_picture = videoWithBackground(content.frame, content_bg.frame);
+        cv::Mat ready_picture = videoWithBackground(content.frame, content_bg.frame, init_pict);
 
-        cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
+       // cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
+
+
+        cv::imshow("video", ready_picture);
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
 
         //int key = cv::waitKey(1);
