@@ -154,3 +154,33 @@ cv::Mat addRandomBackgroundInsteadOfBlackPixels(cv::Mat object) {
 
     return myNewImage;
 }
+
+cv::Mat addBackgroundInsteadOfColorPixelsLargeBackground(cv::Mat object, cv::Mat largeBackground, cv::Vec3b color) {
+    // теперь вам гарантируется что largeBackground гораздо больше - добавьте проверок этого инварианта (rassert-ов)
+//    int width = largeBackground.cols; // как в ООП - у картинки есть поля доступные через точку, они называются cols и rows - попробуйте их
+//    int height = largeBackground.rows;
+//    std::cout << "Unicorn image loaded: " << width << "x" << height << std::endl;
+
+
+    int object_width = object.cols;
+    int object_height = object.rows;
+    cv::Mat myNewImage(object_height,object_width, CV_8UC3, cv::Scalar(0, 0, 0));
+    int largeBackground_width = largeBackground.cols;
+    int largeBackground_height = largeBackground.rows;
+    for(int i = 0;i<object_height;i++)
+        for(int j =0;j<object_width;j++){
+            cv::Vec3b object_color = object.at<cv::Vec3b>(i, j);
+            cv::Vec3b background_color = largeBackground.at<cv::Vec3b>(i*largeBackground_height/object_height, j*largeBackground_width/object_width);
+            unsigned char blue = object_color[0];
+            unsigned char green = object_color[1];
+            unsigned char red = object_color[2];
+            if(abs(blue-color[0])<20 && abs(green-color[1])<20&&abs(red-color[2])<20){
+                red = background_color[2];
+                green = background_color[1];
+                blue = background_color[0];
+            }
+            myNewImage.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+        }
+
+    return myNewImage;
+}
