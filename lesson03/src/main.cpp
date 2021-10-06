@@ -86,6 +86,7 @@ struct MyVideoContent {
     std::vector<std::vector<int>> mas;
     int lastClickX = 0;
     int lastClickY = 0;
+    int ret = 10, r = 10;
     bool kaka = false;
     bool pack = false, dil = false, er = false, diller = false, elrond = false;
 
@@ -168,7 +169,6 @@ struct MyVideoContent {
         rassert(mat.cols == frame.cols, "ПАРАПАПАРА2")
         cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
         cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
-        int ret = 10;
         for (int i = 0; i < mas.size(); ++i) {
             for (int j = 0; j < mas[i].size(); j++) {
                 color = frame.at<cv::Vec3b>(j, i);
@@ -180,18 +180,18 @@ struct MyVideoContent {
         }
         ans = frame;
         if (dil){
-            mas = Dilate(mas, 10);
+            mas = Dilate(mas, r);
         }
         if (er){
-            mas = Erode(mas, 10);
+            mas = Erode(mas, r);
         }
         if (diller){
-            mas = Dilate(mas, 10);
-            mas = Erode(mas, 10);
+            mas = Dilate(mas, r);
+            mas = Erode(mas, r);
         }
         if (elrond){
-            mas = Erode(mas, 10);
-            mas = Dilate(mas, 10);
+            mas = Erode(mas, r);
+            mas = Dilate(mas, r);
         }
 //        std::cout << 1;
         for (int i = 0; i < mas.size(); ++i) {
@@ -540,7 +540,7 @@ void task4() {
         }
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
         int key = cv::waitKey(10);
-//        std::cout << key;
+//        std::cout << key << std::endl;
         if (key == 27){
             if (big){
                 big = false;
@@ -567,6 +567,18 @@ void task4() {
         }
         else if (key > 50 && key < 56){
             content.Set(key - 48);
+        }
+        else if(key == 61){
+            content.r++;
+        }
+        else if(key == 45){
+            content.r--;
+        }
+        else if(key == 48){
+            content.ret++;
+        }
+        else if(key == 57){
+            content.ret--;
         }
         if (key == 32){
             break;
