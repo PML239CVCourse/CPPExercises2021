@@ -246,9 +246,14 @@ cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>>& 
                 cv::Vec3b color_right = object.at<cv::Vec3b>(i, j + 1);
                 cv::Vec3b color_left = object.at<cv::Vec3b>(i, j - 1);
 
-                color_obj[0] = static_cast<int>((color_up[0] + color_down[0] + color_left[0] + color_right[0] + color_obj[0]) / 5.0);
-                color_obj[1] = static_cast<int>((color_up[1] + color_down[1] + color_left[1] + color_right[1] + color_obj[1]) / 5.0);
-                color_obj[2] = static_cast<int>((color_up[2] + color_down[2] + color_left[2] + color_right[2] + color_obj[2]) / 5.0);
+                int blue = color_obj[0];
+                int green = color_obj[1];
+                int red = color_obj[2];
+                blue = static_cast<int>((color_up[0] + color_down[0] + color_left[0] + color_right[0] + color_obj[0]) / 5.0);
+                green = static_cast<int>((color_up[1] + color_down[1] + color_left[1] + color_right[1] + color_obj[1]) / 5.0);
+                red = static_cast<int>((color_up[2] + color_down[2] + color_left[2] + color_right[2] + color_obj[2]) / 5.0);
+
+                object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
             }
         }
     }
