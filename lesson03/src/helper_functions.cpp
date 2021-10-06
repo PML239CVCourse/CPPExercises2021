@@ -178,8 +178,10 @@ cv::Mat replaceInRandomColors(cv::Mat object){
     return object;
 }
 
-bool isFilledBy1(std::vector<std::vector<int>> arr, int idx_i, int idx_j, int i_max, int j_max){
-    const int depth_of_search = 20;
+bool isFilledBy1(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i_max, int j_max){
+    const int depth_of_search = 15;
+
+
     if((idx_i - depth_of_search < 0) || (idx_i + depth_of_search >= i_max)
     || (idx_j - depth_of_search < 0) || (idx_j + depth_of_search >= j_max)){
         return false;
@@ -199,18 +201,26 @@ bool isFilledBy1(std::vector<std::vector<int>> arr, int idx_i, int idx_j, int i_
         }
     }
 
-    const double right_ammount = 0.9;
+    const double right_ammount = 0.6;
     if(cnt_of_right_pixels >= (right_ammount * cnt_of_all_pixels))
         return true;
     return false;
 }
 
 
-cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>> difference_in_colors){
+cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>>& difference_in_colors){
+    std::vector<std::vector<int>> difference_in_colors_new(object.rows, std::vector<int>(object.cols));
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
-            if(isFilledBy1){
-                difference_in_colors[i][j] = 1;
+            difference_in_colors_new[i][j] = difference_in_colors[i][j];
+        }
+    }
+
+
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            if(isFilledBy1(difference_in_colors, i, j, object.rows, object.cols)){
+                difference_in_colors_new[i][j] = 1;
             }
         }
     }
@@ -218,7 +228,7 @@ cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>> d
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
             cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
-            if(difference_in_colors[i][j] == 1){
+            if(difference_in_colors_new[i][j] == 1){
                 unsigned blue = color_obj[0];
                 unsigned green = color_obj[1];
                 unsigned red = color_obj[2];
