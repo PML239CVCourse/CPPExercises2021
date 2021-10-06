@@ -4,6 +4,7 @@
 #include <tuple>
 #include <ctime>
 #include <math.h>
+#include <vector>
 
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image);
 
@@ -19,4 +20,8 @@ cv::Mat replaceInRandomColors(cv::Mat object);
 
 //cv::Mat initPicture(cv::Mat object);
 
+bool isFilledBy1(std::vector<std::vector<int>> arr, int idx_i, int idx_j, int i_max, int j_max);
+
 cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict);
+
+cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>> difference_in_colors);

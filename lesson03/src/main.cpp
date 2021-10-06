@@ -141,7 +141,7 @@ void task3() {
     rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пусто
 
 
-    cv::Mat init_pict = content.frame;
+    cv::Mat init_pict = content.frame.clone();
     std::string resultsDir = "lesson03/resultsData/";
     std::string picture_before_vid = resultsDir + "init_picture.jpg";
     cv::imwrite(picture_before_vid, init_pict);

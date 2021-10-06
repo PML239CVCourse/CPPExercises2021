@@ -178,10 +178,68 @@ cv::Mat replaceInRandomColors(cv::Mat object){
     return object;
 }
 
+bool isFilledBy1(std::vector<std::vector<int>> arr, int idx_i, int idx_j, int i_max, int j_max){
+    const int depth_of_search = 20;
+    if((idx_i - depth_of_search < 0) || (idx_i + depth_of_search >= i_max)
+    || (idx_j - depth_of_search < 0) || (idx_j + depth_of_search >= j_max)){
+        return false;
+    }
+
+    int i_beg = idx_i - depth_of_search;
+    int j_beg = idx_j - depth_of_search;
+    int i_end = idx_i + depth_of_search;
+    int j_end = idx_j + depth_of_search;
+    int cnt_of_right_pixels = 0;
+    int cnt_of_all_pixels = (i_end - i_beg) * (j_end - j_beg);
+
+    for(int i = i_beg; i < i_end; i++){
+        for(int j = j_beg; j < j_end; j++){
+            if(arr[i][j] == 1)
+                cnt_of_right_pixels++;
+        }
+    }
+
+    const double right_ammount = 0.9;
+    if(cnt_of_right_pixels >= (right_ammount * cnt_of_all_pixels))
+        return true;
+    return false;
+}
+
+
+cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>> difference_in_colors){
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            if(isFilledBy1){
+                difference_in_colors[i][j] = 1;
+            }
+        }
+    }
+
+    for(int i = 0; i < object.rows; i++){
+        for(int j = 0; j < object.cols; j++){
+            cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);
+            if(difference_in_colors[i][j] == 1){
+                unsigned blue = color_obj[0];
+                unsigned green = color_obj[1];
+                unsigned red = color_obj[2];
+
+                blue = 0;
+                green = 255;
+                red = 0;
+
+                object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
+            }
+        }
+    }
+    return object;
+}
+
 
 cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict){
     using namespace std;
     //rassert(object.cols > background.cols || object.rows > background.rows, "wrong size of the background");
+
+    vector<vector<int>> diff_in_colors(object.rows, vector<int>(object.cols, 0));
 
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
@@ -195,17 +253,19 @@ cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict){
             unsigned green_init = color_obj_init[1];
             unsigned red_init = color_obj_init[2];
 
-            const int diff_between_colors = 0;
+            const int diff_between_colors = 15;
 
             if((abs((int)blue - (int)blue_init) <= diff_between_colors) && (abs((int)green - (int)green_init) <= diff_between_colors)
             && (abs((int)red - (int)red_init) <= diff_between_colors)){
                 green = 255;
                 red = 0;
                 blue = 0;
+                diff_in_colors[i][j] = 1;
             }
 
             object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
         }
     }
-    return object;
+    cv::Mat ready_object = videoWithoutInterference(object.clone(), diff_in_colors);
+    return ready_object;
 }
