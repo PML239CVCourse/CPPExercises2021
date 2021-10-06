@@ -19,4 +19,4 @@ cv::Mat replaceInRandomColors(cv::Mat object);
 
 //cv::Mat initPicture(cv::Mat object);
 
-cv::Mat videoWithBackground(cv::Mat object, cv::Mat background, cv::Mat init_pict);
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict);

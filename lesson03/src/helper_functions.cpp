@@ -179,7 +179,7 @@ cv::Mat replaceInRandomColors(cv::Mat object){
 }
 
 
-cv::Mat videoWithBackground(cv::Mat object, cv::Mat background, cv::Mat init_pict){
+cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict){
     using namespace std;
     //rassert(object.cols > background.cols || object.rows > background.rows, "wrong size of the background");
 

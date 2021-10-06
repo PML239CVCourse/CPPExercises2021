@@ -112,7 +112,7 @@ void task3() {
     // давайте теперь вместо картинок подключим видеопоток с веб камеры:
 
 
-    cv::VideoCapture video(1);
+    cv::VideoCapture video(0);
 
 
     // если у вас нет вебкамеры - подключите ваш телефон к компьютеру как вебкамеру - это должно быть не сложно (загуглите)
@@ -123,9 +123,9 @@ void task3() {
     // и укажите путь к этому видео тут:
 
 
-   cv::VideoCapture video_bg("lesson03/data/Spin_1.mp4");
+//   cv::VideoCapture video_bg("lesson03/data/Spin_1.mp4");
 
-    rassert(video_bg.isOpened(), 3423948392481); // проверяем что видео получилось открыть
+//    rassert(video_bg.isOpened(), 3423948392481); // проверяем что видео получилось открыть
 
     MyVideoContent content; // здесь мы будем хранить всякие полезности - например последний видео кадр, координаты последнего клика и т.п.
     // content.frame - доступ к тому кадру что был только что отображен на экране
@@ -133,7 +133,7 @@ void task3() {
     // вы можете добавить своих переменных в структурку выше (считайте что это описание объекта из ООП, т.к. почти полноценный класс)
     // просто перейдите к ее объявлению - удерживая Ctrl сделайте клик левой кнопкой мыши по MyVideoContent - и вас телепортирует к ее определению
 
-    MyVideoContent content_bg;
+    //MyVideoContent content_bg;
 
 
     bool isSuccess_beg = video.read(content.frame); // считываем из видео очередной кадр
@@ -148,17 +148,18 @@ void task3() {
 
 
 
-    while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
+    //while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
+    for(;;){
         bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
         rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
         rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
 
-        bool isSuccess_bg = video_bg.read(content_bg.frame);
+        /*bool isSuccess_bg = video_bg.read(content_bg.frame);
         rassert(isSuccess_bg, "background error");
-        rassert(!content_bg.frame.empty(), "empty background file");
+        rassert(!content_bg.frame.empty(), "empty background file");*/
 
 
-        cv::Mat ready_picture = videoWithBackground(content.frame, content_bg.frame, init_pict);
+        cv::Mat ready_picture = videoWithBackground(content.frame.clone() , init_pict.clone());
 
        // cv::imshow("video", content.frame); // покаызваем очередной кадр в окошке
 
