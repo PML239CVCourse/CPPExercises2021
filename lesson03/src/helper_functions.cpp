@@ -184,7 +184,7 @@ bool isFilledBy1(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i
 
     if((idx_i - depth_of_search < 0) || (idx_i + depth_of_search >= i_max)
     || (idx_j - depth_of_search < 0) || (idx_j + depth_of_search >= j_max)){
-        return false;
+        return true;
     }
 
     int i_beg = idx_i - depth_of_search;
@@ -201,7 +201,7 @@ bool isFilledBy1(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i
         }
     }
 
-    const double right_ammount = 0.6;
+    const double right_ammount = 0.45;
     if(cnt_of_right_pixels >= (right_ammount * cnt_of_all_pixels))
         return true;
     return false;
@@ -239,6 +239,17 @@ cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>>& 
 
                 object.at<cv::Vec3b>(i, j) = cv::Vec3b(blue, green, red);
             }
+
+            if(i >= 0 && i < object.rows && j >= 0 && j < object.cols){
+                cv::Vec3b color_up = object.at<cv::Vec3b>(i - 1, j);
+                cv::Vec3b color_down = object.at<cv::Vec3b>(i + 1, j);
+                cv::Vec3b color_right = object.at<cv::Vec3b>(i, j + 1);
+                cv::Vec3b color_left = object.at<cv::Vec3b>(i, j - 1);
+
+                color_obj[0] = static_cast<int>((color_up[0] + color_down[0] + color_left[0] + color_right[0] + color_obj[0]) / 5.0);
+                color_obj[1] = static_cast<int>((color_up[1] + color_down[1] + color_left[1] + color_right[1] + color_obj[1]) / 5.0);
+                color_obj[2] = static_cast<int>((color_up[2] + color_down[2] + color_left[2] + color_right[2] + color_obj[2]) / 5.0);
+            }
         }
     }
     return object;
@@ -263,7 +274,7 @@ cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict){
             unsigned green_init = color_obj_init[1];
             unsigned red_init = color_obj_init[2];
 
-            const int diff_between_colors = 15;
+            const int diff_between_colors = 16;
 
             if((abs((int)blue - (int)blue_init) <= diff_between_colors) && (abs((int)green - (int)green_init) <= diff_between_colors)
             && (abs((int)red - (int)red_init) <= diff_between_colors)){
