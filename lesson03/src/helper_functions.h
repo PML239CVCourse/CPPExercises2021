@@ -12,3 +12,14 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackgroundN(cv::Mat object, cv::Mat largeBackground,int N);
 cv::Mat f(cv::Mat object, cv::Mat largeBackground);
 cv::Mat f1(cv::Mat object);
+std::vector<std::vector<int>> Dilate(std::vector<std::vector<int>> mas, int r);
+
+std::vector<std::vector<int>> Erode(std::vector<std::vector<int>> mas, int r);
+cv::Mat rast(cv::Mat object, cv::Mat largeBackground);
+
+
+cv::Mat rast1(cv::Mat object, cv::Mat largeBackground, std::vector<int> pix);
+
+cv::Mat baba(cv::Mat largeBackground, cv::Mat object);
+
+cv::Mat rast2(cv::Mat object, cv::Mat largeBackground, cv::Mat fon);
