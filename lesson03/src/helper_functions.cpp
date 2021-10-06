@@ -105,9 +105,9 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
 cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackgroundN(cv::Mat object, cv::Mat lB,int n) {
 
     for (int a=0; a < n;a++){
-       int b = rand() % (lB.rows -object.rows+1);
+        int b = rand() % (lB.rows -object.rows+1);
         int c = rand() % (lB.cols -object.cols+1);
-         for( int i = 0; i < object.cols; i++){
+        for( int i = 0; i < object.cols; i++){
             for( int j = 0; j < object.rows; j++) {
                 cv::Vec3b color = object.at<cv::Vec3b>(j, i);
                 if (color[0] == 0 && color[1] == 0 && color[2] == 0) {
@@ -119,8 +119,8 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackgroundN(cv::Mat object, cv::Ma
 
             }
         }
-            }
-        return lB;
+    }
+    return lB;
 }
 
 
@@ -145,7 +145,7 @@ cv::Mat f(cv::Mat object,cv::Mat lB){
             double a = (double)lB.rows/(double)object.rows;
             double b = (double)lB.cols/(double)object.cols;
 
-                lB.at<cv::Vec3b>(j, i) = object.at<cv::Vec3b>((double)j/a, (double)i/b);
+            lB.at<cv::Vec3b>(j, i) = object.at<cv::Vec3b>((double)j/a, (double)i/b);
 
         }
     }
