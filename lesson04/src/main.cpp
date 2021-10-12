@@ -50,14 +50,24 @@ void testingMyDisjointSets() {
 // 5) попробуйте добавить настройку параметров морфологии и СНМ по нажатию кнопок (и выводите их значения в консоль)
 
 struct MyVideoContent {
+//    MyVideoContent() {
+//
+//    }
+
+    MyVideoContent(int a) : set(set) {
+        DisjointSet set(a);
+    }
+
     std::vector<std::vector<int>> pix;
     cv::Mat frame;
     cv::Mat ans;
     cv::Mat fon;
     cv::Mat frame1;
     cv::Mat mat;
+    DisjointSet set;
     std::vector<std::vector<int>> mas;
     std::vector<std::vector<int>> vasya;
+    std::vector<std::vector<int>> snm;
     int lastClickX = 0;
     int lastClickY = 0;
     int ret = 10, r = 10;
@@ -141,6 +151,51 @@ struct MyVideoContent {
         rassert(!fon.empty(), 123);
         rassert(mat.rows == frame.rows, "123431234314")
         rassert(mat.cols == frame.cols, "ПАРАПАПАРА2")
+//        cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
+//        cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
+//        for (int i = 0; i < mas.size(); ++i) {
+//            for (int j = 0; j < mas[i].size(); j++) {
+//                color = frame.at<cv::Vec3b>(j, i);
+//                colorf = fon.at<cv::Vec3b>(j, i);
+//                if (((int) color[0] < (int)colorf[0]+ret && (int) color[1] < (int)colorf[1]+ret && (int) color[2] < (int)colorf[2]+ret)&&((int) color[0] > (int)colorf[0]-ret && (int) color[1] > (int)colorf[1]-ret && (int) color[2] > (int)colorf[2]-ret)){
+//                    mas[i][j] = 1;
+//                }
+//            }
+//        }
+//        vasya = mas;
+//        ans = frame.clone();
+//        if (dil){
+//            mas = Dilate(mas, r);
+//        }
+//        if (er){
+//            mas = Erode(mas, r);
+//        }
+//        if (diller){
+//            mas = Dilate(mas, r);
+//            mas = Erode(mas, r);
+//        }
+//        if (elrond){
+//            mas = Erode(mas, r);
+//            mas = Dilate(mas, r);
+//        }
+//        for (int i = 0; i < mas.size(); ++i) {
+//            for (int j = 0; j < mas[i].size(); j++) {
+//                if (mas[i][j] == 1){
+//                    ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
+//                    mas[i][j] = 0;
+//                }
+//            }
+//        }
+//        std::cout << 1;
+//        std::cout << pix.size();
+        //frame = rast2(frame,frame1,fon);
+        return ans;
+    }
+
+    cv::Mat Paint4(){
+
+    }
+    void Dudu(){
         cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
         cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
         for (int i = 0; i < mas.size(); ++i) {
@@ -152,8 +207,24 @@ struct MyVideoContent {
                 }
             }
         }
+        int n = 0;
+        for (int i = 0; i < mas.size(); ++i) {
+            for (int j = 0; j < mas[i].size(); j++) {
+                n = j%mat.rows + i * mat.cols;
+                if (i < mas.size()-1){
+                    if (j < mas[i].size()-1){
+                        if (mas[i][j] == mas[i+1][j]){
+                            set.union_sets(n,n+1);
+                        }
+                        if (mas[i][j] == mas[i][j+1]){
+                            set.union_sets(n,j%mat.rows + (i+1) * mat.cols);
+                        }
+                    }
+                }
+            }
+        }
         vasya = mas;
-        ans = frame;
+        ans = frame.clone();
         if (dil){
             mas = Dilate(mas, r);
         }
@@ -174,28 +245,11 @@ struct MyVideoContent {
                 if (mas[i][j] == 1){
                     ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
                     mas[i][j] = 0;
+                    snm[i][j] = j%mat.rows + i * mat.cols;
                 }
             }
         }
-//        std::cout << 1;
-//        std::cout << pix.size();
-        //frame = rast2(frame,frame1,fon);
-        return frame;
     }
-
-//    void Dudu(){
-//        cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
-//        cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
-//        for (int i = 0; i < mas.size(); ++i) {
-//            for (int j = 0; j < mas[i].size(); j++) {
-//                color = frame.at<cv::Vec3b>(j, i);
-//                colorf = fon.at<cv::Vec3b>(j, i);
-//                if (((int) color[0] < (int)colorf[0]+ret && (int) color[1] < (int)colorf[1]+ret && (int) color[2] < (int)colorf[2]+ret)&&((int) color[0] > (int)colorf[0]-ret && (int) color[1] > (int)colorf[1]-ret && (int) color[2] > (int)colorf[2]-ret)){
-//                    mas[i][j] = 1;
-//                }
-//            }
-//        }
-//    }
 
     void Mat(){
         std::vector<int> q;
@@ -251,7 +305,13 @@ struct MyVideoContent {
         }
         return mat;
     }
+
+    void Setset() {
+        set = DisjointSet(frame.rows * frame.cols);
+    }
 };
+
+
 
 void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoContent) {
     MyVideoContent &content = *((MyVideoContent*) pointerToMyVideoContent);
@@ -288,7 +348,7 @@ void backgroundMagickStreaming() {
     cv::VideoCapture video(0);
     rassert(video.isOpened(), 3423948392481);
 
-    MyVideoContent content;
+    MyVideoContent content(5);
     std::vector<std::vector<int>> mas;
     cv::Mat Foto;
     int q = 0;
@@ -313,8 +373,17 @@ void backgroundMagickStreaming() {
             q++;
             content.mat = content.frame;
             content.Mat();
+            content.snm = content.mas;
+            for (int i = 0; i < content.mat.cols; ++i) {
+                for (int j = 0; j < content.mat.rows; j++) {
+                    content.snm[i][j] = j%content.mat.rows + i * content.mat.cols;
+                }
+            }
+            content.Setset();
+            DisjointSet set1(content.frame.rows*content.frame.cols);
+            content.set = set1;
         }
-//        content.Dudu();
+        content.Dudu();
 
         if (big) {
             cv::imshow("video", content.frame1); // покаызваем очередной кадр в окошке
