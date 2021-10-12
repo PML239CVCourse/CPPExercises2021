@@ -216,3 +216,79 @@ vector <vector <int> > go(vector <vector <int> > v,int r,double c,int coef)
     }
     return ans;
 }
+vector <vector <int> > go2(vector <vector <int> > v,int r,double c,int coef)
+{
+    vector <vector <int> > ans=v;
+    int n=v.size();int m=v[0].size();
+    for(int i=0;i<n;i+=r)
+    {
+        for(int j=0;j<m;j+=r)
+        {
+            int val=0;int val1=0;
+            for(int k=0;k<r;++k)
+            {
+                for(int l=0;l<r;++l) {
+                    if ((i + k) < n && (j + l) < m)
+                    {
+                        val+=v[i][j];
+                        ++val1;
+                    }
+                }
+            }
+            for(int k=0;k<r;++k)
+            {
+                for(int l=0;l<r;++l) {
+                    if ((i + k) < n && (j + l) < m)
+                    {
+                        ans[i+k][j+l]=(val>=(val1*c));
+                    }
+                }
+            }
+        }
+    }
+    return ans;
+}
+vector <vector <int> > go3(vector <vector <int> > v,int r,double c,int coef)
+{
+    int n=v.size();int m=v[0].size();
+    vector <vector <double> > ans(n);
+    for(int i=0;i<n;++i)
+    {
+        ans[i].resize(m);
+        for(int j=0;j<m;++j)
+        {
+            ans[i][j]=v[i][j];
+        }
+    }
+    for(int i=1;i<n;++i)
+    {
+        for(int j=1;j<m;++j)
+        {
+            ans[i][j]=(2*ans[i][j]+ans[i][j-1]+ans[i-1][j])/4;
+        }
+    }
+    for(int i=0;i<n-1;++i)
+    {
+        for(int j=0;j<m-1;++j)
+        {
+            ans[i][j]=(2*ans[i][j]+ans[i+1][j]+ans[i][j+1])/4;
+        }
+    }
+    for(int i=1;i<n;++i)
+    {
+        for(int j=0;j<m-1;++j)
+        {
+            ans[i][j]=(2*ans[i][j]+ans[i-1][j]+ans[i][j+1])/4;
+        }
+    }
+    for(int i=0;i<n-1;++i)
+    {
+        for(int j=1;j<m;++j)
+        {
+            ans[i][j]=(2*ans[i][j]+ans[i+1][j]+ans[i][j-1])/4;
+        }
+    }
+    vector <vector <int> > res(n);
+    for(int i=0;i<n;++i) {res[i].resize(m);for(int j=0;j<m;++j) res[i][j]=(ans[i][j]>=c);}
+    return res;
+}
