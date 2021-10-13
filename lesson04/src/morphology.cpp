@@ -148,19 +148,19 @@ cv::Mat replaceInRandomColors(cv::Mat object){
     return object;
 }
 
-bool isFilledBy1(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i_max, int j_max){
+bool isFilledBy1OR0(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i_max, int j_max, int symb){
     const int depth_of_search = 15;
 
 
     if((idx_i - depth_of_search < 0) || (idx_i + depth_of_search >= i_max)
-    || (idx_j - depth_of_search < 0) || (idx_j + depth_of_search >= j_max)){
+    || (idx_j - depth_of_search < 0) || (idx_j + depth_of_search >= j_max)){       // WRONG
         return true;
     }
 
-    int i_beg = idx_i - depth_of_search;
-    int j_beg = idx_j - depth_of_search;
+    int i_beg = (idx_i - depth_of_search >= 0 ? idx_i - depth_of_search: 0);
+    int j_beg = (idx_j - depth_of_search >= 0 ? idx_j - depth_of_search : 0);
     int i_end = idx_i + depth_of_search;
-    int j_end = idx_j + depth_of_search;
+    int j_end = idx_j + depth_of_search;        // FIX
     int cnt_of_right_pixels = 0;
     int cnt_of_all_pixels = (i_end - i_beg) * (j_end - j_beg);
 
@@ -190,13 +190,13 @@ cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>>& 
     //adding more 1 to fix the spots
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
-            if(isFilledBy1(difference_in_colors, i, j, object.rows, object.cols)){
+            if(isFilledBy1(difference_in_colors, i, j, object.rows, object.cols)){   // FIX
                 difference_in_colors_new[i][j] = 1;
             }
         }
     }
 
-
+ // ADD FILLING BIG SPOTS BY 0 BACK
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
             cv::Vec3b color_obj = object.at<cv::Vec3b>(i, j);

@@ -20,7 +20,7 @@ cv::Mat replaceInRandomColors(cv::Mat object);
 
 //cv::Mat initPicture(cv::Mat object);
 
-bool isFilledBy1(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i_max, int j_max);
+bool isFilledBy1OR0(std::vector<std::vector<int>>& arr, int idx_i, int idx_j, int i_max, int j_max, int symb);
 
 cv::Mat videoWithBackground(cv::Mat object, cv::Mat init_pict);
 

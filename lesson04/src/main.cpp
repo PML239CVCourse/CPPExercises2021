@@ -68,7 +68,7 @@ void backgroundMagickStreaming() {
 
             cv::Mat ready_picture = videoWithBackground(content.frame.clone() , init_pict.clone());
 
-            int updateDelay = 10;
+            const int updateDelay = 10;
             if(cv::waitKey(updateDelay) == 44){                           // pressing print screen
                 ready_picture = invertImageColors(ready_picture);
             }
@@ -87,8 +87,6 @@ void backgroundMagickStreaming() {
                 break;
             if(cv::waitKey(updateDelay) == 27)
                 break;
-
-            // TODO сделайте по правому клику мышки переключение в режим "цвета каждого кадра инвертированы" (можете просто воспользоваться функцией invertImageColors)
         }
 }
 
