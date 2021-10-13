@@ -26,10 +26,10 @@ int	DisjointSet::get_set(int element)
     // номер этого корневого элемента - номер множества на данный момент (кто вверху тот и главный, множество названо в его честь)
     int first_of_their_kind = 0;
 
-    if(parents[element] == -1)
+    if(this->parents[element] == -1)
         first_of_their_kind = element;
     else
-        first_of_their_kind = get_set(parents[element]);
+        first_of_their_kind = get_set(this->parents[element]);
 
     return first_of_their_kind;
 }
@@ -39,7 +39,7 @@ int DisjointSet::count_differents() const
     // TODO посчитать сколько разных множеств (подсказка: в каждом множестве ровно один корень, а корень - это тот у кого родитель = ROOT)
     int count = 0;
     for (size_t i = 0; i < this->parents.size(); i++) {
-        if(parents[i] == -1)
+        if(this->parents[i] == -1)
             count++;
     }
     return count;
@@ -48,7 +48,7 @@ int DisjointSet::count_differents() const
 int DisjointSet::get_set_size(int element)
 {
     // TODO сообщить сколько элементов в множестве, которому принадлежит данный элемент (да, это очень просто)
-    int size_of_elements = sizes[get_set(element)];
+    int size_of_elements = this->sizes[get_set(element)];
     return size_of_elements;
 }
 
@@ -59,5 +59,23 @@ int	DisjointSet::union_sets(int element0, int element1)
     // при этом стоит подвешивать менее высокое дерево к более высокому (т.е. учитывая ранк),
     // а так же важно не забыть после переподвешивания у корневого элемента обновить ранк и размер множества
 
-    return 0; // вернуть номер объединенного множества
+    int num_elem0 = get_set(element0);
+    int num_elem1 = get_set(element1);
+
+    int fin_v_elem = 0;
+    if(this->ranks[num_elem0] > this->ranks[num_elem1]){
+        fin_v_elem = num_elem0;
+        this->parents[num_elem1] = fin_v_elem;
+        this->ranks[num_elem1] = 0;
+        this->sizes[num_elem1] = 0;
+    }
+    else{
+        fin_v_elem = num_elem1;
+        this->parents[num_elem0] = fin_v_elem;
+        this->ranks[num_elem0] = 0;
+        this->sizes[num_elem0] = 0;
+    }
+
+
+    return fin_v_elem; // вернуть номер объединенного множества
 }
