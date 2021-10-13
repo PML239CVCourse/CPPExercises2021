@@ -1,4 +1,5 @@
 #include <iostream>
+#include <libutils/rasserts.h>
 #include "disjoint_set.h"
 
 #define ROOT -1 // объявили макрос (считайте константу) равный минус единице - чтобы не было "волшебной переменной", а была именованная константа "корень дерева"
@@ -6,6 +7,7 @@
 
 DisjointSet::DisjointSet(int size)
 {
+    s = size;
     parents = std::vector<int>(size);
     ranks = std::vector<int>(size);
     sizes = std::vector<int>(size);
@@ -76,23 +78,29 @@ int	DisjointSet::union_sets(int element0, int element1)
     // кого из них подвесить к другому (тем самым объединить два множества)
     // при этом стоит подвешивать менее высокое дерево к более высокому (т.е. учитывая ранк),
     // а так же важно не забыть после переподвешивания у корневого элемента обновить ранк и размер множества
-    if (ranks[get_set(element0)] > ranks[get_set(element1)]){
-        parents[get_set(element1)] = get_set(element0);
-    }
-    else if (ranks[get_set(element0)] < ranks[get_set(element1)]){
-        parents[get_set(element0)] = get_set(element1);
-    }
-    else{
-        if (get_set_size(element0) > get_set_size(element1)){
+    rassert(element1 < s, element1)
+    rassert(element0 < s, element0)
+    if (get_set(element1) != get_set(element0)){
+        if (ranks[get_set(element0)] > ranks[get_set(element1)]){
+            parents[get_set(element1)] = get_set(element0);
+        }
+        else if (ranks[get_set(element0)] < ranks[get_set(element1)]){
             parents[get_set(element0)] = get_set(element1);
         }
         else{
-            parents[get_set(element1)] = get_set(element0);
+            if (get_set_size(element0) > get_set_size(element1)){
+                parents[get_set(element0)] = get_set(element1);
+            }
+            else{
+                parents[get_set(element1)] = get_set(element0);
+            }
+            ranks[get_set(element1)]++;
         }
+        sizes[get_set(element1)] = size;
+        //    std::cout << size << "SEF:LJSEF" << std::endl;
     }
 
-    sizes[get_set(element1)] = size;
-//    std::cout << size << "SEF:LJSEF" << std::endl;
-    ranks[get_set(element1)]++;
+
+
     return 0; // вернуть номер объединенного множества
 }

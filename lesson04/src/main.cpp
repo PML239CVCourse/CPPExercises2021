@@ -54,9 +54,9 @@ struct MyVideoContent {
 //
 //    }
 
-    MyVideoContent(int a) : set(set) {
-        DisjointSet set(a);
-    }
+//    MyVideoContent(int a) : set(set) {
+//        DisjointSet set(a);
+//    }
 
     std::vector<std::vector<int>> pix;
     cv::Mat frame;
@@ -64,7 +64,7 @@ struct MyVideoContent {
     cv::Mat fon;
     cv::Mat frame1;
     cv::Mat mat;
-    DisjointSet set;
+//    DisjointSet set;
     std::vector<std::vector<int>> mas;
     std::vector<std::vector<int>> vasya;
     std::vector<std::vector<int>> snm;
@@ -195,7 +195,7 @@ struct MyVideoContent {
     cv::Mat Paint4(){
 
     }
-    void Dudu(){
+    void Dudu(DisjointSet set){
         cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
         cv::Vec3b colorf = fon.at<cv::Vec3b>(13, 5);
         for (int i = 0; i < mas.size(); ++i) {
@@ -208,18 +208,15 @@ struct MyVideoContent {
             }
         }
         int n = 0;
-        for (int i = 0; i < mas.size(); ++i) {
-            for (int j = 0; j < mas[i].size(); j++) {
-                n = j%mat.rows + i * mat.cols;
-                if (i < mas.size()-1){
-                    if (j < mas[i].size()-1){
-                        if (mas[i][j] == mas[i+1][j]){
-                            set.union_sets(n,n+1);
-                        }
-                        if (mas[i][j] == mas[i][j+1]){
-                            set.union_sets(n,j%mat.rows + (i+1) * mat.cols);
-                        }
-                    }
+//        std::cout << (mas.size()-1)*(mas[0].size()-1) << std::endl;
+        for (int i = 0; i < mas.size()-1; ++i) {
+            for (int j = 0; j < mas[i].size()-1; j++) {
+                n++;
+                if (mas[i][j] == mas[i+1][j]){
+                    set.union_sets(n,n+1);
+                }
+                if (mas[i][j] == mas[i][j+1]){
+                    set.union_sets(n,n+mas[i].size()-1);
                 }
             }
         }
@@ -306,9 +303,9 @@ struct MyVideoContent {
         return mat;
     }
 
-    void Setset() {
-        set = DisjointSet(frame.rows * frame.cols);
-    }
+//    void Setset() {
+//        set = DisjointSet(frame.rows * frame.cols);
+//    }
 };
 
 
@@ -344,13 +341,15 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 }
 
 void backgroundMagickStreaming() {
+
     bool big = false, small = false, a = false;
     cv::VideoCapture video(0);
     rassert(video.isOpened(), 3423948392481);
 
-    MyVideoContent content(5);
+    MyVideoContent content;
     std::vector<std::vector<int>> mas;
     cv::Mat Foto;
+    DisjointSet set(1);
     int q = 0;
     bool isSuccess = false;
     while (true) {
@@ -379,11 +378,13 @@ void backgroundMagickStreaming() {
                     content.snm[i][j] = j%content.mat.rows + i * content.mat.cols;
                 }
             }
-            content.Setset();
-            DisjointSet set1(content.frame.rows*content.frame.cols);
-            content.set = set1;
+//            content.Setset();
+            DisjointSet set1((content.frame.rows)*(content.frame.cols));
+            set = set1;
         }
-        content.Dudu();
+        std::cout << set.s << std::endl;
+        rassert(set.get_set_size(50) == 1, 123125125);
+        content.Dudu(set);
 
         if (big) {
             cv::imshow("video", content.frame1); // покаызваем очередной кадр в окошке
@@ -445,6 +446,7 @@ void backgroundMagickStreaming() {
 
 
 int main() {
+    std::cout << 1 << std::endl;
     try {
 //        testingMyDisjointSets();
         backgroundMagickStreaming();
