@@ -24,7 +24,7 @@ void testSobel(const std::string &name) {
 
     // TODO реализуйте функцию считающую применение оператора Собеля к картинке
     // т.е. посчитайте производную по x и по y (в каждом пикселе хранятся две эти производные)
-    cv::Mat dxy = sobelDXY(img); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
+    cv::Mat dxy = sobelDXY(convertBGRToGray(img)); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
 
     cv::Mat dx = convertDXYToDX(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
@@ -38,9 +38,24 @@ void testSobel(const std::string &name) {
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_gradientLength.jpg", gradientStrength);
-    // для valve.jpg должно быть похоже на картинку с википедии - https://ru.wikipedia.org/wiki/%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80_%D0%A1%D0%BE%D0%B1%D0%B5%D0%BB%D1%8F
+
 }
 
+struct MyVideoContent {
+    cv::Mat frame;
+    int lastClickX;
+    int lastClickY;
+};
+
+void camtest(){
+    MyVideoContent content;
+    int updateDelay = 10;
+    cv::VideoCapture video(0);
+    while (video.isOpened() && cv::waitKey(updateDelay) != ' ' && cv::waitKey(updateDelay) != 27) { // пока видео не закрылось - бежим по нему
+        bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+        cv::imshow("video", convertDXYToGradientLength(sobelDXY(convertBGRToGray(content.frame)))); // покаызваем очередной кадр в окошке
+    }
+}
 int main() {
     try {
         testBGRToGray();
@@ -50,7 +65,7 @@ int main() {
         }
 
         for (int i = 1; i <= 4; ++i) {
-            // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
+            testSobel("line1" + std::to_string(i));
         }
 
         testSobel("line21_water_horizont");
