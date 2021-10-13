@@ -33,14 +33,69 @@ void testingMyDisjointSets() {
 // 3) попробуйте добавить с помощью нажатия каких то двух кнопок "усиление/ослабление подавления фона"
 // 4) попробуйте поменять местами морфологию и СНМ
 // 5) попробуйте добавить настройку параметров морфологии и СНМ по нажатию кнопок (и выводите их значения в консоль)
-void backgroundMagickStreaming() {
 
+struct MyVideoContent {
+    cv::Mat frame;
+    int lastClickX;
+    int lastClickY;
+};
+
+void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoContent) {
+    MyVideoContent &content = *((MyVideoContent*) pointerToMyVideoContent);
+    if (event == cv::EVENT_LBUTTONDOWN) { // если нажата левая кнопка мыши
+        std::cout << "Left click at x=" << x << ", y=" << y << std::endl;
+    }
+}
+
+void backgroundMagickStreaming() {
+    cv::VideoCapture video(0);
+        MyVideoContent content;
+        //MyVideoContent content_bg;
+        bool isSuccess_beg = video.read(content.frame); // считываем из видео очередной кадр
+        rassert(isSuccess_beg, 348792347819); // проверяем что считывание прошло успешно
+        rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пусто
+        cv::Mat init_pict = content.frame.clone();
+        std::string resultsDir = "lesson04/resultsData/";
+        std::string picture_before_vid = resultsDir + "init_picture.jpg";
+        cv::imwrite(picture_before_vid, init_pict);
+
+
+        //while (video_bg.isOpened()) { // пока видео не закрылось - бежим по нему
+        for(;;){
+            bool isSuccess = video.read(content.frame); // считываем из видео очередной кадр
+            rassert(isSuccess, 348792347819); // проверяем что считывание прошло успешно
+            rassert(!content.frame.empty(), 3452314124643); // проверяем что кадр не пустой
+
+            cv::Mat ready_picture = videoWithBackground(content.frame.clone() , init_pict.clone());
+
+            int updateDelay = 10;
+            if(cv::waitKey(updateDelay) == 44){                           // pressing print screen
+                ready_picture = invertImageColors(ready_picture);
+            }
+
+            cv::imshow("video", ready_picture);
+            cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
+
+            std::string resultsDir = "lesson04/resultsData/";
+            std::string picture_before_vid = resultsDir + "picture.jpg";
+            cv::imwrite(picture_before_vid, init_pict);
+
+
+            //int key = cv::waitKey(1);
+            //int updateDelay = 10;
+            if(cv::waitKey(updateDelay) == 32)
+                break;
+            if(cv::waitKey(updateDelay) == 27)
+                break;
+
+            // TODO сделайте по правому клику мышки переключение в режим "цвета каждого кадра инвертированы" (можете просто воспользоваться функцией invertImageColors)
+        }
 }
 
 int main() {
     try {
-        testingMyDisjointSets();
-//        backgroundMagickStreaming();
+        //testingMyDisjointSets();
+      backgroundMagickStreaming();
         return 0;
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
