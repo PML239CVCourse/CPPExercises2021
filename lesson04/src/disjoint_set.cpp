@@ -51,6 +51,6 @@ int	DisjointSet::union_sets(int element0, int element1)
     if(ranks[A]==ranks[B])
         ranks[A]++;
     parents[B]=A;
-
+    sizes[A]+= sizes[B];
     return A;
 }
