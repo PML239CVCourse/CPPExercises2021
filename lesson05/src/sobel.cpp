@@ -19,14 +19,11 @@ cv::Mat convertBGRToGray(cv::Mat img) {
             unsigned char blue = color[0];
             unsigned char green = color[1];
             unsigned char red = color[2];
-
             // TODO реализуйте усреднение яркости чтобы получить серый цвет
             //  - обратите внимание что если складывать unsigned char - сумма может переполниться, поэтому перед сложением их стоит преобразовать в int или float
             //  - загуглите "RGB to grayscale formula" - окажется что правильно это делать не усреднением в равных пропорциях, а с другими коэффициентами
             float grayIntensity = 0.0f;
             grayIntensity = (float)(0.30*(int)red + 0.59*(int)green + 0.11*(int)blue);
-
-
             grayscaleImg.at<float>(j, i) = grayIntensity;
         }
     }
@@ -36,9 +33,7 @@ cv::Mat convertBGRToGray(cv::Mat img) {
 
 
 cv::Mat sobelDXY(cv::Mat img) {
-    int height = img.rows;
-    int width = img.cols;
-    cv::Mat dxyImg(height, width, CV_32FC2); // в этой картинке мы сохраним обе производные:
+    cv::Mat dxyImg(img.rows, img.cols, CV_32FC2); // в этой картинке мы сохраним обе производные:
     // давайте поймем что означает тип картинки CV_32FC2:
     //                                          CV = Computer Vision (библиотека в целом называетсяOpenCV)
     //                                             32F = 32-битное floating число, т.е. вещественное число типа float
@@ -70,8 +65,8 @@ cv::Mat sobelDXY(cv::Mat img) {
     };
 
     // TODO доделайте этот код (в т.ч. производную по оси ty), в нем мы пробегаем по всем пикселям (j,i)
-    for (int j = 1; j < height -1; ++j) {
-        for (int i = 1; i < width -1; ++i) {
+    for (int j = 1; j < img.rows -1; ++j) {
+        for (int i = 1; i < img.cols -1; ++i) {
             float dxSum = 0.0f; // судя будем накапливать производную по оси x
             // затем пробегаем по окрестности 3x3 вокруг нашего центрального пикселя (j,i)
             for (int dj = -1; dj <= 1; ++dj) {
@@ -92,13 +87,13 @@ cv::Mat sobelDXY(cv::Mat img) {
             dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(dxSum, dySum);
         }
     }
-    for(int j = 0; j < height; j++){
+    for(int j = 0; j < img.rows; j++){
         dxyImg.at<cv::Vec2f>(j, 0) = dxyImg.at<cv::Vec2f>(j, 1);
-        dxyImg.at<cv::Vec2f>(j, width-1) = dxyImg.at<cv::Vec2f>(j, width-2);
+        dxyImg.at<cv::Vec2f>(j, img.cols-1) = dxyImg.at<cv::Vec2f>(j, img.cols-2);
     }
-    for(int i = 0; i < width; i++){
+    for(int i = 0; i < img.cols; i++){
         dxyImg.at<cv::Vec2f>(0, i) = dxyImg.at<cv::Vec2f>(1, i);
-        dxyImg.at<cv::Vec2f>(height-1, i) = dxyImg.at<cv::Vec2f>(height-2, i);
+        dxyImg.at<cv::Vec2f>(img.rows-1, i) = dxyImg.at<cv::Vec2f>(img.rows-2, i);
     }
 
     return dxyImg; // производная по оси x и оси y (в каждом пикселе два канала - два числа - каждая из компонент производной)
@@ -107,15 +102,11 @@ cv::Mat sobelDXY(cv::Mat img) {
 cv::Mat convertDXYToDX(cv::Mat img) {
     rassert(img.type() == CV_32FC2,
             238129037129092); // сверяем что в картинке два канала и в каждом - вещественное число
-    int width = img.cols;
-    int height = img.rows;
-    cv::Mat dxImg(height, width, CV_32FC1); // создаем одноканальную картинку состоящую из 32-битных вещественных чисел
-    for (int j = 0; j < height; ++j) {
-        for (int i = 0; i < width; ++i) {
+            cv::Mat dxImg(img.rows, img.cols, CV_32FC1); // создаем одноканальную картинку состоящую из 32-битных вещественных чисел
+    for (int j = 0; j < img.rows; ++j) {
+        for (int i = 0; i < img.cols; ++i) {
             cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
-
             float x = std::abs(dxy[0]); // взяли абсолютное значение производной по оси x
-
             dxImg.at<float>(j, i) = x;
         }
     }
@@ -131,9 +122,7 @@ cv::Mat convertDXYToDY(cv::Mat img) {
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
             cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
-
             float y = std::abs(dxy[1]); // взяли абсолютное значение производной по оси y
-
             dyImg.at<float>(j, i) = y;
         }
     }
@@ -149,9 +138,7 @@ cv::Mat convertDXYToGradientLength(cv::Mat img) {
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
             cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
-
             float z = sqrt((dxy[1])*(dxy[1])+(dxy[0])*(dxy[0])); // взяли абсолютное значение производной по оси y
-
             Img.at<float>(j, i) = z;
         }
     }
