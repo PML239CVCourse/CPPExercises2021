@@ -26,6 +26,7 @@ void testSobel(const std::string &name) {
     // т.е. посчитайте производную по x и по y (в каждом пикселе хранятся две эти производные)
     cv::Mat dxy = sobelDXY(img); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
 
+    rassert(!dxy.empty(), 23981920813);
     cv::Mat dx = convertDXYToDX(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_dx.jpg", dx);
@@ -37,7 +38,7 @@ void testSobel(const std::string &name) {
     cv::Mat gradientStrength = convertDXYToGradientLength(dxy); // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
-    cv::imwrite("lesson05/resultsData/" + name + "_gradientLength.jpg", gradientStrength);
+    //cv::imwrite("lesson05/resultsData/" + name + "_gradientLength.jpg", gradientStrength);
     // для valve.jpg должно быть похоже на картинку с википедии - https://ru.wikipedia.org/wiki/%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%82%D0%BE%D1%80_%D0%A1%D0%BE%D0%B1%D0%B5%D0%BB%D1%8F
 }
 
