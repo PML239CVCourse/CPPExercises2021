@@ -1,13 +1,17 @@
 #include <filesystem>
 #include <iostream>
 #include <libutils/rasserts.h>
-
+#include <string>
 #include "blur.h" // TODO реализуйте функцию блюра с произвольной силой размытия в файле blur.cpp
 
 void testSomeBlur() {
+    std::string name = "emperor-vs-horus";
+    cv::Mat img = cv::imread("lesson06/data/" + name + ".jpg");
     // TODO выберите любую картинку и любую силу сглаживания - проверьте что результат - чуть размытая картинка
     // Входные картинки для тестирования возьмите из предыдущего урока (т.е. по пути lesson05/data/*).
     // Результирующие картинки сохарняйте в эту папку (т.е. по пути lesson06/resultsData/*).
+    cv::Mat bluremp = blur(img,0.1);
+    cv::imwrite("lesson06/resultsData/" + name + "_blur_.jpg" , bluremp);
 }
 
 void testManySigmas() {
@@ -20,7 +24,7 @@ void testManySigmas() {
 int main() {
     try {
         testSomeBlur();
-        testManySigmas();
+        //testManySigmas();
 
         return 0;
     } catch (const std::exception &e) {
