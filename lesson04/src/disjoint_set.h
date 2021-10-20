@@ -6,7 +6,9 @@ class DisjointSet {
 public:
     DisjointSet(int size); // конструктор - создает size элементов, каждый элемент - состоит в своем личном множестве (размера 1)
     int s;
+    std::vector<int> value;
 
+    std::vector<int> GetParents();
     int get_set(int element); // говорит номер множества в котором состоит данный элемент
     int get_set_size(int element); // говорит размер множества в котором состоит данный элемент
     int union_sets(int element0, int element1); // объединяет два множества в одно (два аргумента задают множества - это какие-то элементы этих двух множеств)

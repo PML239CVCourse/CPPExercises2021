@@ -24,6 +24,8 @@ cv::Mat convertBGRToGray(cv::Mat img) {
             //  - обратите внимание что если складывать unsigned char - сумма может переполниться, поэтому перед сложением их стоит преобразовать в int или float
             //  - загуглите "RGB to grayscale formula" - окажется что правильно это делать не усреднением в равных пропорциях, а с другими коэффициентами
             float grayIntensity = 0.0f;
+            grayIntensity = (float)(0.30*(int)red + 0.59*(int)green + 0.11*(int)blue);
+
 
             grayscaleImg.at<float>(j, i) = grayIntensity;
         }
@@ -62,16 +64,15 @@ cv::Mat sobelDXY(cv::Mat img) {
 
     // TODO исправьте коээфициенты свертки по вертикальной оси y
     int dySobelKoef[3][3] = {
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
+            {-1,-2,-1},
+            { 0, 0, 0},
+            { 1, 2, 1},
     };
 
     // TODO доделайте этот код (в т.ч. производную по оси ty), в нем мы пробегаем по всем пикселям (j,i)
-    for (int j = 0; j < height; ++j) {
-        for (int i = 0; i < width; ++i) {
+    for (int j = 1; j < height -1; ++j) {
+        for (int i = 1; i < width -1; ++i) {
             float dxSum = 0.0f; // судя будем накапливать производную по оси x
-
             // затем пробегаем по окрестности 3x3 вокруг нашего центрального пикселя (j,i)
             for (int dj = -1; dj <= 1; ++dj) {
                 for (int di = -1; di <= 1; ++di) {
@@ -79,9 +80,25 @@ cv::Mat sobelDXY(cv::Mat img) {
                     dxSum += dxSobelKoef[1 + dj][1 + di] * intensity; // добавляем его яркость в производную с учетом веса из ядра Собеля
                 }
             }
+            float dySum = 0.0f; // судя будем накапливать производную по оси x
+            // затем пробегаем по окрестности 3x3 вокруг нашего центрального пикселя (j,i)
+            for (int dj = -1; dj <= 1; ++dj) {
+                for (int di = -1; di <= 1; ++di) {
+                    float intensity = img.at<float>(j + dj, i + di); // берем соседний пиксель из окрестности
+                    dySum += dySobelKoef[1 + dj][1 + di] * intensity; // добавляем его яркость в производную с учетом веса из ядра Собеля
+                }
+            }
 
-            dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(0.0f, 0.0f);
+            dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(dxSum, dySum);
         }
+    }
+    for(int j = 0; j < height; j++){
+        dxyImg.at<cv::Vec2f>(j, 0) = dxyImg.at<cv::Vec2f>(j, 1);
+        dxyImg.at<cv::Vec2f>(j, width-1) = dxyImg.at<cv::Vec2f>(j, width-2);
+    }
+    for(int i = 0; i < width; i++){
+        dxyImg.at<cv::Vec2f>(0, i) = dxyImg.at<cv::Vec2f>(1, i);
+        dxyImg.at<cv::Vec2f>(height-1, i) = dxyImg.at<cv::Vec2f>(height-2, i);
     }
 
     return dxyImg; // производная по оси x и оси y (в каждом пикселе два канала - два числа - каждая из компонент производной)
@@ -106,14 +123,41 @@ cv::Mat convertDXYToDX(cv::Mat img) {
 }
 
 cv::Mat convertDXYToDY(cv::Mat img) {
-    // TODO
-    cv::Mat dyImg;
+    rassert(img.type() == CV_32FC2,
+            238129037129092); // сверяем что в картинке два канала и в каждом - вещественное число
+    int width = img.cols;
+    int height = img.rows;
+    cv::Mat dyImg(height, width, CV_32FC1); // создаем одноканальную картинку состоящую из 32-битных вещественных чисел
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+            cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
+
+            float y = std::abs(dxy[1]); // взяли абсолютное значение производной по оси y
+
+            dyImg.at<float>(j, i) = y;
+        }
+    }
     return dyImg;
 }
 
 cv::Mat convertDXYToGradientLength(cv::Mat img) {
+    rassert(img.type() == CV_32FC2,
+            238129037129092); // сверяем что в картинке два канала и в каждом - вещественное число
+    int width = img.cols;
+    int height = img.rows;
+    cv::Mat Img(height, width, CV_32FC1); // создаем одноканальную картинку состоящую из 32-битных вещественных чисел
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+            cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
+
+            float z = sqrt((dxy[1])*(dxy[1])+(dxy[0])*(dxy[0])); // взяли абсолютное значение производной по оси y
+
+            Img.at<float>(j, i) = z;
+        }
+    }
+
     // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
-    return img;
+    return Img;
 }

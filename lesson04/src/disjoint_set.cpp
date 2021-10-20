@@ -8,6 +8,7 @@
 DisjointSet::DisjointSet(int size)
 {
     s = size;
+    value = std::vector<int>(size);
     parents = std::vector<int>(size);
     ranks = std::vector<int>(size);
     sizes = std::vector<int>(size);
@@ -21,6 +22,10 @@ DisjointSet::DisjointSet(int size)
     // TODO заполнить parents
     // TODO заполнить ranks
     // TODO заполнить sizes
+}
+
+std::vector<int> DisjointSet::GetParents(){
+    return parents;
 }
 
 int	DisjointSet::get_set(int element)
@@ -98,9 +103,11 @@ int	DisjointSet::union_sets(int element0, int element1)
         }
         sizes[get_set(element1)] = size;
         //    std::cout << size << "SEF:LJSEF" << std::endl;
+        return 0;
     }
+    return 1;
 
 
 
-    return 0; // вернуть номер объединенного множества
+     // вернуть номер объединенного множества
 }

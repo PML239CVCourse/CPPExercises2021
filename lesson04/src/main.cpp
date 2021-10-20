@@ -64,6 +64,8 @@ struct MyVideoContent {
     cv::Mat fon;
     cv::Mat frame1;
     cv::Mat mat;
+    cv::Mat samdurak;
+    cv::Mat nahnado;
 //    DisjointSet set;
     std::vector<std::vector<int>> mas;
     std::vector<std::vector<int>> vasya;
@@ -193,7 +195,7 @@ struct MyVideoContent {
     }
 
     cv::Mat Paint4(){
-
+        return samdurak;
     }
     void Dudu(DisjointSet set){
         cv::Vec3b color = frame.at<cv::Vec3b>(13, 5);
@@ -220,6 +222,54 @@ struct MyVideoContent {
                 }
             }
         }
+        int w = 0, h = 0, o = mas[0][0];
+        snm[0][0] = o;
+        bool pidor = false;
+        for (int i = 0; i < set.s; ++i) {
+            h = i%mas[0].size();
+            w = i/mas[0].size();
+//            if (set.get_set_size(i) < 20){
+//                int q = i;
+//                while (set.union_sets(i,q) == 1){
+//                    if (q >= set.s-1){
+//                        pidor = true;
+//                    }
+//                    if (q <= 0){
+//                        pidor = false;
+//                    }
+//                    if (!pidor){
+//                        q++;
+//                    }
+//                    else{
+//                        q--;
+//                    }
+//                }
+//            }
+            int asdf = set.get_set(0), asnaropi = set.get_set(1);
+            std::vector<int> asfdjiasdf = set.GetParents();
+            if (i > 0){
+                if (set.get_set(i) != set.get_set(i-1)){
+                    if (o == 0){
+                        o = 1;
+                    }
+                    else{
+                        o = 0;
+                    }
+                }
+                rassert(o == mas[w][h], i)
+//                snm[w][h] = o;
+                color = frame.at<cv::Vec3b>(h, w);
+                colorf = frame1.at<cv::Vec3b>(h, w);
+                if (o == 0){
+                    samdurak.at<cv::Vec3b>(h,w) = colorf;
+                    nahnado.at<cv::Vec3b>(h,w) = cv::Vec3b(0, 0, 0);
+                }
+                else{
+                    samdurak.at<cv::Vec3b>(h,w) = color;
+                    nahnado.at<cv::Vec3b>(h,w) = cv::Vec3b(255, 255, 255);
+                }
+            }
+        }
         vasya = mas;
         ans = frame.clone();
         if (dil){
@@ -242,7 +292,7 @@ struct MyVideoContent {
                 if (mas[i][j] == 1){
                     ans.at<cv::Vec3b>(j,i) = frame1.at<cv::Vec3b>(j,i);
                     mas[i][j] = 0;
-                    snm[i][j] = j%mat.rows + i * mat.cols;
+//                    snm[i][j] = j%mat.rows + i * mat.cols;
                 }
             }
         }
@@ -342,7 +392,7 @@ void onMouseClick(int event, int x, int y, int flags, void *pointerToMyVideoCont
 
 void backgroundMagickStreaming() {
 
-    bool big = false, small = false, a = false;
+    bool big = false, small = false, a = false, b = false;
     cv::VideoCapture video(0);
     rassert(video.isOpened(), 3423948392481);
 
@@ -370,7 +420,7 @@ void backgroundMagickStreaming() {
         if (q == 0) {
             content.setF(baba(cv::imread("lesson03/data/castle_large.jpg"), content.frame.clone()));
             q++;
-            content.mat = content.frame;
+            content.mat = content.frame.clone();
             content.Mat();
             content.snm = content.mas;
             for (int i = 0; i < content.mat.cols; ++i) {
@@ -378,6 +428,8 @@ void backgroundMagickStreaming() {
                     content.snm[i][j] = j%content.mat.rows + i * content.mat.cols;
                 }
             }
+            content.samdurak = content.frame.clone();
+            content.nahnado = content.frame.clone();
 //            content.Setset();
             DisjointSet set1((content.frame.rows)*(content.frame.cols));
             set = set1;
@@ -392,11 +444,14 @@ void backgroundMagickStreaming() {
             cv::imshow("video", content.Paint2()); // покаызваем очередной кадр в окошке
         } else if (a) {
             cv::imshow("video", content.Paint3()); // покаызваем очередной кадр в окошке
-        } else {
+        } else if (b) {
+            cv::imshow("video", content.Paint4()); // покаызваем очередной кадр в окошке
+        }else {
             cv::imshow("video", content.Paint1()); // покаызваем очередной кадр в окошке
         }
         cv::setMouseCallback("video", onMouseClick, &content); // делаем так чтобы функция выше (onMouseClick) получала оповещение при каждом клике мышкой
         int key = cv::waitKey(10);
+        std::cout << key << std::endl;
         std::string resultsDir = "lesson04/resultsData/";
         if (key == 0) {
             if (big) {
@@ -414,6 +469,7 @@ void backgroundMagickStreaming() {
             content.vasya = Dilate(content.vasya, content.r);
             content.vasya = Erode(content.vasya, content.r);
             cv::imwrite(resultsDir + "04_Eelon.jpg", content.Vis());
+            cv::imwrite(resultsDir + "05_Besit.jpg", content.nahnado);
         }else if (key == 49) {
             if (small) {
                 small = false;
@@ -436,6 +492,12 @@ void backgroundMagickStreaming() {
             content.ret++;
         } else if (key == 57) {
             content.ret--;
+        }else if (key == 122) {
+            if (b) {
+                b = false;
+            } else {
+                b = true;
+            }
         }
         if (key == 27) {
             break;
