@@ -180,13 +180,45 @@ cv::Mat convertDXYToDX(cv::Mat img) {
 
 cv::Mat convertDXYToDY(cv::Mat img) {
     // TODO
-    cv::Mat dyImg;
+    rassert(img.type() == CV_32FC2,
+            238129037129092);
+    int width = img.cols;
+    int height = img.rows;
+    cv::Mat dyImg(height, width, CV_32FC1);
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+            cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
+
+            float y = std::abs(dxy[1]);
+
+            dyImg.at<float>(j, i) = y;
+        }
+    }
     return dyImg;
 }
 
 cv::Mat convertDXYToGradientLength(cv::Mat img) {
     // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
+    rassert(img.type() == CV_32FC2,
+            238129037129092);
+    int width = img.cols;
+    int height = img.rows;
+    cv::Mat grad_lengthImg(height, width, CV_32FC1);
+
+    for (int j = 0; j < height; ++j) {
+        for (int i = 0; i < width; ++i) {
+            cv::Vec2f dxy = img.at<cv::Vec2f>(j, i);
+
+            float x = std::abs(dxy[0]);
+            float y = std::abs(dxy[1]);
+            float grad_scale = sqrt(pow(x, 2) + pow(y, 2));
+
+            grad_lengthImg.at<float>(j, i) = grad_scale;
+        }
+    }
+
+
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
-    return img;
+    return grad_lengthImg;
 }
