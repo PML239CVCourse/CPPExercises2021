@@ -103,8 +103,8 @@ cv::Mat addBackgroundInsteadOfColorPixelsLargeBackground(cv::Mat object, cv::Mat
 // 4) попробуйте поменять местами морфологию и СНМ
 // 5) попробуйте добавить настройку параметров морфологии и СНМ по нажатию кнопок (и выводите их значения в консоль)
 void backgroundMagickStreaming() {
-    cv::VideoCapture video("lesson03/data/Spin_1.mp4");
-//    cv::VideoCapture video(0);
+    cv::VideoCapture video("C:\\Users\\ratkovva.22\\CLionProjects\\CPPExercises2021\\lesson04\\data\\Spin_1.mp4");
+    //cv::VideoCapture video(0);
     rassert(video.isOpened(), 3423948392481); // проверяем что видео получилось открыть
 
     MyVideoContent content; // здесь мы будем хранить всякие полезности - например последний видео кадр, координаты последнего клика и т.п.
