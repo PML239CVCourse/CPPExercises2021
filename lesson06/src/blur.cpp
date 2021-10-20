@@ -1,7 +1,7 @@
 #include "blur.h"
 
 #include <libutils/rasserts.h>
-
+//2
 double G(double x, double y, double sig){
     return (1/ (2 * M_PI * sig)) * pow(M_E, -(x*x+y*y)/(2*sig*sig));
 }
