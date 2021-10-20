@@ -45,10 +45,9 @@ int main() {
     try {
         testBGRToGray();
 
-       /* for (int i = 1; i <= 4; ++i) {
+        for (int i = 1; i <= 4; ++i) {
             testSobel("line0" + std::to_string(i));
-        }*/
-
+        }
         /*for (int i = 1; i <= 4; ++i) {
             // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
         }
