@@ -12,7 +12,7 @@ void testBGRToGray() {
     rassert(!img.empty(), 23981920813);
 
     // TODO реализуйте эту функцию, преобразующую картинку в черно-белую
-    cv::Mat gray = convertBGRToGray(img);
+    cv::Mat gray = convertBGRToGray(img.clone());
 
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_grey.jpg", gray);
@@ -24,17 +24,17 @@ void testSobel(const std::string &name) {
 
     // TODO реализуйте функцию считающую применение оператора Собеля к картинке
     // т.е. посчитайте производную по x и по y (в каждом пикселе хранятся две эти производные)
-    cv::Mat dxy = sobelDXY(img); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
+    cv::Mat dxy = sobelDXY(convertBGRToGray(img.clone())); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
 
-    cv::Mat dx = convertDXYToDX(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
+    cv::Mat dx = convertDXYToDX(dxy.clone()); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_dx.jpg", dx);
 
-    cv::Mat dy = convertDXYToDY(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по y (ее абсолютное значение)
+    cv::Mat dy = convertDXYToDY(dxy.clone()); // TODO реализуйте функцию которая вытаскивает силу производной по y (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_dy.jpg", dy);
 
-    cv::Mat gradientStrength = convertDXYToGradientLength(dxy); // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
+    cv::Mat gradientStrength = convertDXYToGradientLength(dxy.clone()); // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_gradientLength.jpg", gradientStrength);
@@ -45,14 +45,14 @@ int main() {
     try {
         testBGRToGray();
 
-        for (int i = 1; i <= 4; ++i) {
+       /* for (int i = 1; i <= 4; ++i) {
             testSobel("line0" + std::to_string(i));
-        }
+        }*/
 
-        for (int i = 1; i <= 4; ++i) {
+        /*for (int i = 1; i <= 4; ++i) {
             // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
         }
-
+*/
         testSobel("line21_water_horizont");
         testSobel("multiline1_paper_on_table");
         testSobel("multiline2_paper_on_table");

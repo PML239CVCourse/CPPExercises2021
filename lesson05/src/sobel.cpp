@@ -121,7 +121,7 @@ cv::Mat sobelDXY(cv::Mat img) {
         }
     }
 
-    for (int j = 0; j < height; ++j) {        // to fill the last one rows and cols with correct values
+    /*for (int j = 0; j < height; ++j) {        // to fill the last one rows and cols with correct values
         for (int i = 0; i < width; ++i) {
             if(!(i == 0 || i == width - 1 || j == 0 || j == height - 1))
                 continue;
@@ -155,7 +155,15 @@ cv::Mat sobelDXY(cv::Mat img) {
                 }
             }
         }
+    }*/
+    for (int j = 0; j < height; ++j) {        // to fill the last one rows and cols with correct values
+        for (int i = 0; i < width; ++i) {
+            if(!(i == 0 || i == width - 1 || j == 0 || j == height - 1))
+                continue;
+            dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(0, 0);
+        }
     }
+
 
     return dxyImg; // производная по оси x и оси y (в каждом пикселе два канала - два числа - каждая из компонент производной)
 }

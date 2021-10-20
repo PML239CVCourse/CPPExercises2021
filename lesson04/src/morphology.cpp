@@ -190,9 +190,9 @@ cv::Mat videoWithoutInterference(cv::Mat object, std::vector<std::vector<int>>& 
     //adding more 1 to fix the spots
     for(int i = 0; i < object.rows; i++){
         for(int j = 0; j < object.cols; j++){
-            if(isFilledBy1(difference_in_colors, i, j, object.rows, object.cols)){   // FIX
-                difference_in_colors_new[i][j] = 1;
-            }
+//            if(isFilledBy1(difference_in_colors, i, j, object.rows, object.cols)){   // FIX
+//                difference_in_colors_new[i][j] = 1;
+//            }
         }
     }
 
