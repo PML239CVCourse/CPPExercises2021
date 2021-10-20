@@ -37,6 +37,21 @@ cv::Mat convertBGRToGray(cv::Mat img) {
 }
 
 
+void changePixel(cv::Mat img, int i_to_change, int j_to_change, int i, int j){ // to change certain pixel(i_to_change, j_to_change) by using another one (i, j)
+    /*cv::Vec3b color1 = img.at<cv::Vec3b>(j, i);
+    dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(dxSum, dySum);*/
+
+    cv::Vec2f color = img.at<cv::Vec2f>(i, j);
+    cv::Vec2f color_to_change = img.at<cv::Vec2f>(i_to_change, j_to_change);
+
+    /*color_to_change[0] = color[0];
+    color_to_change[1] = color[1];*/
+
+    img.at<cv::Vec2f>(j_to_change, i_to_change) = cv::Vec2f(color[0], color[1]);
+    return;
+}
+
+
 cv::Mat sobelDXY(cv::Mat img) {
     int height = img.rows;
     int width = img.cols;
@@ -71,20 +86,74 @@ cv::Mat sobelDXY(cv::Mat img) {
             {1, 2, 1},
     };
 
-    // TODO доделайте этот код (в т.ч. производную по оси ty), в нем мы пробегаем по всем пикселям (j,i)
+
+   /* dxyImg.at<cv::Vec2f>(0, 0) = cv::Vec2f(0, 0);
+
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
-            float dxSum = 0.0f; // судя будем накапливать производную по оси x
+            if()
+        }
+    }*/
 
+
+    // TODO доделайте этот код (в т.ч. производную по оси ty), в нем мы пробегаем по всем пикселям (j,i)
+    for (int j = 1; j < height - 1; ++j) {
+        for (int i = 1; i < width - 1; ++i) {
+            float dxSum = 0.0f; // судя будем накапливать производную по оси x
             // затем пробегаем по окрестности 3x3 вокруг нашего центрального пикселя (j,i)
-            for (int dj = -1; dj <= 1; ++dj) {
+            for (int dj = -1; dj <= 1; ++dj) {                                                  //   for dx derivative
                 for (int di = -1; di <= 1; ++di) {
                     float intensity = img.at<float>(j + dj, i + di); // берем соседний пиксель из окрестности
                     dxSum += dxSobelKoef[1 + dj][1 + di] * intensity; // добавляем его яркость в производную с учетом веса из ядра Собеля
                 }
             }
 
-            dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(0.0f, 0.0f);
+
+            float dySum = 0.0f;
+            for (int dj = -1; dj <= 1; ++dj) {                    //   for dy derivative
+                for (int di = -1; di <= 1; ++di) {
+                    float intensity = img.at<float>(j + dj, i + di);
+                    dySum += dySobelKoef[1 + dj][1 + di] * intensity;
+                }
+            }
+
+            dxyImg.at<cv::Vec2f>(j, i) = cv::Vec2f(dxSum, dySum);
+        }
+    }
+
+    for (int j = 0; j < height; ++j) {        // to fill the last one rows and cols with correct values
+        for (int i = 0; i < width; ++i) {
+            if(!(i == 0 || i == width - 1 || j == 0 || j == height - 1))
+                continue;
+
+            if(j == 0){
+                if(i == 0)
+                    changePixel(dxyImg, i, j, i + 1, j + 1);
+                else {
+                    if (i == width - 1)
+                        changePixel(dxyImg, i, j, i - 1, j + 1);
+                    else
+                        changePixel(dxyImg, i, j, i, j + 1);
+                }
+            }
+            else {
+                if (j == height - 1) {
+                    if (i == 0)
+                        changePixel(dxyImg, i, j, i + 1, j - 1);
+                    else {
+                        if (i == width - 1)
+                            changePixel(dxyImg, i, j, i - 1, j - 1);
+                        else
+                            changePixel(dxyImg, i, j, i, j - 1);
+                    }
+                }
+                else{
+                    if(i == 0)
+                        changePixel(dxyImg, i, j, i + 1, j);
+                    else
+                        changePixel(dxyImg, i, j, i - 1, j);
+                }
+            }
         }
     }
 
