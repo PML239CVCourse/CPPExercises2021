@@ -23,9 +23,9 @@ cv::Mat blur(cv::Mat img, double sigma) {
     for (int i = 0; i < 5; ++i) {
         for (int j = 0; j < 5; ++j) {
             sum += GaussKoef[i][j];
-            std::cout << GaussKoef[i][j] << " ";
+//            std::cout << GaussKoef[i][j] << " ";
         }
-        std::cout << std::endl;
+//        std::cout << std::endl;
     }
     int width = img.cols;
     int height = img.rows;
@@ -45,10 +45,20 @@ cv::Mat blur(cv::Mat img, double sigma) {
                     rassert(j+dj < height, 12487623876124)
                     rassert(i+di >= 0, 12487623876124)
                     rassert(i+di < width, 12487623876124)
-                    std::cout << GaussKoef[i+di][j+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[0]) << std::endl;
-                    s0 += GaussKoef[i+di][j+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[0]);
-                    s1 += GaussKoef[i+di][j+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[1]);
-                    s2 += GaussKoef[i+di][j+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[2]);
+//                    for (int i = 0; i < 5; ++i) {
+//                        for (int j = 0; j < 5; ++j) {
+//                            sum += GaussKoef[i][j];
+//                            std::cout << GaussKoef[i][j] << " ";
+//                        }
+//                        std::cout << std::endl;
+//                    }
+                    float a = GaussKoef[2+di][2+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[0]);
+                    float b = GaussKoef[2+di][2+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[1]);
+                    float c = GaussKoef[2+di][2+dj]*(float)(img.at<cv::Vec3b>(j+dj, i+di)[2]);
+//                    std::cout << GaussKoef[i+di][j+dj]  << "  ____  " << i+di << " " << j+dj << "  ____  " << a << " " << b << " " << c << " " << "  ____  " << (float)(img.at<cv::Vec3b>(j+dj, i+di)[0]) << " " << (float)(img.at<cv::Vec3b>(j+dj, i+di)[1]) << " " << (float)(img.at<cv::Vec3b>(j+dj, i+di)[2]) << " " << std::endl;
+                    s0 += a;
+                    s1 += b;
+                    s2 += c;
                 }
             }
             img.at<cv::Vec3b>(j,i)[0] = (unsigned int)(s0/sum);
