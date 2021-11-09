@@ -8,6 +8,10 @@ void testSomeBlur() {
     // TODO выберите любую картинку и любую силу сглаживания - проверьте что результат - чуть размытая картинка
     // Входные картинки для тестирования возьмите из предыдущего урока (т.е. по пути lesson05/data/*).
     // Результирующие картинки сохарняйте в эту папку (т.е. по пути lesson06/resultsData/*).
+    std::string name = "valve";
+    cv::Mat img = cv::imread("C:/Users/Vitya/CLionProjects/CPPExercises2021/lesson06/data/valve.jpg");
+    cv::Mat bl = blur(img,1);
+    cv::imwrite("C:/Users/Vitya/CLionProjects/CPPExercises2021/lesson06/resultsData/valve.jpg", bl);
 }
 
 void testManySigmas() {
@@ -20,7 +24,7 @@ void testManySigmas() {
 int main() {
     try {
         testSomeBlur();
-        testManySigmas();
+//        testManySigmas();
 
         return 0;
     } catch (const std::exception &e) {
