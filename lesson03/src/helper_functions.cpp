@@ -3,6 +3,8 @@
 #include <libutils/rasserts.h>
 
 
+class n;
+
 cv::Mat makeAllBlackPixelsBlue(cv::Mat image) {
 //    // TODO реализуйте функцию которая каждый черный пиксель картинки сделает синим
 //
@@ -103,18 +105,77 @@ cv::Mat addBackgroundInsteadOfBlackPixelsLargeBackground(cv::Mat object, cv::Mat
     int b = object.cols;
     int c = largeBackground.rows;
     int d = largeBackground.cols;
-    for(int i = (c-a)/2; i < c - (c-a)/2; ++i){
-        for(int j = (d-b)/2; j < d - (d-b)/2; ++j){
+    for(int i=0; i<a;++i){
+        for(int j=0; j<b; ++j){
             cv::Vec3b color = object.at<cv::Vec3b>(i, j);
             unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
             unsigned char green = color[1];
             unsigned char red = color[2];
             if(blue < 5 && green < 5 && red < 5){
 
+            } else {
+                cv::Vec3b color2 = object.at<cv::Vec3b>(i,j);
+                unsigned char blue2 = color[0];
+                unsigned char green2 = color[1];
+                unsigned char red2 = color[2];
+                largeBackground.at<cv::Vec3b>(i+(c-a)/2,j+(d-b)/2) = cv::Vec3b(blue2, green2, red2);
             }
         }
-
     }
+//    for(int i = (c-a)/2; i < c - (c-a)/2; ++i){
+//        for(int j = (d-b)/2; j < d - (d-b)/2; ++j){
 
     return largeBackground;
+}
+
+
+cv::Mat unicornsOtake(cv::Mat object, cv::Mat largeBackground, int n){
+    rassert(object.cols <= largeBackground.cols, 3414151251351);
+    rassert(object.rows <= largeBackground.rows, 876765853457);
+    int a = object.rows;
+    int b = object.cols;
+    int c = largeBackground.rows;
+    int d = largeBackground.cols;
+    while(n>0){
+        n--;
+        int k = rand() % (c-a);
+        int l = rand() % (d-b);
+        for(int i = 0; i < a; ++i){
+            for(int j = 0; j < b; ++j){
+                cv::Vec3b color = object.at<cv::Vec3b>(i, j);
+                unsigned char blue = color[0]; // если это число равно 255 - в пикселе много синего, если равно 0 - в пикселе нет синего
+                unsigned char green = color[1];
+                unsigned char red = color[2];
+                if(blue < 5 && green < 5 && red < 5){
+
+                } else {
+                    cv::Vec3b color2 = object.at<cv::Vec3b>(i,j);
+                    unsigned char blue2 = color[0];
+                    unsigned char green2 = color[1];
+                    unsigned char red2 = color[2];
+                    largeBackground.at<cv::Vec3b>(i+k,j+l) = cv::Vec3b(blue2, green2, red2);
+                }
+            }
+        }
+    }
+    return largeBackground;
+
+}
+
+cv::Mat bigUnicorn(cv::Mat object, cv::Mat largeBackground){
+    rassert(object.cols <= largeBackground.cols, 341415251351);
+    rassert(object.rows <= largeBackground.rows, 87676553457);
+    int a = object.rows;
+    int b = object.cols;
+    int c = largeBackground.rows;
+    int d = largeBackground.cols;
+    for(int i=0; i<c; ++i){
+        for(int j=0; j<d; ++j){
+            cv::Vec3b color = object.at<cv::Vec3b>(i, j);
+            unsigned char blue = color[0];
+            unsigned char green = color[1];
+            unsigned char red = color[2];
+            largeBackground.at<cv::Vec3b>(i,j) = cv::Vec3b(blue, green, red);
+        }
+    }
 }

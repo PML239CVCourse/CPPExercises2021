@@ -7,34 +7,55 @@
 #include <opencv2/highgui.hpp>
 
 void testBGRToGray() {
-    std::string name = "valve";
-    cv::Mat img = cv::imread("lesson05/data/" + name + ".jpg");
+
+    std::string resultsDir = "lesson05/resultsData/";
+    if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
+        std::filesystem::create_directory(resultsDir); // то создаем ее
+    }
+
+    cv::Mat img = cv::imread("lesson05/data/valve.jpg");
     rassert(!img.empty(), 23981920813);
 
     // TODO реализуйте эту функцию, преобразующую картинку в черно-белую
-    cv::Mat gray = convertBGRToGray(img);
+    cv::Mat gray = convertBGRToGray(img.clone());
+    std::string filename = resultsDir + "01_gray_valve.jpg";
+    cv::imwrite(filename, gray);
+
 
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
-    cv::imwrite("lesson05/resultsData/" + name + "_grey.jpg", gray);
+
+    rassert(gray.type() == CV_32FC1, 2781792319);
 }
 
 void testSobel(const std::string &name) {
+
+    std::string resultsDir = "lesson05/resultsData/";
+    if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
+        std::filesystem::create_directory(resultsDir); // то создаем ее
+    }
+
     cv::Mat img = cv::imread("lesson05/data/" + name + ".jpg");
     rassert(!img.empty(), 23981920813);
 
+
+    cv::Mat img1 = convertBGRToGray(img.clone());
+    rassert(!img1.empty(), 23981920863);
+    rassert(img1.type() == CV_32FC1, 27817923109);
     // TODO реализуйте функцию считающую применение оператора Собеля к картинке
     // т.е. посчитайте производную по x и по y (в каждом пикселе хранятся две эти производные)
-    cv::Mat dxy = sobelDXY(img); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
+    cv::Mat dxy = sobelDXY(img1.clone()); // обратите внимание что внутри ждут черно-белую картинку, значит нашу картинку надо перед Собелем преобразовать
 
-    cv::Mat dx = convertDXYToDX(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
+
+
+    cv::Mat dx = convertDXYToDX(dxy.clone()); // TODO реализуйте функцию которая вытаскивает силу производной по x (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_dx.jpg", dx);
 
-    cv::Mat dy = convertDXYToDY(dxy); // TODO реализуйте функцию которая вытаскивает силу производной по y (ее абсолютное значение)
+    cv::Mat dy = convertDXYToDY(dxy.clone()); // TODO реализуйте функцию которая вытаскивает силу производной по y (ее абсолютное значение)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_dy.jpg", dy);
 
-    cv::Mat gradientStrength = convertDXYToGradientLength(dxy); // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
+    cv::Mat gradientStrength = convertDXYToGradientLength(dxy.clone()); // TODO реализуйте функцию которая считает силу градиента в каждом пикселе
     // точнее - его длину, ведь градиент - это вектор (двухмерный, ведь у него две компоненты), а у вектора всегда есть длина - sqrt(x^2+y^2)
     // TODO и удостоверьтесь что результат выглядит так как вы ожидаете, если нет - спросите меня
     cv::imwrite("lesson05/resultsData/" + name + "_gradientLength.jpg", gradientStrength);
@@ -50,6 +71,7 @@ int main() {
         }
 
         for (int i = 1; i <= 4; ++i) {
+            testSobel("line1" + std::to_string(i));
             // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
         }
 
