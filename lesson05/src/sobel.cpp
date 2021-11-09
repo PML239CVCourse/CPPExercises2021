@@ -16,8 +16,8 @@ cv::Mat convertBGRToGray(cv::Mat img) {
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
             cv::Vec3b color = img.at<cv::Vec3b>(j, i);
-            float grayIntensity = (color[0] * 1.0f + color[1] * 1.0f + color[2] * 1.0f) / 3.0f;
-            grayscaleImg.at<float>(j, i) = grayIntensity;
+            double grayIntensity = (color[0]  + color[1]  + color[2] ) / 3.0;
+            grayscaleImg.at<double>(j, i) = grayIntensity;
         }
     }
 
@@ -61,13 +61,13 @@ cv::Mat sobelDXY(cv::Mat img) {
 
     for (int j = 1; j < height - 1; ++j) {
         for (int i = 1; i < width - 1; ++i) {
-            float dxSum = 0.0f; // судя будем накапливать производную по оси x
-            float dySum = 0.0f;
+            double dxSum = 0.0; // судя будем накапливать производную по оси x
+            double dySum = 0.0;
 
             // затем пробегаем по окрестности 3x3 вокруг нашего центрального пикселя (j,i)
             for (int dj = -1; dj <= 1; ++dj) {
                 for (int di = -1; di <= 1; ++di) {
-                    float intensity = img.at<float>(j + dj, i + di); // берем соседний пиксель из окрестности
+                    double intensity = img.at<double>(j + dj, i + di); // берем соседний пиксель из окрестности
                     dxSum += dxSobelKoef[1 + dj][1 + di] *
                              intensity; // добавляем его яркость в производную с учетом веса из ядра Собеля
                     dySum += dySobelKoef[1 + dj][1 + di] * intensity;
