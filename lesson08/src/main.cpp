@@ -48,12 +48,19 @@ void test(std::string name) {
 
     // но яркость иногда сильно больше чем 255
     // поэтому найдем максимальную яркость (max_accumulated) среди всей матрицы hough и после этого отнормируем всю картинку:
-    float max_accumulated = 0.0f;
+    float max_accumulated = 0.0f;\
+    int r, theta;
     for (int j = 0; j < hough.rows; ++j) {
         for (int i = 0; i < hough.cols; ++i) {
+            int q = max_accumulated;
             max_accumulated = std::max(max_accumulated, hough.at<float>(j, i));
+            if (max_accumulated != q){
+                r = j;
+                theta = i;
+            }
         }
     }
+    std::cout << "r = " << r << " theta = " << theta << std::endl;
 
     // заменим каждый пиксель с яркости X на яркость X*255.0f/max_accumulated (т.е. уменьшим диапазон значений)
     cv::imwrite("lesson08/resultsData/" + name + "_2_hough_normalized.png", hough*255.0f/max_accumulated);

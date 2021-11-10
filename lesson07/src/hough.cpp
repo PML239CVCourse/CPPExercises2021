@@ -29,7 +29,7 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
     }
     // проходим по всем пикселям нашей картинки (уже свернутой оператором Собеля)
     for (int y0 = 0; y0 < height; ++y0) {
-        std::cout << y0 << "    " << height <<  std::endl;
+//        std::cout << y0 << "    " << height <<  std::endl;
         for (int x0 = 0; x0 < width; ++x0) {
             // смотрим на пиксель с координатами (x0, y0)
             float strength = sobel.at<float>(y0,x0);// TODO считайте его "силу градиента" из картинки sobel
@@ -41,24 +41,26 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 // TODO обратите внимание что функции sin/cos принимают углы в радианах, поэтому сначала нужно пересчитать theta0 в радианы (воспользуйтесь константой PI)
                 const double PI = 3.14159265358979323846264338327950288;
                 double teta = theta0*PI/180;
-                float r0 = abs(x0*cos(teta)+y0*sin(teta));
+                float r0 = x0*cos(teta)+y0*sin(teta);
 
                 // TODO теперь рассчитайте координаты пикслея в пространстве Хафа (в картинке-аккумуляторе) соответсвующего параметрам theta0, r0
                 int i = theta0;
                 int j = r0;
 
                 // чтобы проверить не вышли ли мы за пределы картинки-аккумулятора - давайте явно это проверим:
-                rassert(i >= 0, 237891731289044);
-                rassert(i < accumulator.cols, 237891731289045);
-                rassert(j >= 0, 237891731289046);
-                rassert(j < accumulator.rows, 237891731289047);
+//                rassert(i >= 0, 237891731289044);
+//                rassert(i < accumulator.cols, 237891731289045);
+//                rassert(j >= 0, 237891731289046);
+//                rassert(j < accumulator.rows, 237891731289047);
                 // теперь легко отладить случай выхода за пределы картинки
                 // TODO просто поставьте точку остановки внутри rassert:
                 // нажмите Ctrl+Shift+N -> rasserts.cpp
                 // и поставьте точку остановки на 8 строке: "return line;"
 
                 // TODO и добавьте в картинку-аккумулятор наш голос с весом strength (взятый из картинки свернутой Собелем)
-                accumulator.at<float>(j, i) += strength;
+                if(r0 >= 0){
+                    accumulator.at<float>(j, i) += strength;
+                }
             }
         }
     }

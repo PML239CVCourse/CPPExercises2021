@@ -1,6 +1,7 @@
 #include "hough.h"
 
 #include <libutils/rasserts.h>
+#include <iostream>
 
 double toRadians(double degrees)
 {
@@ -45,11 +46,36 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
             // переберем параметр theta по всему возможному диапазону (в градусах):
             for (int theta0 = 0; theta0 + 1 < max_theta; ++theta0) {
 
+                int theta1;
+                double theta1radians;
+                if (theta0 + 1 == max_theta-1){
+                    theta1 = 0;
+                    theta1radians = toRadians(0);
+                }
+                else{
+                    theta1 = theta0+1;
+                    theta1radians = toRadians(theta0+1);
+                }
                 double theta0radians = toRadians(theta0);
                 int r0 = (int) round(estimateR(x0, y0, theta0radians)); // оцениваем r0 и округляем его до целого числа
+                int r1 = (int) round(estimateR(x0, y0, theta1radians)); // оцениваем r0 и округляем его до целого числа
                 if (r0 < 0 || r0 >= max_r)
                     continue;
+                if (r1 < 0 || r1 >= max_r)
+                    continue;
 
+                int from = std::min(r1,r0), to = std::max(r1,r0);
+//                if (theta0 == 76 || theta0 == 120){
+//                    std::cout << theta0 << " " << theta1 << std::endl;
+//                }
+                int h = to-from;
+                float a, b;
+                for (int i = from; i < to; ++i) {
+                    a = (float )i/(float )h*strength;
+                    b = strength - a;
+                    accumulator.at<float>((int)theta0, i) += a;
+                    accumulator.at<float>((int)theta1, i) += b;
+                }
                 // TODO надо определить в какие пиксели i,j надо внести наш голос с учетом проблемы "Почему два экстремума?" обозначенной на странице:
                 // https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/11/09/lesson9-hough2-interpolation-extremum-detection.html
 
@@ -84,12 +110,33 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
 
     for (int theta = 0; theta < max_theta; ++theta) {
         for (int r = 0; r < max_r; ++r) {
+            bool ok = false;
+            int x0 = theta-1,x1 = theta+1,y0 = r-1,y1 = r+1, votes = 0;
+            if (theta == 0){
+                x0 = max_theta-1;
+            }
+            if (theta == max_theta-1){
+                x1 = 0;
+            }
+            if (r == 0){
+                y0 = 0;
+            }
+            if (r == max_r - 1){
+                y1 = r;
+            }
+            for (int i = y0; i <= y1; ++i) {
+                for (int j = x0; j <= x1; ++j) {
+                    if (houghSpace.at<float>(r,theta) >= houghSpace.at<float>(j,i)){
+                        ok = true;
+                    }
+                }
+            }
             // TODO
             // ...
-            // if (ok) {
-            //     PolarLineExtremum line(theta, r, votes);
-            //     winners.push_back(line);
-            // }
+             if (ok) {
+                 PolarLineExtremum line(theta, r, 0.0f);
+                 winners.push_back(line);
+             }
         }
     }
 
