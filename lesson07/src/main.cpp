@@ -54,8 +54,8 @@ void test(std::string name) {
 
     // TODO поправьте это - найдите максимальную яркость (max_accumulated) среди всей матрицы hough и после этого отнормируйте всю картинку:
     float max_accumulated = hough.at<float>(0,0);;
-    for (int j = 1; j < hough.cols; ++j) {
-        for (int i = 1; i < hough.rows; ++i) {
+    for (int j = 0; j < hough.cols; ++j) {
+        for (int i = 0; i < hough.rows; ++i) {
             if (hough.at<float>(i,j) > max_accumulated){
                 max_accumulated = hough.at<float>(i,j);
             }
@@ -63,8 +63,8 @@ void test(std::string name) {
     }
     // TODO замените каждый пиксель с яркости X на яркость X255/max_accumulated (т.е. уменьшите диапазон значений):
     cv::Mat hough1 = hough;
-    for (int j = 1; j < hough1.cols; ++j) {
-        for (int i = 1; i < hough1.rows; ++i) {
+    for (int j = 0; j < hough1.cols; ++j) {
+        for (int i = 0; i < hough1.rows; ++i) {
             hough1.at<float>(i,j) = (hough.at<float>(i,j)*255)/max_accumulated;
         }
     }
@@ -100,9 +100,9 @@ int main() {
 //        // 6) Сколько должно бы быть ярких точек? Сколько вы насчитали в пространстве Хафа?
 //        // ответ:
 //
-//        test("multiline2_paper_on_table");
-//        // 7) Сколько должно бы быть ярких точек? Сколько вы насчитали в пространстве Хафа? Есть ли интересные наблюдения относительно предыдущего случая?
-//        // ответ:
+        test("multiline2_paper_on_table");
+        // 7) Сколько должно бы быть ярких точек? Сколько вы насчитали в пространстве Хафа? Есть ли интересные наблюдения относительно предыдущего случая?
+        // ответ:
 //
 //        test("valve");
 //        // 8) Какие-нибудь мысли?

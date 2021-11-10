@@ -45,15 +45,11 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
 
                 int j = theta0;
 
-                int i = 0;
-                if (r0 < 0){
-                    i = 0;
-                }else {
-                    i = r0;
-                }
+                int i = r0;
+
 
                 // чтобы проверить не вышли ли мы за пределы картинки-аккумулятора - давайте явно это проверим:
-                rassert(i >= 0, 237891731289044);
+                //rassert(i >= 0, 237891731289044);
                 rassert(i < accumulator.rows, 237891731289045);
                 rassert(j >= 0, 237891731289046);
                 rassert(j < accumulator.cols, 237891731289047);
@@ -63,7 +59,9 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 // и поставьте точку остановки на 8 строке: "return line;"
 
                 // TODO и добавьте в картинку-аккумулятор наш голос с весом strength (взятый из картинки свернутой Собелем)
-                accumulator.at<float>(i, j) += strength;
+                if (i > 0){
+                    accumulator.at<float>(i, j) += strength;
+                }
             }
         }
     }
