@@ -64,8 +64,8 @@ void test(std::string name) {
     std::vector<PolarLineExtremum> lines = findLocalExtremums(hough);
 
 // TODO реализуйте фильтрацию прямых - нужно оставлять только те прямые, у кого много голосов (реализуйте функцию filterStrongLines(...) ):
-//    double thresholdFromWinner = 0.5; // хотим оставить только те прямые у кого не менее половины голосов по сравнению с самой популярной прямой
-//    lines = filterStrongLines(lines, thresholdFromWinner);
+    double thresholdFromWinner = 0.5; // хотим оставить только те прямые у кого не менее половины голосов по сравнению с самой популярной прямой
+    lines = filterStrongLines(lines, thresholdFromWinner);
 
     std::cout << "Found " << lines.size() << " extremums:" << std::endl;
     for (int i = 0; i < lines.size(); ++i) {
