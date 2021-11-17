@@ -29,7 +29,7 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
     int max_theta = 360;
 
     // решаем какое максимальное значение у параметра r в нашем пространстве прямых:
-    int max_r = width + height;
+    int max_r = static_cast<int>(sqrt(width * width + height * height)) - 1;
 
     // создаем картинку-аккумулятор, в которой мы будем накапливать суммарные голоса за прямые
     // так же известна как пространство Хафа
@@ -69,10 +69,10 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 // https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/11/09/lesson9-hough2-interpolation-extremum-detection.html
 
 //                        // чтобы проверить не вышли ли мы за пределы картинки-аккумулятора - давайте явно это проверим
-                        rassert(i >= 0, 237891731289044);
+                       /* rassert(r0 >= 0, 237891731289044);
                         rassert(i < accumulator.cols, 237891731289045);
                        rassert(j >= 0, 237891731289046);
-                        rassert(j < accumulator.rows, 237891731289047);
+                        rassert(j < accumulator.rows, 237891731289047);*/
                         // теперь легко отладить случай выхода за пределы картинки
 //                        // просто поставьте точку остановки внутри rassert:
 //                        // нажмите Ctrl+Shift+N -> rasserts.cpp
@@ -119,10 +119,10 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
                    continue;
 
                bool is_ok = true;
-               float this_votes = accumulator.at<float>(r, theta);
+               float this_votes = houghSpace.at<float>(r, theta);
                for(int st_r = -1; st_r <= 1; st_r++){
                    for(int st_theta = -1; st_theta <= 1; st_theta++){
-                       float votes_tmp = accumulator.at<float>(r + st_r, theta + st_theta);
+                       float votes_tmp = houghSpace.at<float>(r + st_r, theta + st_theta);
                        if(votes_tmp > this_votes){
                            is_ok = false;
                            break;
@@ -131,7 +131,7 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
                }
 
                if(is_ok){
-                   PolarLineExtremum line(theta, r, votes);
+                   PolarLineExtremum line(theta, r, this_votes);
                    winners.push_back(line);
                }
         }
@@ -144,11 +144,11 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
 {
     std::vector<PolarLineExtremum> strongLines;
 
-    PolarLineExtremum PolarLineMax(0, 0, 0.0f);
+    PolarLineExtremum polarLineMax(0, 0, 0.0f);
 
     for(auto line : allLines){
-        if(line.votes > PolarLineMax.votes){
-            PolarLineMax(line.theta, line.r, line.votes);
+        if(line.votes > polarLineMax.votes){
+            polarLineMax = PolarLineExtremum(line.theta, line.r, line.votes);
         }
     }
 
@@ -158,7 +158,7 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
     // TODO
 
     for(auto line : allLines){
-        if(line.votes >= PolarLineMax.votes * thresholdFromWinner){
+        if(line.votes >= polarLineMax.votes * thresholdFromWinner){
             strongLines.push_back(line);
         }
     }
