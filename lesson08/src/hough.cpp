@@ -43,13 +43,17 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
 
             // теперь для текущего пикселя надо найти все возможные прямые которые через него проходят
             // переберем параметр theta по всему возможному диапазону (в градусах):
-            for (int theta0 = 0; theta0 + 1 < max_theta; ++theta0) {
+            for (int theta0 = 0; theta0 + 1 < 360*4; ++theta0) {
 
-                double theta0radians = toRadians(theta0);
+                double theta0radians = toRadians(theta0/8);
                 int r0 = (int) round(estimateR(x0, y0, theta0radians)); // оцениваем r0 и округляем его до целого числа
                 if (r0 < 0 || r0 >= max_r)
                     continue;
-
+                rassert( theta0/4 >= 0, 237891731289044);
+                rassert(theta0/4 < accumulator.cols, 237891731289045);
+                rassert(r0 >= 0, 237891731289046);
+                rassert(r0 < accumulator.rows, 237891731289047);
+                accumulator.at<float>(r0, theta0/4) += strength;
                 // TODO надо определить в какие пиксели i,j надо внести наш голос с учетом проблемы "Почему два экстремума?" обозначенной на странице:
                 // https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/11/09/lesson9-hough2-interpolation-extremum-detection.html
 
@@ -79,17 +83,17 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
     const int max_theta = 360;
     rassert(houghSpace.cols == max_theta, 233892742893082);
     const int max_r = houghSpace.rows;
-
+    const double fr = 200;
     std::vector<PolarLineExtremum> winners;
 
     for (int theta = 0; theta < max_theta; ++theta) {
         for (int r = 0; r < max_r; ++r) {
             // TODO
             // ...
-            // if (ok) {
-            //     PolarLineExtremum line(theta, r, votes);
-            //     winners.push_back(line);
-            // }
+            if (houghSpace.at<float>(r, theta) >= fr) {
+                PolarLineExtremum line(theta, r, houghSpace.at<float>(r, theta));
+                winners.push_back(line);
+            }
         }
     }
 
@@ -102,7 +106,6 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
 
     // Эта функция по множеству всех найденных локальных экстремумов (прямых) находит самую популярную прямую
     // и возвращает только вектор из тех прямых, что не сильно ее хуже (набрали хотя бы thresholdFromWinner голосов от победителя, т.е. например половину)
-
     // TODO
 
     return strongLines;
