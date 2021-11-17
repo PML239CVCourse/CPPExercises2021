@@ -35,6 +35,14 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
     // так же известна как пространство Хафа
     cv::Mat accumulator(max_r, max_theta, CV_32FC1, 0.0f); // зануление аккумулятора через указание значения по умолчанию в конструкторе
 
+    float summary_strenth = 0;
+    for (int y0 = 0; y0 < height; ++y0) {
+        for (int x0 = 0; x0 < width; ++x0) {
+            float strength = sobel.at<float>(y0, x0);
+            summary_strenth += strength;
+        }
+    }
+
     // проходим по всем пикселям нашей картинки (уже свернутой оператором Собеля)
     for (int y0 = 0; y0 < height; ++y0) {
         for (int x0 = 0; x0 < width; ++x0) {
@@ -50,15 +58,22 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 if (r0 < 0 || r0 >= max_r)
                     continue;
 
+                //int color_pixel_theta_r = staric_cast<int>(255 * stregth / summary_strenth);
+
+                float color_hough = accumulator.at<float>(r0, theta0);
+                //color_hough += (strength * 255 / summary_strenth);
+                color_hough += strength;
+                accumulator.at<float>(r0, theta0) = color_hough;
+
                 // TODO надо определить в какие пиксели i,j надо внести наш голос с учетом проблемы "Почему два экстремума?" обозначенной на странице:
                 // https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/11/09/lesson9-hough2-interpolation-extremum-detection.html
 
 //                        // чтобы проверить не вышли ли мы за пределы картинки-аккумулятора - давайте явно это проверим
-//                        rassert(i >= 0, 237891731289044);
-//                        rassert(i < accumulator.cols, 237891731289045);
-//                        rassert(j >= 0, 237891731289046);
-//                        rassert(j < accumulator.rows, 237891731289047);
-//                        // теперь легко отладить случай выхода за пределы картинки
+                        rassert(i >= 0, 237891731289044);
+                        rassert(i < accumulator.cols, 237891731289045);
+                       rassert(j >= 0, 237891731289046);
+                        rassert(j < accumulator.rows, 237891731289047);
+                        // теперь легко отладить случай выхода за пределы картинки
 //                        // просто поставьте точку остановки внутри rassert:
 //                        // нажмите Ctrl+Shift+N -> rasserts.cpp
 //                        // и поставьте точку остановки на 8 строке: "return line;"
@@ -68,6 +83,8 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
             }
         }
     }
+
+
 
     return accumulator;
 }
@@ -90,6 +107,33 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
             //     PolarLineExtremum line(theta, r, votes);
             //     winners.push_back(line);
             // }
+
+            /*bool is_ok = false;
+            if(theta > 0 || theta < max_theta){
+                if()
+
+            }*/
+               if(theta == 0 || theta == max_theta)
+                   continue;
+               if(r == 0 || r == max_r)
+                   continue;
+
+               bool is_ok = true;
+               float this_votes = accumulator.at<float>(r, theta);
+               for(int st_r = -1; st_r <= 1; st_r++){
+                   for(int st_theta = -1; st_theta <= 1; st_theta++){
+                       float votes_tmp = accumulator.at<float>(r + st_r, theta + st_theta);
+                       if(votes_tmp > this_votes){
+                           is_ok = false;
+                           break;
+                       }
+                   }
+               }
+
+               if(is_ok){
+                   PolarLineExtremum line(theta, r, votes);
+                   winners.push_back(line);
+               }
         }
     }
 
@@ -100,10 +144,24 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
 {
     std::vector<PolarLineExtremum> strongLines;
 
+    PolarLineExtremum PolarLineMax(0, 0, 0.0f);
+
+    for(auto line : allLines){
+        if(line.votes > PolarLineMax.votes){
+            PolarLineMax(line.theta, line.r, line.votes);
+        }
+    }
+
     // Эта функция по множеству всех найденных локальных экстремумов (прямых) находит самую популярную прямую
     // и возвращает только вектор из тех прямых, что не сильно ее хуже (набрали хотя бы thresholdFromWinner голосов от победителя, т.е. например половину)
 
     // TODO
+
+    for(auto line : allLines){
+        if(line.votes >= PolarLineMax.votes * thresholdFromWinner){
+            strongLines.push_back(line);
+        }
+    }
 
     return strongLines;
 }
