@@ -18,17 +18,112 @@ double estimateR(double x0, double y0, double theta0radians)
 
 
 cv::Mat buildHough(cv::Mat sobel) {
-    // TODO скопируйте сюда свою реализацию построения пространства Хафа из прошлого задания - lesson08
+    rassert(sobel.type() == CV_32FC1, 237128273918006);
+
+
+    int width = sobel.cols;
+    int height = sobel.rows;
+
+
+    int max_theta = 360;
+    int max_r = static_cast<int>(sqrt(width * width + height * height)) - 1;
+
+
+    cv::Mat accumulator(max_r, max_theta, CV_32FC1, 0.0f);
+
+    float summary_strenth = 0;
+    for (int y0 = 0; y0 < height; ++y0) {
+        for (int x0 = 0; x0 < width; ++x0) {
+            float strength = sobel.at<float>(y0, x0);
+            summary_strenth += strength;
+        }
+    }
+
+
+    for (int y0 = 0; y0 < height; ++y0) {
+        for (int x0 = 0; x0 < width; ++x0) {
+            float strength = sobel.at<float>(y0, x0);
+
+
+            for (int theta0 = 0; theta0 + 1 < max_theta; ++theta0) {
+
+                double theta0radians = toRadians(theta0);
+                int r0 = (int) round(estimateR(x0, y0, theta0radians));
+                if (r0 < 0 || r0 >= max_r)
+                    continue;
+
+
+
+                float color_hough = accumulator.at<float>(r0, theta0);
+                color_hough += strength;
+                accumulator.at<float>(r0, theta0) = color_hough;
+            }
+        }
+    }
+
+
+
+    return accumulator;
 }
 
 std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
 {
-    // TODO скопируйте сюда свою реализацию извлечения экстремумов из прошлого задания - lesson08
+    rassert(houghSpace.type() == CV_32FC1, 234827498237080);
+
+    const int max_theta = 360;
+    rassert(houghSpace.cols == max_theta, 233892742893082);
+    const int max_r = houghSpace.rows;
+
+    std::vector<PolarLineExtremum> winners;
+
+    for (int theta = 0; theta < max_theta; ++theta) {
+        for (int r = 0; r < max_r; ++r) {
+            if(theta == 0 || theta == max_theta)
+                continue;
+            if(r == 0 || r == max_r)
+                continue;
+
+            bool is_ok = true;
+            float this_votes = houghSpace.at<float>(r, theta);
+            for(int st_r = -1; st_r <= 1; st_r++){
+                for(int st_theta = -1; st_theta <= 1; st_theta++){
+                    float votes_tmp = houghSpace.at<float>(r + st_r, theta + st_theta);
+                    if(votes_tmp > this_votes){
+                        is_ok = false;
+                        break;
+                    }
+                }
+            }
+
+            if(is_ok){
+                PolarLineExtremum line(theta, r, this_votes);
+                winners.push_back(line);
+            }
+        }
+    }
+
+    return winners;
 }
 
 std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> allLines, double thresholdFromWinner)
 {
-    // TODO скопируйте сюда свою реализацию фильтрации сильных прямых из прошлого задания - lesson08
+    std::vector<PolarLineExtremum> strongLines;
+
+    PolarLineExtremum polarLineMax(0, 0, 0.0f);
+
+    for(auto line : allLines){
+        if(line.votes > polarLineMax.votes){
+            polarLineMax = PolarLineExtremum(line.theta, line.r, line.votes);
+        }
+    }
+
+    for(auto line : allLines){
+        if(line.votes >= polarLineMax.votes * thresholdFromWinner){
+            strongLines.push_back(line);
+        }
+    }
+
+    return strongLines;
 }
 
 cv::Mat drawCirclesOnExtremumsInHoughSpace(cv::Mat houghSpace, std::vector<PolarLineExtremum> lines, int radius)
@@ -50,10 +145,14 @@ cv::Mat drawCirclesOnExtremumsInHoughSpace(cv::Mat houghSpace, std::vector<Polar
     for (int i = 0; i < lines.size(); ++i) {
         PolarLineExtremum line = lines[i];
 
+
+        cv::Point point(line.r, line.theta);
+        cv::Scalar color(0, 0, 255); //red color
+        cv::circle(houghSpaceWithCrosses, point, radius, color);
         // Пример как рисовать кружок в какой-то точке (закомментируйте его):
-        cv::Point point(100, 50);
+        /*cv::Point point(100, 50);
         cv::Scalar color(0, 0, 255); // BGR, т.е. красный цвет
-        cv::circle(houghSpaceWithCrosses, point, 3, color);
+        cv::circle(houghSpaceWithCrosses, point, 3, color);*/
 
         // TODO отметьте в пространстве Хафа красным кружком радиуса radius экстремум соответствующий прямой line
     }
@@ -75,8 +174,11 @@ cv::Point PolarLineExtremum::intersect(PolarLineExtremum that)
     // после этого загуглите как искать пересечение двух прямых, пример запроса: "intersect two 2d lines"
     // и не забудьте что cos/sin принимают радианы (используйте toRadians)
 
-    int x = 20;
-    int y = 10;
+    double num = (r0 / sin(toRadians(theta0))) - (r1 / sin(toRadians(theta1)));
+    double denom = (1 / tan(toRadians(theta0))) - (1 / tan(toRadians(theta1)));
+
+    int x = num / denom;
+    int y = (r0 / sin(toRadians(theta0))) - (num / denom) / tan(toRadians(theta0));
 
     return cv::Point(x, y);
 }
