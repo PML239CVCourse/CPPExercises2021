@@ -1,7 +1,7 @@
 #include "hough.h"
 
 #include <libutils/rasserts.h>
-
+#include <vector>
 #include <opencv2/imgproc.hpp>
 
 double toRadians(double degrees)
@@ -201,6 +201,13 @@ cv::Mat drawLinesOnImage(cv::Mat img, std::vector<PolarLineExtremum> lines)
     int width = imgWithLines.cols;
     int height = imgWithLines.rows;
 
+
+    PolarLineExtremum leftImageBorder(0, 0, 0);
+    PolarLineExtremum bottomImageBorder(0, width, 0);
+    PolarLineExtremum rightImageBorder(90, height, 0);
+    PolarLineExtremum topImageBorder(90, 0, 0);
+
+
     for (int i = 0; i < lines.size(); ++i) {
         PolarLineExtremum line = lines[i];
 
@@ -227,8 +234,31 @@ cv::Mat drawLinesOnImage(cv::Mat img, std::vector<PolarLineExtremum> lines)
 //        pointB = line.intersect(???);
 
         // TODO переделайте так чтобы цвет для каждой прямой был случайным (чтобы легче было различать близко расположенные прямые)
+
+        /*cv::Point point_left = line.intersect(leftImageBorder);
+        cv::Point point_right = line.intersect(rightImageBorder);
+        cv::Point point_bottom = line.intersect(bottomImageBorder);
+        cv::Point point_top = line.intersect(topImageBorder);*/
+
+        std::vector <cv::Point> points(4);
+        points[0] = line.intersect(leftImageBorder);
+        points[1] = line.intersect(rightImageBorder);
+        points[2] = line.intersect(bottomImageBorder);
+        points[3] = line.intersect(topImageBorder);
+
+        std::vector <int> twopoints(2);
+
+        int it = 0;
+        for(int rep = 0; rep < points.size(); rep++){
+            if(points[rep].x <= width && points[rep].x >= 0 && points[rep].y <= height && points[rep].y >= 0){
+                twopoints[it] = rep;
+                it++;
+            }
+        }
+
+
         cv::Scalar color(0, 0, 255);
-        cv::line(imgWithLines, pointA, pointB, color);
+        cv::line(imgWithLines, points[0], points[1], color);
     }
 
     return imgWithLines;
