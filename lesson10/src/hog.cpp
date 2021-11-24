@@ -28,6 +28,13 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
     // рекомендую воспользоваться atan2(dy, dx) - он возвращает радианы - https://en.cppreference.com/w/cpp/numeric/math/atan2
     // прочитайте по ссылке на документацию (в прошлой строке) - какой диапазон значений у угла-результата atan2 может быть?
     // 5) внесите его силу как голос за соответствующую его углу корзину
+
+
+    hog.resize(NBINS);
+    for(int it = 0; it < hog.size(); it++){
+        hog[it] = 0.0;
+    }
+
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
             float dx = grad_x.at<float>(j, i);
@@ -36,6 +43,8 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
 
             if (strength < 10) // пропускайте слабые градиенты, это нужно чтобы игнорировать артефакты сжатия в jpeg (например в line01.jpg пиксели не идеально белые/черные, есть небольшие отклонения)
                 continue;
+
+            double angle = atan2(dx, dy);  // not correct!!!!!!!!!!!!!!!!!!!!! wrong angle value !!!!!! to degrees
 
             // TODO рассчитайте в какую корзину нужно внести голос
             int bin = -1;
