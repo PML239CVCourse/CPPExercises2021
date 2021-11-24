@@ -113,7 +113,7 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
 
     for(auto line : allLines){
         if(line.votes > polarLineMax.votes){
-            polarLineMax = PolarLineExtremum(line.theta, line.r, line.votes);
+            polarLineMax = PolarLineExtremum(line.r, line.theta, line.votes);
         }
     }
 
