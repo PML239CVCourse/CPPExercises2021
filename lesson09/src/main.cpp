@@ -13,7 +13,7 @@ void test(std::string name) {
 
     std::string full_path = "lesson05/data/" + name + ".jpg";
     cv::Mat img = cv::imread(full_path);
-    cv::imwrite("lesson08/resultsData/" + name + "_0.png", img);
+    cv::imwrite("lesson09/resultsData/" + name + "_0.png", img);
     rassert(!img.empty(), 238982391080010);
     cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
@@ -35,7 +35,7 @@ void test(std::string name) {
             sobel_strength.at<float>(j, i) = gradient_strength;
         }
     }
-    cv::imwrite("lesson08/resultsData/" + name + "_1_sobel_strength.png", sobel_strength);
+    cv::imwrite("lesson09/resultsData/" + name + "_1_sobel_strength.png", sobel_strength);
 
     cv::Mat hough = buildHough(sobel_strength);
     float max_accumulated = 0.0f;
@@ -44,7 +44,7 @@ void test(std::string name) {
             max_accumulated = std::max(max_accumulated, hough.at<float>(j, i));
         }
     }
-    cv::imwrite("lesson08/resultsData/" + name + "_2_hough_normalized.png", hough*255.0f/max_accumulated);
+    cv::imwrite("lesson09/resultsData/" + name + "_2_hough_normalized.png", hough*255.0f/max_accumulated);
 
 
     std::vector<PolarLineExtremum> lines = findLocalExtremums(hough);
