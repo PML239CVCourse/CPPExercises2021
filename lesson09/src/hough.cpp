@@ -2,6 +2,7 @@
 
 #include <libutils/rasserts.h>
 #include <vector>
+#include <iostream>
 #include <opencv2/imgproc.hpp>
 
 double toRadians(double degrees)
@@ -28,6 +29,7 @@ cv::Mat buildHough(cv::Mat sobel) {
     int max_theta = 360;
     int max_r = static_cast<int>(sqrt(width * width + height * height)) - 1;
 
+std::cout << "max_r : " << max_r << "   max_theta : " << max_theta << "\n";
 
     cv::Mat accumulator(max_r, max_theta, CV_32FC1, 0.0f);
 
@@ -87,6 +89,14 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
             float this_votes = houghSpace.at<float>(r, theta);
             for(int st_r = -1; st_r <= 1; st_r++){
                 for(int st_theta = -1; st_theta <= 1; st_theta++){
+                    if(r + st_r < 0 || r + st_r >= houghSpace.rows)
+                        continue;
+                    if(theta + st_theta < 0 || theta + st_theta >= houghSpace.cols)
+                        continue;
+
+                    //std::cout << r + st_r << " " << theta + st_theta << "\n";
+                    rassert(r + st_r < houghSpace.rows && r + st_r >= 0, "failed size");
+                    rassert(theta + st_theta < houghSpace.cols && theta + st_theta >= 0, "failed size");
                     float votes_tmp = houghSpace.at<float>(r + st_r, theta + st_theta);
                     if(votes_tmp > this_votes){
                         is_ok = false;
@@ -113,7 +123,7 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
 
     for(auto line : allLines){
         if(line.votes > polarLineMax.votes){
-            polarLineMax = PolarLineExtremum(line.r, line.theta, line.votes);
+            polarLineMax = PolarLineExtremum(line.theta, line.r, line.votes);
         }
     }
 
@@ -146,7 +156,7 @@ cv::Mat drawCirclesOnExtremumsInHoughSpace(cv::Mat houghSpace, std::vector<Polar
         PolarLineExtremum line = lines[i];
 
 
-        cv::Point point(line.r, line.theta);
+        cv::Point point(line.theta, line.r);
         cv::Scalar color(0, 0, 255); //red color
         cv::circle(houghSpaceWithCrosses, point, radius, color);
         // Пример как рисовать кружок в какой-то точке (закомментируйте его):

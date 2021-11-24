@@ -74,15 +74,15 @@ void test(std::string name) {
 int main() {
     try {
         // TODO 4 обязательно получите результат на всех картинках:
-        //test("line01");
+        test("line01");
 
         test("line02");
 
-        //test("line11");
+        test("line11");
 
-        //test("line12");
+        test("line12");
 
-        //test("line21_water_horizont");
+        test("line21_water_horizont");
 
         //test("multiline1_paper_on_table");
 
