@@ -13,24 +13,24 @@
 
 int randFont() {
     int fonts[] = {
-//            cv::FONT_HERSHEY_SIMPLEX,
-//            cv::FONT_HERSHEY_PLAIN,
-//            cv::FONT_HERSHEY_DUPLEX,
-//            cv::FONT_HERSHEY_COMPLEX,
-//            cv::FONT_HERSHEY_TRIPLEX,
+            //            cv::FONT_HERSHEY_SIMPLEX,
+            //            cv::FONT_HERSHEY_PLAIN,
+            //            cv::FONT_HERSHEY_DUPLEX,
+            //            cv::FONT_HERSHEY_COMPLEX,
+            //            cv::FONT_HERSHEY_TRIPLEX,
             cv::FONT_HERSHEY_COMPLEX_SMALL,
-//            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
-//            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
+            //            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
+            //            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
     };
     // Выбираем случайный шрифт из тех что есть в OpenCV
     int nfonts = (sizeof(fonts) / sizeof(int));
     int font = rand() % nfonts;
 
     // С вероятностью 20% делаем шрифт наклонным (italic)
-//    bool is_italic = ((rand() % 5) == 0);
-//    if  (is_italic) {
-//        font = font | cv::FONT_ITALIC;
-//    }
+    //    bool is_italic = ((rand() % 5) == 0);
+    //    if  (is_italic) {
+    //        font = font | cv::FONT_ITALIC;
+    //    }
 
     return font;
 }
@@ -112,19 +112,32 @@ void experiment1() {
     // А так же среди всех максимальных расстояний найдите максимальное и выведите его в конце
 
     std::cout << "________Experiment 1________" << std::endl;
+    double max=0.0;
     for (char letter = 'a'; letter <= 'z'; ++letter) {
         std::string letterDir = LETTER_DIR_PATH + "/" + letter;
-
+        double distMax = 0.0;
+        double distSum = 0.0;
+        double distN = 0.0;
         for (int sampleA = 1; sampleA <= NSAMPLES_PER_LETTER; ++sampleA) {
             for (int sampleB = sampleA + 1; sampleB <= NSAMPLES_PER_LETTER; ++sampleB) {
                 cv::Mat a = cv::imread(letterDir + "/" + std::to_string(sampleA) + ".png");
                 cv::Mat b = cv::imread(letterDir + "/" + std::to_string(sampleB) + ".png");
                 HoG hogA = buildHoG(a);
+                HoG hogB = buildHoG(b);
+                distSum = distSum + distance(hogA, hogB);
+                distN++;
+                if(distance(hogA, hogB) > distMax){
+                    distMax = distance(hogA, hogB);
+                }
+                if(distance(hogA, hogB) > max){
+                    max = distance(hogA, hogB);
+                }
                 // TODO
             }
         }
-//        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
+        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
     }
+    std::cout << "MAX=" << max << std::endl;
 }
 
 void experiment2() {
@@ -139,14 +152,29 @@ void experiment2() {
     std::cout << "________Experiment 2________" << std::endl;
     for (char letterA = 'a'; letterA <= 'z'; ++letterA) {
         std::string letterDirA = LETTER_DIR_PATH + "/" + letterA;
-
+        char letterMax;
+        char letterMin;
+        double distMax = 0.0;
+        double distMin = 1.0;
         for (char letterB = 'a'; letterB <= 'z'; ++letterB) {
             if (letterA == letterB) continue;
 
+            cv::Mat a = cv::imread(letterDirA + "/" + std::to_string(letterA) + ".png");
+            cv::Mat b = cv::imread(letterDirA + "/" + std::to_string(letterB) + ".png");
+            HoG hogA = buildHoG(a);
+            HoG hogB = buildHoG(b);
+            if(distance(hogA, hogB)>distMax){
+                distMax = distance(hogA, hogB);
+                letterMax =letterB;
+            }
+            if(distance(hogA, hogB)<distMin){
+                distMin = distance(hogA, hogB);
+                letterMin =letterB;
+            }
             // TODO
         }
 
-//        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
+        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
     }
 }
 
@@ -170,4 +198,3 @@ int main() {
         return 1;
     }
 }
-

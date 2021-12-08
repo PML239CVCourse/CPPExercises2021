@@ -18,7 +18,9 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
     int width = grad_x.cols;
 
     HoG hog;
-
+    for(int i=0;i<NBINS;i++){
+        hog.push_back(0);
+    }
     // TODO
     // 1) увеличьте размер вектора hog до NBINS (ведь внутри это просто обычный вектор вещественных чисел)
     // 2) заполните его нулями
@@ -28,24 +30,31 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
     // рекомендую воспользоваться atan2(dy, dx) - он возвращает радианы - https://en.cppreference.com/w/cpp/numeric/math/atan2
     // прочитайте по ссылке на документацию (в прошлой строке) - какой диапазон значений у угла-результата atan2 может быть?
     // 5) внесите его силу как голос за соответствующую его углу корзину
+    float a=0;
     for (int j = 0; j < height; ++j) {
         for (int i = 0; i < width; ++i) {
             float dx = grad_x.at<float>(j, i);
             float dy = grad_y.at<float>(j, i);
             float strength = sqrt(dx * dx + dy * dy);
-
+            float q = atan2(dy,dx)+3.1415;
             if (strength < 10) // пропускайте слабые градиенты, это нужно чтобы игнорировать артефакты сжатия в jpeg (например в line01.jpg пиксели не идеально белые/черные, есть небольшие отклонения)
                 continue;
-
+            a=a+strength;
             // TODO рассчитайте в какую корзину нужно внести голос
-            int bin = -1;
-
+            int bin = 0;
+            for(int i=0;i<NBINS;i++){
+                if((q>=i*2*3.1415/NBINS)&&(q<=(i+1)*2*3.1415/NBINS)){
+                    bin=i;
+                }
+            }
             rassert(bin >= 0, 3842934728039);
             rassert(bin < NBINS, 34729357289040);
             hog[bin] += strength;
         }
     }
-
+    for(int i=0;i<NBINS;i++){
+        hog[i]=hog[i]/a;
+    }
     rassert(hog.size() == NBINS, 23478937290010);
     return hog;
 }
@@ -79,7 +88,9 @@ std::ostream &operator<<(std::ostream &os, const HoG &hog) {
     // TODO
     os << "HoG[";
     for (int bin = 0; bin < NBINS; ++bin) {
-//        os << angleInDegrees << "=" << percentage << "%, ";
+        float angleInDegrees =360.0/2/NBINS+360.0/NBINS*bin-180.0;
+        int percentage = hog[bin]*100;
+        os << angleInDegrees << "=" << percentage << "%, ";
     }
     os << "]";
     return os;
@@ -97,7 +108,10 @@ double distance(HoG a, HoG b) {
     // TODO рассчитайте декартово расстояние (т.е. корень из суммы квадратов разностей)
     // подумайте - как можно добавить независимость (инвариантность) гистаграммы градиентов к тому насколько контрастная или блеклая картинка?
     // подсказка: на контрастной картинке все градиенты гораздо сильнее, а на блеклой картинке все градиенты гораздо слабее, но пропорции между градиентами (распроцентовка) не изменны!
-
-    double res = 0.0;
+    double s = 0.0;
+    for(int i=0;i<NBINS;i++){
+        s=s+(a[i]-b[i])*(a[i]-b[i]);
+    }
+    double res = sqrt(s);
     return res;
 }
