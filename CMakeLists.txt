@@ -15,5 +15,6 @@ add_subdirectory(lesson06) # сглаживание картинки, блюр (
 add_subdirectory(lesson07) # обнаружение прямых: построение пространства Хафа
 add_subdirectory(lesson08) # обнаружение прямых: интерполяция отрезков голосов в пространстве Хафа + извлечение локальных экстремумов
 add_subdirectory(lesson09) # обнаружение прямых: отрисовка найденных прямых
-add_subdirectory(lesson10) # распознавание цифр: построение HoG (Histogram Of Gradients) для цифр
+add_subdirectory(lesson10) # распознавание цифр/букв: построение HoG (Histogram Of Gradients) для цифр/букв
+add_subdirectory(lesson11) # распознавание цифр/букв: учимся разбивать картинку на цифры/буквы
 
