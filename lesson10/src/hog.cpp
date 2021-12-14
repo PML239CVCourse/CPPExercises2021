@@ -7,7 +7,6 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-
 HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
     rassert(grad_x.type() == CV_32FC1, 2378274892374008);
     rassert(grad_y.type() == CV_32FC1, 2378274892374008);
@@ -44,10 +43,11 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
             if (strength < 10) // пропускайте слабые градиенты, это нужно чтобы игнорировать артефакты сжатия в jpeg (например в line01.jpg пиксели не идеально белые/черные, есть небольшие отклонения)
                 continue;
 
-            double angle = atan2(dx, dy);  // not correct!!!!!!!!!!!!!!!!!!!!! wrong angle value !!!!!! to degrees
+            double angle = atan2(dy, dx) * 180 / M_PI;
+            angle += 180;
 
             // TODO рассчитайте в какую корзину нужно внести голос
-            int bin = -1;
+            int bin = angle / QUANT_DIV;
 
             rassert(bin >= 0, 3842934728039);
             rassert(bin < NBINS, 34729357289040);
@@ -88,7 +88,7 @@ std::ostream &operator<<(std::ostream &os, const HoG &hog) {
     // TODO
     os << "HoG[";
     for (int bin = 0; bin < NBINS; ++bin) {
-//        os << angleInDegrees << "=" << percentage << "%, ";
+        os << QUANT_DIV * (bin * 2 - 1) / 2 << "=" << hog[bin] << "%, ";
     }
     os << "]";
     return os;
@@ -107,6 +107,29 @@ double distance(HoG a, HoG b) {
     // подумайте - как можно добавить независимость (инвариантность) гистаграммы градиентов к тому насколько контрастная или блеклая картинка?
     // подсказка: на контрастной картинке все градиенты гораздо сильнее, а на блеклой картинке все градиенты гораздо слабее, но пропорции между градиентами (распроцентовка) не изменны!
 
+    int norm_a[NBINS];
+    double summary_a_str = 0;
+    for(int i = 0; i < NBINS; i++){
+        norm_a[i] = a[i];
+        summary_a_str += a[i];
+    }
+    for(auto el : norm_a)
+        el = el / summary_a_str;
+
+    int norm_b[NBINS];
+    double summary_b_str = 0;
+    for(int i = 0; i < NBINS; i++){
+        norm_b[i] = b[i];
+        summary_b_str += b[i];
+    }
+    for(auto el : norm_b)
+        el = el / summary_b_str;
+
+
     double res = 0.0;
+    for(int i = 0; i < NBINS; i++)
+        res += pow2(a[i] - b[i]);
+
+    res = sqrt(res);
     return res;
 }
