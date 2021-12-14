@@ -43,11 +43,12 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
             if (strength < 10) // пропускайте слабые градиенты, это нужно чтобы игнорировать артефакты сжатия в jpeg (например в line01.jpg пиксели не идеально белые/черные, есть небольшие отклонения)
                 continue;
 
-            double angle = atan2(dy, dx) * 180 / M_PI;
-            angle += 180;
+            double angle = atan2(dy, dx) * (ANGLE_SUM / 2) / M_PI;
+            angle += ANGLE_SUM / 2;
+            int res_angle = (int)angle % ANGLE_SUM;
 
             // TODO рассчитайте в какую корзину нужно внести голос
-            int bin = angle / QUANT_DIV;
+            int bin = res_angle / QUANT_DIV;
 
             rassert(bin >= 0, 3842934728039);
             rassert(bin < NBINS, 34729357289040);
@@ -86,9 +87,13 @@ std::ostream &operator<<(std::ostream &os, const HoG &hog) {
     rassert(hog.size() == NBINS, 234728497230016);
 
     // TODO
+    double sum_strength = 0;
+    for(int i = 0; i < NBINS; i++)
+        sum_strength += hog[i];
+
     os << "HoG[";
     for (int bin = 0; bin < NBINS; ++bin) {
-        os << QUANT_DIV * (bin * 2 - 1) / 2 << "=" << hog[bin] << "%, ";
+        os << QUANT_DIV * (bin * 2.0 - 1.0) / 2.0 << " = " << hog[bin] * 100 / sum_strength << "%, ";
     }
     os << "]";
     return os;
