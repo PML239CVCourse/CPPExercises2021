@@ -112,10 +112,10 @@ double distance(HoG a, HoG b) {
     // подумайте - как можно добавить независимость (инвариантность) гистаграммы градиентов к тому насколько контрастная или блеклая картинка?
     // подсказка: на контрастной картинке все градиенты гораздо сильнее, а на блеклой картинке все градиенты гораздо слабее, но пропорции между градиентами (распроцентовка) не изменны!
 
-    int norm_a[NBINS];
+    //int norm_a[NBINS];
     double summary_a_str = 0;
     for(int i = 0; i < NBINS; i++){
-        norm_a[i] = a[i];
+        //norm_a[i] = a[i];
         summary_a_str += a[i];
     }
     /*for(auto el : norm_a)
@@ -124,10 +124,10 @@ double distance(HoG a, HoG b) {
     for(HoG::iterator it = a.begin(); it < a.end(); it++)
         *it = *it / summary_a_str;
 
-    int norm_b[NBINS];
+    //int norm_b[NBINS];
     double summary_b_str = 0;
     for(int i = 0; i < NBINS; i++){
-        norm_b[i] = b[i];
+        //norm_b[i] = b[i];
         summary_b_str += b[i];
     }
     /*for(auto el : norm_b)

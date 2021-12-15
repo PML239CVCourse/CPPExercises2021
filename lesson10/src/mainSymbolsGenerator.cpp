@@ -133,6 +133,21 @@ void experiment1() {
     }
 }
 
+
+inline double average_dist(std::vector<HoG> arr_a, std::vector<HoG> arr_b){
+    double sum_dist = 0.0;
+    int cnt = 0;
+    for(int i  = 0; i < NSAMPLES_PER_LETTER; i++){
+        for(int j = 0; j < NSAMPLES_PER_LETTER; j++){
+            double tmp_dist = distance(arr_a[i], arr_b[j]);
+            sum_dist += tmp_dist;
+            cnt++;
+        }
+    }
+    return sum_dist / cnt;
+}
+
+
 void experiment2() {
     // TODO Проведите эксперимент 2:
     // Для каждой буквы найдите среди остальных наиболее похожую и наименее похожую
@@ -144,7 +159,7 @@ void experiment2() {
 
     std::cout << "________Experiment 2________" << std::endl;
     for (char letterA = 'a'; letterA <= 'z'; ++letterA) {
-        std::string letterDirA = LETTER_DIR_PATH + "/" + letterA + "/1";
+        std::string letterDirA = LETTER_DIR_PATH + "/" + letterA + "/";
 
 
         char letterMax = 'a';
@@ -153,16 +168,30 @@ void experiment2() {
         double distMin = INF;
 
         //std::cout << letterDirA;
-        cv::Mat a = cv::imread(letterDirA + ".png");
+        std::vector<HoG> hogsA(NSAMPLES_PER_LETTER);
+        for(int i = 0; i < NSAMPLES_PER_LETTER; i++){
+            cv::Mat a = cv::imread(letterDirA + std::to_string(i) + ".png");
+            HoG hogA = buildHoG(a);
+            hogsA[i] = hogA;
+        }
 
-        HoG hogA = buildHoG(a);
+
         for (char letterB = 'a'; letterB <= 'z'; ++letterB) {
             if (letterA == letterB) continue;
 
-            std::string letterDirB = LETTER_DIR_PATH + "/" + letterB + "/1";
-            cv::Mat b = cv::imread(letterDirB + ".png");
-            HoG hogB = buildHoG(b);
-            double dist = distance(hogA, hogB);
+
+            std::string letterDirB = LETTER_DIR_PATH + "/" + letterB + "/";
+            std::vector<HoG> hogsB(NSAMPLES_PER_LETTER);
+            for(int i = 0; i < NSAMPLES_PER_LETTER; i++){
+                cv::Mat b = cv::imread(letterDirB + std::to_string(i) + ".png");
+                HoG hogB = buildHoG(b);
+                hogsB[i] = hogB;
+            }
+
+
+            double dist = average_dist(hogsA, hogsB);
+
+
             if(dist > distMax){
                 distMax = dist;
                 letterMax = letterB;
@@ -193,6 +222,18 @@ int main() {
 
         // TODO:
         experiment2();
+
+
+        std::cout << "\n" << "\n" << "\n";
+        std::string letterDir1 = LETTER_DIR_PATH + "/" + "b" + "/1";
+        cv::Mat a1 = cv::imread(letterDir1 + ".png");
+        std::string letterDir2 = LETTER_DIR_PATH + "/" + "p" + "/1";
+        cv::Mat a2 = cv::imread(letterDir2 + ".png");
+        HoG hog1 = buildHoG(a1);
+        HoG hog2 = buildHoG(a2);
+        std::cout << hog1 << "\n";
+        std::cout << hog2 << "\n";
+        std::cout << distance(hog1, hog2);
 
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
