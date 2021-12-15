@@ -67,7 +67,7 @@ void test(std::string name, std::string k) {
 
     std::cout << "Processing 02 ..." << std::endl;
     // TODO 02 выполните адаптивный бинарный трешолдинг картинки, прочитайте документацию по cv::adaptiveThreshold
-    cv::adaptiveThreshold(img, binary, 255, cv::ADAPTIVE_THRESH_MEAN_C , cv::THRESH_BINARY, 5, 15);
+    cv::adaptiveThreshold(img, binary, 255, cv::ADAPTIVE_THRESH_MEAN_C , cv::THRESH_BINARY_INV, 5, 15);
     cv::imwrite(out_path + "/03_adaptive_thresholding.jpg", binary);
 
     std::cout << "Processing 03e ..." << std::endl;
@@ -84,7 +84,7 @@ void test(std::string name, std::string k) {
 
     std::cout << "Processing 04 ..." << std::endl;
     // TODO 04 дальше работаем с картинкой после морфологичесокго рашсирения или морфологического сжатия - на ваш выбор, подумайте и посмотрите на картинки
-    binary = binary_eroded;
+    binary = binary_dilated;
 
     // TODO 05
     std::vector<std::vector<cv::Point>> contoursPoints; // по сути это вектор, где каждый элемент - это одна связная компонента-контур,
@@ -109,20 +109,20 @@ void test(std::string name, std::string k) {
     cv::threshold(imageWithContoursPoints2.clone(), imageWithContoursPoints2, 127, 255, cv::THRESH_BINARY_INV);
     std::cout << "Saving" << std::endl;
     cv::imwrite(out_path + "/07_contours_points2.jpg", imageWithContoursPoints2);
-    for (int i = 0; i < imageWithContoursPoints2.cols; ++i) {
-        for (int j = 0; j < imageWithContoursPoints2.rows; ++j) {
-            if(imageWithContoursPoints2.at<cv::Vec3b>(j,i)[0] == 0){
-                imageWithContoursPoints.at<cv::Vec3b>(j,i) = imageWithContoursPoints2.at<cv::Vec3b>(j,i);
-            }
-        }
-    }
-    std::cout << "Saving" << std::endl;
-    cv::imwrite(out_path + "/071_contours_points.jpg", imageWithContoursPoints);
+//    for (int i = 0; i < imageWithContoursPoints2.cols; ++i) {
+//        for (int j = 0; j < imageWithContoursPoints2.rows; ++j) {
+//            if(imageWithContoursPoints2.at<cv::Vec3b>(j,i)[0] == 0){
+//                imageWithContoursPoints.at<cv::Vec3b>(j,i) = imageWithContoursPoints2.at<cv::Vec3b>(j,i);
+//            }
+//        }
+//    }
+//    std::cout << "Saving" << std::endl;
+//    cv::imwrite(out_path + "/071_contours_points.jpg", imageWithContoursPoints);
 
     // TODO 06 наконец давайте посмотрим какие буковки нашлись - обрамим их прямоугольниками
     cv::Mat imgWithBoxes = original.clone();
-    for (int contourI = 0; contourI < contoursPoints.size(); ++contourI) {
-        std::vector<cv::Point> points = contoursPoints[contourI]; // берем очередной контур
+    for (int contourI = 0; contourI < contoursPoints2.size(); ++contourI) {
+        std::vector<cv::Point> points = contoursPoints2[contourI]; // берем очередной контур
         cv::Rect box = cv::boundingRect(points); // строим прямоугольник по всем пикселям контура (bounding box = бокс ограничивающий объект)
         cv::Scalar blackColor(0, 0, 0);
         // TODO прочитайте документацию cv::rectangle чтобы нарисовать прямоугольник box с толщиной 2 и черным цветом (обратите внимание какие есть поля у box)
