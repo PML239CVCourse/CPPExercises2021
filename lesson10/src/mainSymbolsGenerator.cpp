@@ -9,7 +9,7 @@
 
 #define NSAMPLES_PER_LETTER 5
 #define LETTER_DIR_PATH std::string("lesson10/generatedData/letters")
-
+const double INF = 1000000000;
 
 int randFont() {
     int fonts[] = {
@@ -144,15 +144,38 @@ void experiment2() {
 
     std::cout << "________Experiment 2________" << std::endl;
     for (char letterA = 'a'; letterA <= 'z'; ++letterA) {
-        std::string letterDirA = LETTER_DIR_PATH + "/" + letterA;
+        std::string letterDirA = LETTER_DIR_PATH + "/" + letterA + "/1";
 
+
+        char letterMax = 'a';
+        double distMax = 0.0;
+        char letterMin = 'b';
+        double distMin = INF;
+
+        //std::cout << letterDirA;
+        cv::Mat a = cv::imread(letterDirA + ".png");
+
+        HoG hogA = buildHoG(a);
         for (char letterB = 'a'; letterB <= 'z'; ++letterB) {
             if (letterA == letterB) continue;
 
+            std::string letterDirB = LETTER_DIR_PATH + "/" + letterB + "/1";
+            cv::Mat b = cv::imread(letterDirB + ".png");
+            HoG hogB = buildHoG(b);
+            double dist = distance(hogA, hogB);
+            if(dist > distMax){
+                distMax = dist;
+                letterMax = letterB;
+            }
+
+            if(dist < distMin){
+                distMin = dist;
+                letterMin = letterB;
+            }
             // TODO
         }
 
-//        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
+        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
     }
 }
 
@@ -166,10 +189,10 @@ int main() {
         std::cout << "Images with letters were generated!" << std::endl;
 
         // TODO:
-        experiment1();
+        //experiment1();
 
         // TODO:
-        //experiment2();
+        experiment2();
 
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
