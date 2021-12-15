@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 
 #define _USE_MATH_DEFINES
+# define M_PI           3.14159265358979323846  /* pi */
 #include <math.h>
 
 
@@ -17,7 +18,11 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
     int height = grad_x.rows;
     int width = grad_x.cols;
 
-    HoG hog;
+    HoG hog(NBINS);
+//    hog.reserve(NBINS);
+    for (int i = 0; i < hog.size(); ++i) {
+        hog.at(i) = 0;
+    }
 
     // TODO
     // 1) увеличьте размер вектора hog до NBINS (ведь внутри это просто обычный вектор вещественных чисел)
@@ -33,12 +38,16 @@ HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y) {
             float dx = grad_x.at<float>(j, i);
             float dy = grad_y.at<float>(j, i);
             float strength = sqrt(dx * dx + dy * dy);
+            double angle = atan(dy/dx);
+            if (angle < 0){
+                angle += 2*M_PI;
+            }
 
             if (strength < 10) // пропускайте слабые градиенты, это нужно чтобы игнорировать артефакты сжатия в jpeg (например в line01.jpg пиксели не идеально белые/черные, есть небольшие отклонения)
                 continue;
 
             // TODO рассчитайте в какую корзину нужно внести голос
-            int bin = -1;
+            int bin = (int)(angle*8/(2*M_PI));
 
             rassert(bin >= 0, 3842934728039);
             rassert(bin < NBINS, 34729357289040);
@@ -78,8 +87,17 @@ std::ostream &operator<<(std::ostream &os, const HoG &hog) {
 
     // TODO
     os << "HoG[";
+    double sum = 0;
     for (int bin = 0; bin < NBINS; ++bin) {
-//        os << angleInDegrees << "=" << percentage << "%, ";
+        sum += hog[bin];
+    }
+    for (int bin = 0; bin < NBINS; ++bin) {
+        if (bin != 7){
+            os << bin*45+22.5 << "=" <<100*hog[bin]/sum << "%, ";
+        }
+        else{
+            os << bin*45+22.5 << "=" <<100*hog[bin]/sum << "%";
+        }
     }
     os << "]";
     return os;
@@ -99,5 +117,13 @@ double distance(HoG a, HoG b) {
     // подсказка: на контрастной картинке все градиенты гораздо сильнее, а на блеклой картинке все градиенты гораздо слабее, но пропорции между градиентами (распроцентовка) не изменны!
 
     double res = 0.0;
-    return res;
+    double sum1 = 0, sum2 = 0;
+    for (int i = 0; i < NBINS; ++i) {
+        sum1 += a.at(i);
+        sum2 += b.at(i);
+    }
+    for (int i = 0; i < NBINS; ++i) {
+        res += (b.at(i)/sum2-a.at(i)/sum1)*(b.at(i)/sum2-a.at(i)/sum1);
+    }
+    return sqrt(res);
 }

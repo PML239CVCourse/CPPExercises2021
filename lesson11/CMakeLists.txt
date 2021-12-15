@@ -13,6 +13,10 @@ set(SOURCES
         src/parseSymbols.cpp
         src/parseSymbols.h)
 
+set(SOURCES
+        src/parseSymbols.cpp
+        src/parseSymbols.h)
+
 set(LIBRARIES
         libutils
         ${OpenCV_LIBS})

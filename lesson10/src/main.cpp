@@ -28,13 +28,13 @@ int main() {
         test("line02"); // TODO начать предлагаю с этой картинки - все градиенты смотря вправо (и чуть вниз), значит они все должны попасть в первую коризну
 
         // TODO обязательно получите результат на всех картинках и убедитесь что он корректен
-//        test("line01");
-//        test("line03");
-//        test("line04");
-//        test("line11");
-//        test("line12");
-//        test("line13");
-//        test("line14");
+        test("line01");
+        test("line03");
+        test("line04");
+        test("line11");
+        test("line12");
+        test("line13");
+        test("line14");
 
         // TODO реализовав функцию distance продолжите эксперименты с буквам в файле mainSymbolsGenerator.cpp (для его запуска надо выбрать lesson10symbolsGenerator)
 

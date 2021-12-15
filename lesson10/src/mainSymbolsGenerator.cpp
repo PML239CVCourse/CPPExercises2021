@@ -114,16 +114,23 @@ void experiment1() {
     std::cout << "________Experiment 1________" << std::endl;
     for (char letter = 'a'; letter <= 'z'; ++letter) {
         std::string letterDir = LETTER_DIR_PATH + "/" + letter;
-
+        double distSum = 0, distN = 0, distMax = 0;
         for (int sampleA = 1; sampleA <= NSAMPLES_PER_LETTER; ++sampleA) {
             for (int sampleB = sampleA + 1; sampleB <= NSAMPLES_PER_LETTER; ++sampleB) {
                 cv::Mat a = cv::imread(letterDir + "/" + std::to_string(sampleA) + ".png");
                 cv::Mat b = cv::imread(letterDir + "/" + std::to_string(sampleB) + ".png");
                 HoG hogA = buildHoG(a);
+                HoG hogB = buildHoG((b));
+                double q = distance(hogA,hogB);
+                distSum += q;
+                distN++;
+                if (q > distMax){
+                    distMax = q;
+                }
                 // TODO
             }
         }
-//        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
+        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
     }
 }
 
@@ -136,17 +143,34 @@ void experiment2() {
     //  - Какие буквы невозможно различить закодировав их в HoG?
     //  - Можно ли с этим что-то сделать?
 
+    double distMax = 0, distMin = 999;
+    char letterMax = 'a', letterMin = 'z';
     std::cout << "________Experiment 2________" << std::endl;
     for (char letterA = 'a'; letterA <= 'z'; ++letterA) {
         std::string letterDirA = LETTER_DIR_PATH + "/" + letterA;
+        distMax = 0, distMin = 999;
 
         for (char letterB = 'a'; letterB <= 'z'; ++letterB) {
+            std::string letterDirB = LETTER_DIR_PATH + "/" + letterB;
             if (letterA == letterB) continue;
 
             // TODO
+            cv::Mat a = cv::imread(letterDirA + "/" + std::to_string(1) + ".png");
+            cv::Mat b = cv::imread(letterDirB + "/" + std::to_string(1) + ".png");
+            HoG hogA = buildHoG(a);
+            HoG hogB = buildHoG(b);
+            double q = distance(hogA,hogB);
+            if (q > distMax){
+                distMax = q;
+                letterMax = letterB;
+            }
+            if (q < distMin){
+                distMin = q;
+                letterMin = letterB;
+            }
         }
 
-//        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
+        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
     }
 }
 
