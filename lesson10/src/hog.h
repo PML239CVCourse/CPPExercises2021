@@ -11,7 +11,7 @@
 typedef std::vector<double> HoG;
 
 // TODO эту функцию вам надо реализовать
-HoG buildHoG(cv::Mat grad_x, cv::Mat grad_y); // принимает на вход градиенты по обеим осям
+HoG buildHoG(cv::Mat grad_x, double grad_y); // принимает на вход градиенты по обеим осям
 
 HoG buildHoG(cv::Mat img); // принимает на вход оригинальную картинку и вызывает функцию buildHoG объявленную выше
 

@@ -13,24 +13,24 @@
 
 int randFont() {
     int fonts[] = {
-//            cv::FONT_HERSHEY_SIMPLEX,
-//            cv::FONT_HERSHEY_PLAIN,
-//            cv::FONT_HERSHEY_DUPLEX,
-//            cv::FONT_HERSHEY_COMPLEX,
-//            cv::FONT_HERSHEY_TRIPLEX,
+            //            cv::FONT_HERSHEY_SIMPLEX,
+            //            cv::FONT_HERSHEY_PLAIN,
+            //            cv::FONT_HERSHEY_DUPLEX,
+            //            cv::FONT_HERSHEY_COMPLEX,
+            //            cv::FONT_HERSHEY_TRIPLEX,
             cv::FONT_HERSHEY_COMPLEX_SMALL,
-//            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
-//            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
+            //            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
+            //            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
     };
     // Выбираем случайный шрифт из тех что есть в OpenCV
     int nfonts = (sizeof(fonts) / sizeof(int));
     int font = rand() % nfonts;
 
     // С вероятностью 20% делаем шрифт наклонным (italic)
-//    bool is_italic = ((rand() % 5) == 0);
-//    if  (is_italic) {
-//        font = font | cv::FONT_ITALIC;
-//    }
+    //    bool is_italic = ((rand() % 5) == 0);
+    //    if  (is_italic) {
+    //        font = font | cv::FONT_ITALIC;
+    //    }
 
     return font;
 }
@@ -123,7 +123,7 @@ void experiment1() {
                 // TODO
             }
         }
-//        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
+        //        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
     }
 }
 
@@ -146,7 +146,7 @@ void experiment2() {
             // TODO
         }
 
-//        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
+        //        std::cout << "Letter " << letterA << ": max=" << letterMax << "/" << distMax << ", min=" << letterMin << "/" << distMin << std::endl;
     }
 }
 
@@ -170,4 +170,3 @@ int main() {
         return 1;
     }
 }
-
