@@ -118,8 +118,11 @@ double distance(HoG a, HoG b) {
         norm_a[i] = a[i];
         summary_a_str += a[i];
     }
-    for(auto el : norm_a)
-        el = el / summary_a_str;
+    /*for(auto el : norm_a)
+        el = el / summary_a_str;*/
+
+    for(HoG::iterator it = a.begin(); it < a.end(); it++)
+        *it = *it / summary_a_str;
 
     int norm_b[NBINS];
     double summary_b_str = 0;
@@ -127,8 +130,13 @@ double distance(HoG a, HoG b) {
         norm_b[i] = b[i];
         summary_b_str += b[i];
     }
-    for(auto el : norm_b)
-        el = el / summary_b_str;
+    /*for(auto el : norm_b)
+        el = el / summary_b_str;*/
+    for(HoG::iterator it = b.begin(); it < b.end(); it++)
+        *it = *it / summary_b_str;
+
+
+
 
 
     double res = 0.0;

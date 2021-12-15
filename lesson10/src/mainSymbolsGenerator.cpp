@@ -13,24 +13,24 @@
 
 int randFont() {
     int fonts[] = {
-//            cv::FONT_HERSHEY_SIMPLEX,
-//            cv::FONT_HERSHEY_PLAIN,
-//            cv::FONT_HERSHEY_DUPLEX,
-//            cv::FONT_HERSHEY_COMPLEX,
-//            cv::FONT_HERSHEY_TRIPLEX,
+            cv::FONT_HERSHEY_SIMPLEX,
+            cv::FONT_HERSHEY_PLAIN,
+            cv::FONT_HERSHEY_DUPLEX,
+            cv::FONT_HERSHEY_COMPLEX,
+            cv::FONT_HERSHEY_TRIPLEX,
             cv::FONT_HERSHEY_COMPLEX_SMALL,
-//            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
-//            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
+            cv::FONT_HERSHEY_SCRIPT_SIMPLEX,
+            cv::FONT_HERSHEY_SCRIPT_COMPLEX,
     };
     // Выбираем случайный шрифт из тех что есть в OpenCV
     int nfonts = (sizeof(fonts) / sizeof(int));
     int font = rand() % nfonts;
 
     // С вероятностью 20% делаем шрифт наклонным (italic)
-//    bool is_italic = ((rand() % 5) == 0);
-//    if  (is_italic) {
-//        font = font | cv::FONT_ITALIC;
-//    }
+    bool is_italic = ((rand() % 5) == 0);
+    if  (is_italic) {
+        font = font | cv::FONT_ITALIC;
+    }
 
     return font;
 }
@@ -115,15 +115,21 @@ void experiment1() {
     for (char letter = 'a'; letter <= 'z'; ++letter) {
         std::string letterDir = LETTER_DIR_PATH + "/" + letter;
 
+        double distMax = 0.0, distSum = 0.0, distN = NSAMPLES_PER_LETTER;
         for (int sampleA = 1; sampleA <= NSAMPLES_PER_LETTER; ++sampleA) {
             for (int sampleB = sampleA + 1; sampleB <= NSAMPLES_PER_LETTER; ++sampleB) {
                 cv::Mat a = cv::imread(letterDir + "/" + std::to_string(sampleA) + ".png");
                 cv::Mat b = cv::imread(letterDir + "/" + std::to_string(sampleB) + ".png");
                 HoG hogA = buildHoG(a);
+                HoG hogB = buildHoG(b);
+
+                double dist = distance(hogA, hogB);
+                distMax = std::max(dist, distMax);
+                distSum += dist;
                 // TODO
             }
         }
-//        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
+        std::cout << "Letter " << letter << ": max=" << distMax << ", avg=" << (distSum / distN) << std::endl;
     }
 }
 
@@ -163,7 +169,7 @@ int main() {
         experiment1();
 
         // TODO:
-        experiment2();
+        //experiment2();
 
     } catch (const std::exception &e) {
         std::cout << "Exception! " << e.what() << std::endl;
