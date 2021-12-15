@@ -46,7 +46,6 @@ int main() {
 
         for (int i = 1; i <= 4; ++i) {
             testSobel("line1" + std::to_string(i));
-            // TODO сделайте вызов тестирования картинок line11.jpg - line14.jpg
         }
 
         testSobel("line21_water_horizont");
