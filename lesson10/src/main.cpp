@@ -15,26 +15,22 @@ void test(std::string name) {
     cv::Mat img = cv::imread(full_path);
     rassert(!img.empty(), 238982391080010);
 
-    // TODO реализуйте эту функцию:
     HoG hog = buildHoG(img);
 
-    // TODO реализуйте функцию "std::ostream &operator<<" чтобы можно было красиво печатать HoG в консоль:
     std::cout << hog << std::endl;
 }
 
 
 int main() {
     try {
-        test("line02"); // TODO начать предлагаю с этой картинки - все градиенты смотря вправо (и чуть вниз), значит они все должны попасть в первую коризну
-
-        // TODO обязательно получите результат на всех картинках и убедитесь что он корректен
-//        test("line01");
-//        test("line03");
-//        test("line04");
-//        test("line11");
-//        test("line12");
-//        test("line13");
-//        test("line14");
+        test("line02");
+        test("line01");
+        test("line03");
+        test("line04");
+        test("line11");
+        test("line12");
+        test("line13");
+        test("line14");
 
         // TODO реализовав функцию distance продолжите эксперименты с буквам в файле mainSymbolsGenerator.cpp (для его запуска надо выбрать lesson10symbolsGenerator)
 
