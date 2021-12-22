@@ -20,17 +20,17 @@ cv::Mat drawContours(int rows, int cols, std::vector<std::vector<cv::Point>> con
     cv::Mat blackImage(rows, cols, CV_8UC3, cv::Scalar(0, 0, 0));
     // теперь мы на ней хотим нарисовать контуры
     cv::Mat imageWithContoursPoints = blackImage.clone();
-//    for (int contourI = 0; contourI < contoursPoints.size(); ++contourI) {
+    for (int contourI = 0; contourI < contoursPoints.size(); ++contourI) {
 //        // сейчас мы смотрим на контур номер contourI
 //
-//        cv::Scalar contourColor = randColor(); // выберем для него случайный цвет
-//        std::vector<cv::Point> points = contoursPoints[???]; // TODO 06 вытащите вектор из точек-пикселей соответствующих текущему контуру который мы хотим нарисовать
-//        for (int i = 0; ???) { // TODO 06 пробегите по всем точкам-пикселям этого контура
-//            cv::Point point = ???; // TODO 06 и взяв очередную точку-пиксель - нарисуйте выбранный цвет в этом пикселе картинки:
-//            imageWithContoursPoints.at<cv::Vec3b>(point.y, point.x) = cv::Vec3b(contourColor[0], contourColor[1], contourColor[2]);
-//        }
-//
-//    }
+        cv::Scalar contourColor = randColor(); // выберем для него случайный цвет
+        std::vector<cv::Point> points = contoursPoints[contourI]; // TODO 06 вытащите вектор из точек-пикселей соответствующих текущему контуру который мы хотим нарисовать
+        for (int i = 0; i < points.size(); i++) { // TODO 06 пробегите по всем точкам-пикселям этого контура
+            cv::Point point = points[i]; // TODO 06 и взяв очередную точку-пиксель - нарисуйте выбранный цвет в этом пикселе картинки:
+            imageWithContoursPoints.at<cv::Vec3b>(point.y, point.x) = cv::Vec3b(contourColor[0], contourColor[1], contourColor[2]);
+        }
+
+    }
 
     return imageWithContoursPoints;
 }
@@ -89,7 +89,7 @@ void test(std::string name, std::string k) {
     // TODO 05
     std::vector<std::vector<cv::Point>> contoursPoints; // по сути это вектор, где каждый элемент - это одна связная компонента-контур,
                                                         // а что такое компонента-контур? это вектор из точек (из пикселей)
-    cv::findContours(binary, contoursPoints, cv::RETR_LIST , cv::CHAIN_APPROX_SIMPLE); // TODO подумайте, какие нужны два последних параметра? прочитайте документацию, после реализации отрисовки контура - поиграйте с этими параметрами чтобы посмотреть как меняется результат
+    cv::findContours(binary, contoursPoints, cv::RETR_LIST , cv::CHAIN_APPROX_NONE ); // TODO подумайте, какие нужны два последних параметра? прочитайте документацию, после реализации отрисовки контура - поиграйте с этими параметрами чтобы посмотреть как меняется результат
     std::cout << "Contours: " << contoursPoints.size() << std::endl;
     cv::Mat imageWithContoursPoints = drawContours(img.rows, img.cols, contoursPoints); // TODO 06 реализуйте функцию которая покажет вам как выглядят найденные контура
 //    cv::imwrite(out_path + "/06_contours_points.jpg", imageWithContoursPoints);
