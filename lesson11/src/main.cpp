@@ -60,33 +60,38 @@ void test(std::string name, std::string k) {
     cv::imwrite(out_path + "/01_grey.jpg", img);
 
     // TODO 01 выполните бинарный трешолдинг картинки, прочитайте документацию по функции cv::threshold и выберите значения аргументов
-//    cv::Mat binary;
-//    cv::threshold(img, binary, ???, ???, cv::THRESH_BINARY);
-//    cv::imwrite(out_path + "/02_binary_thresholding.jpg", binary);
+    cv::Mat binary;
+    double thresh = 127;
+    double maxval_thresh = 255;
+    cv::threshold(img, binary, thresh, maxval_thresh, cv::THRESH_BINARY);
+    cv::imwrite(out_path + "/02_binary_thresholding.jpg", binary);
 
     // TODO 02 выполните адаптивный бинарный трешолдинг картинки, прочитайте документацию по cv::adaptiveThreshold
-//    cv::adaptiveThreshold(img, binary, 255, ???, cv::THRESH_BINARY, ???, ???);
-//    cv::imwrite(out_path + "/03_adaptive_thresholding.jpg", binary);
+    int blockSize = 5;
+    double maxval_adaptive_thresh = 255;
+    double c_adaptive_thresh = 10;
+    cv::adaptiveThreshold(img, binary, maxval_adaptive_thresh, cv::ADAPTIVE_THRESH_GAUSSIAN_C , cv::THRESH_BINARY, blockSize, c_adaptive_thresh);
+    cv::imwrite(out_path + "/03_adaptive_thresholding.jpg", binary);
 
     // TODO 03 чтобы буквы не разваливались на кусочки - морфологическое расширение (эрозия)
-//    cv::Mat binary_eroded;
-//    cv::erode(binary, binary_eroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4, 4)));
-//    cv::imwrite(out_path + "/04_erode.jpg", binary_eroded);
+    cv::Mat binary_eroded;
+    cv::erode(binary, binary_eroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4, 4)));
+    cv::imwrite(out_path + "/04_erode.jpg", binary_eroded);
 
     // TODO 03 заодно давайте посмотрим что делает морфологическое сужение (диляция)
-//    cv::Mat binary_dilated;
-//    cv::dilate(binary, binary_dilated, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4, 4)));
-//    cv::imwrite(out_path + "/05_dilate.jpg", binary_dilated);
+    cv::Mat binary_dilated;
+    cv::dilate(binary, binary_dilated, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(4, 4)));
+    cv::imwrite(out_path + "/05_dilate.jpg", binary_dilated);
 
     // TODO 04 дальше работаем с картинкой после морфологичесокго рашсирения или морфологического сжатия - на ваш выбор, подумайте и посмотрите на картинки
-//    binary = binary_dilated/binary_eroded;
+    binary = binary_eroded; //binary_dilated/binary_eroded
 
     // TODO 05
-//    std::vector<std::vector<cv::Point>> contoursPoints; // по сути это вектор, где каждый элемент - это одна связная компонента-контур,
-//                                                        // а что такое компонента-контур? это вектор из точек (из пикселей)
-//    cv::findContours(binary, contoursPoints, ???, ???); // TODO подумайте, какие нужны два последних параметра? прочитайте документацию, после реализации отрисовки контура - поиграйте с этими параметрами чтобы посмотреть как меняется результат
-//    std::cout << "Contours: " << contoursPoints.size() << std::endl;
-//    cv::Mat imageWithContoursPoints = drawContours(img.rows, img.cols, contoursPoints); // TODO 06 реализуйте функцию которая покажет вам как выглядят найденные контура
+    std::vector<std::vector<cv::Point>> contoursPoints; // по сути это вектор, где каждый элемент - это одна связная компонента-контур,
+                                                        // а что такое компонента-контур? это вектор из точек (из пикселей)
+    cv::findContours(binary, contoursPoints, cv::RETR_LIST , cv::CHAIN_APPROX_SIMPLE); // TODO подумайте, какие нужны два последних параметра? прочитайте документацию, после реализации отрисовки контура - поиграйте с этими параметрами чтобы посмотреть как меняется результат
+    std::cout << "Contours: " << contoursPoints.size() << std::endl;
+    cv::Mat imageWithContoursPoints = drawContours(img.rows, img.cols, contoursPoints); // TODO 06 реализуйте функцию которая покажет вам как выглядят найденные контура
 //    cv::imwrite(out_path + "/06_contours_points.jpg", imageWithContoursPoints);
 
 //    std::vector<std::vector<cv::Point>> contoursPoints2;
