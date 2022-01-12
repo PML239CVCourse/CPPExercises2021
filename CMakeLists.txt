@@ -17,4 +17,4 @@ add_subdirectory(lesson08) # обнаружение прямых: интерпо
 add_subdirectory(lesson09) # обнаружение прямых: отрисовка найденных прямых
 add_subdirectory(lesson10) # распознавание цифр/букв: построение HoG (Histogram Of Gradients) для цифр/букв
 add_subdirectory(lesson11) # распознавание цифр/букв: учимся разбивать картинку на цифры/буквы
-
+add_subdirectory(lesson12) # поиск прямой на базе точек
