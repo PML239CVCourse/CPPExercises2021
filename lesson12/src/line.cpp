@@ -5,6 +5,7 @@
 #include <opencv2/imgproc.hpp>
 
 #include <random>
+#include <iostream>
 
 double Line::getYFromX(double x)
 {
@@ -88,7 +89,7 @@ void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv:
 
     for (int i = 0; i < points.size(); ++i) {
         // TODO 02 и обратите внимание что делает scale (он указывает масштаб графика)
-        cv::circle(img, points[i] * scale, 5, cv::Scalar(255, 255, 255), 2);
+        cv::circle(img, points[i] * scale, 5, color, 2);
     }
 }
 
@@ -98,8 +99,19 @@ void Line::plot(cv::Mat &img, double scale, cv::Scalar color)
     rassert(!img.empty(), 3478342937820055);
     rassert(img.type() == CV_8UC3, 34237849200055);
 
-    // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
-    // cv::line(img, cv::Point(...), cv::Point(...), color);
+    // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale
+
+    //std::cout << "b " << this->b << "\n";
+    rassert(abs(this->b - 0.0) > 0.000001, "b = 0");
+    rassert(abs(this->a - 0.0) > 0.000001, "a = 0");
+    cv::Point2f p1 = cv::Point(0, this->c / this->b);
+    cv::Point2f p2 = cv::Point(this->c / this->a, 0);
+    std::cout << p1 << "\n";
+    std::cout << p2 << "\n";
+    cv::circle(img, p1 * scale, 10, color, 2);
+    cv::circle(img, p2 * scale, 10, color, 2);
+    cv::line(img, p1, p2, color);
+    //cv::line(img, cv::Point(0, this->c * scale/ this->b)*scale, cv::Point(this->c / this->a, 0)*scale, color);
 }
 
 Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
