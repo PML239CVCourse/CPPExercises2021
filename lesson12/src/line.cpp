@@ -5,13 +5,14 @@
 #include <opencv2/imgproc.hpp>
 
 #include <random>
+#include <iostream>
 
 double Line::getYFromX(double x)
 {
     rassert(b != 0.0, 2734832748932790061); // случай вертикальной прямой не рассматривается для простоты
 
     // TODO 01
-    double y = 1.0;
+    double y = -(a*x+c)/b;
 
     return y;
 }
@@ -29,14 +30,14 @@ std::vector<cv::Point2f> Line::generatePoints(int n,
     // TODO 01 доделайте этот метод:
     //  - поправьте в коде ниже количество точек которые создадутся
     //  - диапазон x в котором создаются точки
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < n; ++i) {
         // это правило генерации случайных чисел - указание какие мы хотим координаты x - равномерно распределенные в диапазоне от fromX  до toX
-        std::uniform_real_distribution<> xDistribution(2.0, 5.0);
+        std::uniform_real_distribution<> xDistribution(fromX, toX);
 
         double x = xDistribution(randomGenerator);
 
         // найдем идеальную координату y для данной координаты x:
-        double idealY = x; // TODO 01 воспользуйтесь методом getYFromX (сначала его надо доделать)
+        double idealY = getYFromX(x); // TODO 01 воспользуйтесь методом getYFromX (сначала его надо доделать)
 
         // указание какую мы хотим координату y - распределенную около idealY в соответствии с распределением Гаусса (т.н. нормальное распределение)
         std::normal_distribution<> yDistribution(idealY, gaussianNoiseSigma);
@@ -88,7 +89,7 @@ void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv:
 
     for (int i = 0; i < points.size(); ++i) {
         // TODO 02 и обратите внимание что делает scale (он указывает масштаб графика)
-        cv::circle(img, points[i] * scale, 5, cv::Scalar(255, 255, 255), 2);
+        cv::circle(img, points[i] * scale, 5, color, 2);
     }
 }
 
@@ -99,7 +100,7 @@ void Line::plot(cv::Mat &img, double scale, cv::Scalar color)
     rassert(img.type() == CV_8UC3, 34237849200055);
 
     // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
-    // cv::line(img, cv::Point(...), cv::Point(...), color);
+    cv::line(img, cv::Point(0*scale, getYFromX(0)*scale), cv::Point(img.rows*scale, getYFromX(img.rows)*scale), color);
 }
 
 Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
@@ -107,13 +108,35 @@ Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
     rassert(a.x != b.x, 23892813901800104); // для упрощения можно считать что у нас не бывает вертикальной прямой
 
     // TODO 04 реализуйте построение прямой по двум точкам
-    return Line(0.0, -1.0, 2.0);
+    return Line((b.y-a.y)/(b.x-a.x), -1, a.y-(b.y-a.y)/(b.x-a.x)*a.x);
 }
 
 Line fitLineFromNPoints(std::vector<cv::Point2f> points)
 {
     // TODO 05 реализуйте построение прямой по многим точкам (такое чтобы прямая как можно лучше учитывала все точки)
-    return Line(0.0, -1.0, 2.0);
+    double maxa = 0, maxb = 0, maxc = 0;
+    double mina = 999, minb = 0, minc = 0;
+    for (int i = 0; i < points.size()/2; ++i) {
+        for (int j = 0; j < points.size()/2; ++j) {
+            std::cout << i << " " << points.size()-j-1 << std::endl;
+            cv::Point2f a = points[i];
+            cv::Point2f b = points[points.size()-j-1];
+            double al = (b.y-a.y)/(b.x-a.x);
+            double bl = -1;
+            double cl = a.y-(b.y-a.y)/(b.x-a.x)*a.x;
+            if (al > maxa){
+                if ((al-maxa)/maxa <= 0.5 || maxa == 0){
+                    maxa = al, maxb = bl, maxc = cl;
+                }
+            }
+            if (al < mina){
+                if ((al-mina)/mina <= 0.5){
+                    mina = al, minb = bl, minc = cl;
+                }
+            }
+        }
+    }
+    return Line(maxa/*+mina)/2*/, -1.0, maxc/*+minc)/2*/);
 }
 
 Line fitLineFromNNoisyPoints(std::vector<cv::Point2f> points)

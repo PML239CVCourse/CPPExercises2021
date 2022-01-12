@@ -37,6 +37,7 @@ void test1() {
 
     line.plot(plot, plotScale, green); // TODO 03 реализуйте отрисовку прямой
 
+    std::cout << "Saving 40" << std::endl;
     cv::imwrite(results + "test1_1points_and_line.png", plot);
 
     for (int i = 0; i + 1 < pointsNearLine.size(); ++i) {
@@ -47,6 +48,7 @@ void test1() {
 
         lineI.plot(plot, plotScale, red);
     }
+    std::cout << "Saving 50" << std::endl;
     cv::imwrite(results + "test1_2all_lines.png", plot);
 
     Line oneLineToRuleThemAll = fitLineFromNPoints(pointsNearLine); // TODO 05 реализуйте построение прямой по многим точкам (такое чтобы прямая как можно лучше учитывала все точки)
