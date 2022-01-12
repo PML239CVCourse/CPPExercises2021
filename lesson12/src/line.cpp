@@ -10,9 +10,9 @@ double Line::getYFromX(double x)
 {
     rassert(b != 0.0, 2734832748932790061); // случай вертикальной прямой не рассматривается для простоты
 
-    // TODO 01
-    double y = 1.0;
 
+    double y = 1.0;
+    x = (-c-y*b)/a;
     return y;
 }
 
@@ -29,14 +29,14 @@ std::vector<cv::Point2f> Line::generatePoints(int n,
     // TODO 01 доделайте этот метод:
     //  - поправьте в коде ниже количество точек которые создадутся
     //  - диапазон x в котором создаются точки
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         // это правило генерации случайных чисел - указание какие мы хотим координаты x - равномерно распределенные в диапазоне от fromX  до toX
         std::uniform_real_distribution<> xDistribution(2.0, 5.0);
 
         double x = xDistribution(randomGenerator);
 
         // найдем идеальную координату y для данной координаты x:
-        double idealY = x; // TODO 01 воспользуйтесь методом getYFromX (сначала его надо доделать)
+        double idealY = getYFromX(x);
 
         // указание какую мы хотим координату y - распределенную около idealY в соответствии с распределением Гаусса (т.н. нормальное распределение)
         std::normal_distribution<> yDistribution(idealY, gaussianNoiseSigma);
@@ -50,7 +50,7 @@ std::vector<cv::Point2f> Line::generatePoints(int n,
 
 // эта функция рисует на картинке указанные точки
 // при этом если картинка пустая - эта функция должна увеличить картинку до размера в который впишутся все точки
-// TODO 02 поправьте в этой функции цвет которым рисуются точки (нужно использовать аргумент color)
+// поправьте в этой функции цвет которым рисуются точки (нужно использовать аргумент color)
 void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv::Scalar color)
 {
     rassert(points.size() > 0, 347238947320012);
@@ -87,8 +87,8 @@ void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv:
     }
 
     for (int i = 0; i < points.size(); ++i) {
-        // TODO 02 и обратите внимание что делает scale (он указывает масштаб графика)
-        cv::circle(img, points[i] * scale, 5, cv::Scalar(255, 255, 255), 2);
+        // и обратите внимание что делает scale (он указывает масштаб графика)
+        cv::circle(img, points[i] * scale, 5, cv::Scalar(125, 125, 125), 2);
     }
 }
 
@@ -99,7 +99,8 @@ void Line::plot(cv::Mat &img, double scale, cv::Scalar color)
     rassert(img.type() == CV_8UC3, 34237849200055);
 
     // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
-    // cv::line(img, cv::Point(...), cv::Point(...), color);
+    // ?
+    cv::line(img, cv::Point(0,getYFromX(0)), cv::Point(1,getYFromX(1)), color);
 }
 
 Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
