@@ -18,3 +18,4 @@ add_subdirectory(lesson09) # обнаружение прямых: отрисов
 add_subdirectory(lesson10) # распознавание цифр/букв: построение HoG (Histogram Of Gradients) для цифр/букв
 add_subdirectory(lesson11) # распознавание цифр/букв: учимся разбивать картинку на цифры/буквы
 add_subdirectory(lesson12) # поиск прямой на базе точек
+add_subdirectory(lesson13) # сопоставление двух картинок для склейки "панорамы" (SIFT + K-ratio test + Left-Right check + RANSAC)
