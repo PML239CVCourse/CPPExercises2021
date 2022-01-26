@@ -10,9 +10,8 @@ double Line::getYFromX(double x)
 {
     rassert(b != 0.0, 2734832748932790061); // случай вертикальной прямой не рассматривается для простоты
 
+    double y = (-a*x-c)/b;
 
-    double y = 1.0;
-    x = (-c-y*b)/a;
     return y;
 }
 
@@ -26,12 +25,11 @@ std::vector<cv::Point2f> Line::generatePoints(int n,
     unsigned int randomSeed = n;
     std::mt19937 randomGenerator(randomSeed); // это генератор случайных чисел (см. https://en.cppreference.com/w/cpp/numeric/random/mersenne_twister_engine )
 
-    // TODO 01 доделайте этот метод:
     //  - поправьте в коде ниже количество точек которые создадутся
     //  - диапазон x в котором создаются точки
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < n; ++i) {
         // это правило генерации случайных чисел - указание какие мы хотим координаты x - равномерно распределенные в диапазоне от fromX  до toX
-        std::uniform_real_distribution<> xDistribution(2.0, 5.0);
+        std::uniform_real_distribution<> xDistribution(fromX, toX);
 
         double x = xDistribution(randomGenerator);
 
@@ -98,29 +96,67 @@ void Line::plot(cv::Mat &img, double scale, cv::Scalar color)
     rassert(!img.empty(), 3478342937820055);
     rassert(img.type() == CV_8UC3, 34237849200055);
 
-    // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
+    // 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
     // ?
-    cv::line(img, cv::Point(0,getYFromX(0)), cv::Point(1,getYFromX(1)), color);
+    cv::line(img, cv::Point(0, getYFromX(0)*scale), cv::Point(img.cols, getYFromX(img.cols/scale)*scale), color);
 }
 
 Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
 {
     rassert(a.x != b.x, 23892813901800104); // для упрощения можно считать что у нас не бывает вертикальной прямой
 
-    // TODO 04 реализуйте построение прямой по двум точкам
-    return Line(0.0, -1.0, 2.0);
+    double A = a.y-b.y;
+    double B = b.x-a.x;
+    double C = -A*a.x-B*a.y;
+
+    return Line(A, B, C);
+}
+
+double MSE(std::vector<cv::Point2f> points, Line line){
+    int cnt = 0;
+    double sum = 0;
+    for(auto z:points){
+        cnt++;
+        double y_pred = line.getYFromX(z.x);
+        sum+=(z.y-y_pred)*(z.y-y_pred);
+    }
+    return sum/cnt;
 }
 
 Line fitLineFromNPoints(std::vector<cv::Point2f> points)
 {
-    // TODO 05 реализуйте построение прямой по многим точкам (такое чтобы прямая как можно лучше учитывала все точки)
-    return Line(0.0, -1.0, 2.0);
+    int n = points.size();
+    double minMSE = 1000000000;
+    Line Line_ans(0.0, -1.0, 2.0);
+    for(int i = 0; i<n; i++){
+        for(int j = i+1; j<n; j++){
+            Line line = fitLineFromTwoPoints(points[i], points[j]);
+            double now = MSE(points, line);
+            if(now<minMSE){
+                minMSE = now;
+                Line_ans = line;
+            }
+        }
+    }
+    return Line_ans;
 }
 
 Line fitLineFromNNoisyPoints(std::vector<cv::Point2f> points)
 {
-    // TODO 06 БОНУС - реализуйте построение прямой по многим точкам включающим нерелевантные (такое чтобы прямая как можно лучше учитывала НАИБОЛЬШЕЕ число точек)
-    return Line(0.0, -1.0, 2.0);
+    int n = points.size();
+    double minMSE = 1000000000;
+    Line Line_ans(0.0, -1.0, 2.0);
+    for(int i = 0; i<n; i++){
+        for(int j = i+1; j<n; j++){
+            Line line = fitLineFromTwoPoints(points[i], points[j]);
+            double now = MSE(points, line);
+            if(now<minMSE){
+                minMSE = now;
+                Line_ans = line;
+            }
+        }
+    }
+    return Line_ans;
 }
 
 std::vector<cv::Point2f> generateRandomPoints(int n,
