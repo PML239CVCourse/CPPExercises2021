@@ -29,20 +29,20 @@ std::vector<cv::Point2f> Line::generatePoints(int n,
     // TODO 01 доделайте этот метод:
     //  - поправьте в коде ниже количество точек которые создадутся
     //  - диапазон x в котором создаются точки
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < n; ++i) {
         // это правило генерации случайных чисел - указание какие мы хотим координаты x - равномерно распределенные в диапазоне от fromX  до toX
         std::uniform_real_distribution<> xDistribution(2.0, 5.0);
 
         double x = xDistribution(randomGenerator);
 
         // найдем идеальную координату y для данной координаты x:
-        double idealY = x; // TODO 01 воспользуйтесь методом getYFromX (сначала его надо доделать)
+        double idealY =  getYFromX(x); // TODO 01 воспользуйтесь методом getYFromX (сначала его надо доделать)
 
         // указание какую мы хотим координату y - распределенную около idealY в соответствии с распределением Гаусса (т.н. нормальное распределение)
         std::normal_distribution<> yDistribution(idealY, gaussianNoiseSigma);
         double y = yDistribution(randomGenerator);
 
-        points.push_back(cv::Point2f(x, y));
+        points.emplace_back(cv::Point2f(x, y));
     }
 
     return points;
@@ -76,9 +76,7 @@ void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv:
         cv::Scalar white(255, 255, 255);
         float textHeight = cv::getTextSize("0;0", cv::FONT_HERSHEY_DUPLEX, 1.0, 1, nullptr).height;
         cv::putText(img, "0;0", cv::Point(0, textHeight), cv::FONT_HERSHEY_DUPLEX, 1.0, white);
-
         cv::putText(img, "0;" + std::to_string(maxY), cv::Point(0, nrows - 5), cv::FONT_HERSHEY_DUPLEX, 1.0, white);
-
         std::string textTopRight = std::to_string(maxX) + ";0";
         float textWidth = cv::getTextSize(textTopRight, cv::FONT_HERSHEY_DUPLEX, 1.0, 1, nullptr).width;
         cv::putText(img, textTopRight, cv::Point(ncols-textWidth, textHeight), cv::FONT_HERSHEY_DUPLEX, 1.0, white);
@@ -88,7 +86,7 @@ void plotPoints(cv::Mat &img, std::vector<cv::Point2f> points, double scale, cv:
 
     for (int i = 0; i < points.size(); ++i) {
         // TODO 02 и обратите внимание что делает scale (он указывает масштаб графика)
-        cv::circle(img, points[i] * scale, 5, cv::Scalar(255, 255, 255), 2);
+        cv::circle(img, points[i] * scale, 5, color, 2);
     }
 }
 
@@ -100,20 +98,45 @@ void Line::plot(cv::Mat &img, double scale, cv::Scalar color)
 
     // TODO 03 реализуйте отрисовку прямой (воспользуйтесь getYFromX и cv::line(img, cv::Point(...), cv::Point(...), color)), будьте осторожны и не забудьте учесть scale!
     // cv::line(img, cv::Point(...), cv::Point(...), color);
+    cv::line(img, cv::Point(0, getYFromX(0) * scale), cv::Point(img.cols, getYFromX(img.cols / scale) * scale), color);
 }
 
 Line fitLineFromTwoPoints(cv::Point2f a, cv::Point2f b)
 {
     rassert(a.x != b.x, 23892813901800104); // для упрощения можно считать что у нас не бывает вертикальной прямой
 
+    double ta = a.y - b.y;
+    double tb = b.x - a.x;
+    double tc = -ta * a.x - tb * a.y;
+
     // TODO 04 реализуйте построение прямой по двум точкам
-    return Line(0.0, -1.0, 2.0);
+    return Line(ta, tb, tc);
 }
 
 Line fitLineFromNPoints(std::vector<cv::Point2f> points)
 {
     // TODO 05 реализуйте построение прямой по многим точкам (такое чтобы прямая как можно лучше учитывала все точки)
-    return Line(0.0, -1.0, 2.0);
+    int n = points.size();
+    double minMSE = 1000000000;
+    Line trueLine(0.0, -1.0, 2.0);
+
+    for(int i = 0; i<n; i++){
+        for(int j = i+1; j<n; j++){
+            Line line = fitLineFromTwoPoints(points[i], points[j]);
+            int cnt = 0;
+            double sum = 0;
+            for(auto z:points){
+                cnt++;
+                double y_pred = line.getYFromX(z.x);
+                sum+=(z.y-y_pred)*(z.y-y_pred);
+            }
+            if(sum/cnt < minMSE){
+                minMSE = sum/cnt;
+                trueLine = line;
+            }
+        }
+    }
+    return trueLine;
 }
 
 Line fitLineFromNNoisyPoints(std::vector<cv::Point2f> points)
