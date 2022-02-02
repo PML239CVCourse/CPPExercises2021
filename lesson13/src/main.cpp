@@ -35,6 +35,7 @@ void test1() {
 
     cv::Mat img0 = cv::imread(path + "box0.png");
     cv::Mat img1 = cv::imread(path + "box1.png");
+    cv::Mat img2 = cv::imread(path + "box1_nesquik.png");
     cv::Mat img1_alternative = cv::imread(path + "box1_nesquik.png");
     rassert(!img0.empty() && !img1.empty() && !img1_alternative.empty(), 2389827851080019);
     rassert(img0.type() == CV_8UC3, 2389827851080020);
@@ -166,12 +167,12 @@ void test1() {
         bool isOk = true;
 
         // TODO реализуйте фильтрацию на базе "достаточно ли похож дескриптор?" - как можно было бы подобрать порог? вспомните про вывод min/median/max раньше
-        if (match.distance > distances01[distances01.size()-1]) {
+        /*if (match.distance > distances01[distances01.size()-1]) {
             isOk = false;
-        }
+        }*/
 
         // TODO добавьте K-ratio тест (K=0.7), т.е. проверьте правда ли самая похожая точка сильно ближе к нашей точки (всмысле расстояния между дескрипторами) чем вторая по похожести?
-        cv::DMatch match2 = matches01[i][1];
+       cv::DMatch match2 = matches01[i][1];
         const double k = 0.7;
         if (match.distance * 1.0 > match2.distance * k) {
             isOk = false;
@@ -189,6 +190,9 @@ void test1() {
         // TODO: попробуйте решить какую комбинацию этих методов вам хотелось бы использовать в результате?
         // TODO: !!!ОБЯЗАТЕЛЬНО!!! ЗАПИШИТЕ СЮДА ВВИДЕ КОММЕНТАРИЯ СВОИ ОТВЕТЫ НА ЭТИ ВОПРОСЫ И СВОИ ВЫВОДЫ!!
 
+        // если смотреть по одному методу, не комбинируя их, то видно, что лучше всего работает k-ratio, дальше left-right check
+        // а distance отсеивает очень плохо (возможно потому что на картинках могут быть ращные засветки или зименения цветов, потэтому рассматривать просто в массиве разницу цветов всех ключевых точек не очень точно)
+        //поэтому будем использовать комбинацию left-tight check и k-ratio
 
         if (isOk) {
             ++nmatchesGood;
@@ -266,16 +270,16 @@ void test1() {
 
     cv::Mat H10 = H01.inv(); // у матрицы есть обратная матрица - находим ее, какое преобразование она делает?
     cv::Mat img1to0;
-//    cv::warpPerspective(TODO TODO TODO); // TODO преобразуйте вторую картинку в пространство первой картинки
-//    cv::imwrite(results + "09img1to0.jpg", img1to0); // TODO проверьте что она правильно наложилась на первую картинку
+    cv::warpPerspective(img1, img1to0, H10, img0.size()); // TODO преобразуйте вторую картинку в пространство первой картинки
+    cv::imwrite(results + "09img1to0.jpg", img1to0); // TODO проверьте что она правильно наложилась на первую картинку
 
-//    img1to0 = img0.clone(); // давайте теперь вторую картинку нарисуем не просто в пространстве первой картинки - но поверх нее!
-//    cv::warpPerspective(img1, img1to0, H10, img1to0.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
-//    cv::imwrite(results + "10img0with1to0.jpg", img1to0);
+    img1to0 = img0.clone(); // давайте теперь вторую картинку нарисуем не просто в пространстве первой картинки - но поверх нее!
+    cv::warpPerspective(img1, img1to0, H10, img1to0.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+    cv::imwrite(results + "10img0with1to0.jpg", img1to0);
 
-//    img1to0 = img0.clone();
-//    cv::warpPerspective(TODO); // сделайте то же самое что и в предыдущей визуализации но вместо второй картинки - наложите картинку с несквиком
-//    cv::imwrite(results + "11img0withNesquik.jpg", img1to0);
+    img1to0 = img0.clone();
+    cv::warpPerspective(img2, img1to0, H10, img1to0.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT); // сделайте то же самое что и в предыдущей визуализации но вместо второй картинки - наложите картинку с несквиком
+    cv::imwrite(results + "11img0withNesquik.jpg", img1to0);
 }
 
 void test2() {
