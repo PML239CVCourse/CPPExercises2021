@@ -82,14 +82,14 @@ void test1() {
     }
 
     // TODO: исследуйте минимальное/медианное/максимальное расстояние в найденных сопоставлениях
-    {
-        std::vector<double> distances;
+
+        std::vector<double> distances01;
         for (int i = 0; i < matches01.size(); ++i) {
-            distances.push_back((double)matches01[0][i].distance);
+            distances01.push_back((double)matches01[i][0].distance);
         }
-        std::sort(distances.begin(), distances.end()); // GOOGLE: "cpp how to sort vector"
-        std::cout << "matches01 distances min/median/max: " << distances[0] << "/" << distances[distances.size()/2] << "/" << distances[distances.size()-1] << std::endl;
-    }
+        std::sort(distances01.begin(), distances01.end()); // GOOGLE: "cpp how to sort vector"
+        std::cout << "matches01 distances min/median/max: " << distances01[0] << "/" << distances01[distances01.size()/2] << "/" << distances[distances.size()-1] << std::endl;
+
     for (int k = 0; k < 2; ++k) {
         std::vector<cv::DMatch> matchesK;
         for (int i = 0; i < matches01.size(); ++i) {
@@ -123,16 +123,16 @@ void test1() {
         rassert(matches10[i][0].distance <= matches10[i][1].distance, 328493778); // давайте явно проверим что расстояние для этой второй точки - не меньше чем для первой точки
     }
 
-    {
-        std::vector<double> distances;
+
+        std::vector<double> distances10;
         for (int i = 0; i < matches10.size(); ++i) {
             // TODO
-            distances.push_back((double)matches10[0][i].distance);
+            distances10.push_back((double)matches10[i][0].distance);
         }
         // TODO
-        std::sort(distances.begin(), distances.end());
-        std::cout << "matches01 distances min/median/max: " << distances[0] << "/" << distances[distances.size()/2] << "/" << distances[distances.size()-1] << std::endl;
-    }
+        std::sort(distances10.begin(), distances10.end());
+        std::cout << "matches01 distances min/median/max: " << distances10[0] << "/" << distances10[distances10.size()/2] << "/" << distances[distances.size()-1] << std::endl;
+
 
 
     for (int k = 0; k < 2; ++k) {
@@ -166,22 +166,23 @@ void test1() {
         bool isOk = true;
 
         // TODO реализуйте фильтрацию на базе "достаточно ли похож дескриптор?" - как можно было бы подобрать порог? вспомните про вывод min/median/max раньше
-//        if (match.distance > ???) {
-//            isOk = false;
-//        }
+        if (match.distance > distances01[distances01.size()-1]) {
+            isOk = false;
+        }
 
         // TODO добавьте K-ratio тест (K=0.7), т.е. проверьте правда ли самая похожая точка сильно ближе к нашей точки (всмысле расстояния между дескрипторами) чем вторая по похожести?
-//        cv::DMatch match2 = TODO;
-//        if (match.distance > TODO) {
-//            isOk = false;
-//        }
+        cv::DMatch match2 = matches01[i][1];
+        const double k = 0.7;
+        if (match.distance * 1.0 > match2.distance * k) {
+            isOk = false;
+        }
 
         // TODO добавьте left-right check, т.е. проверку правда ли если для точки А самой похожей оказалась точка Б, то вероятно при обратном сопоставлении и у точки Б - ближайшей является точка А
-//        cv::DMatch match01 = match;
-//        cv::DMatch match10 = matches10[TODO][TODO];
-//        if (TODO) {
-//            isOk = false;
-//        }
+        cv::DMatch match01 = match;
+        cv::DMatch match10 = matches10[match01.trainIdx][0];
+        if (match10.trainIdx != match01.queryIdx) {
+            isOk = false;
+        }
 
         // TODO: визуализация в 04goodMatches01.jpg покажет вам какие сопоставления остаются, какой из этих методов фильтрации оказался лучше всего?
         // TODO: попробуйте оставить каждый из них закомменьтировав два других, какой самый крутой?
