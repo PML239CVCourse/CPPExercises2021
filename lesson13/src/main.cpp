@@ -88,7 +88,7 @@ void test1() {
             distances01.push_back((double)matches01[i][0].distance);
         }
         std::sort(distances01.begin(), distances01.end()); // GOOGLE: "cpp how to sort vector"
-        std::cout << "matches01 distances min/median/max: " << distances01[0] << "/" << distances01[distances01.size()/2] << "/" << distances[distances.size()-1] << std::endl;
+        std::cout << "matches01 distances min/median/max: " << distances01[0] << "/" << distances01[distances01.size()/2] << "/" << distances01[distances01.size()-1] << std::endl;
 
     for (int k = 0; k < 2; ++k) {
         std::vector<cv::DMatch> matchesK;
@@ -107,7 +107,7 @@ void test1() {
     matcher->knnMatch(descriptors1, descriptors0, matches10, 2); // k: 2 - указывает что мы ищем ДВЕ ближайшие точки, а не ОДНУ САМУЮ БЛИЖАЙШУЮ
     std::cout << "matching done" << std::endl;
 
-    rassert(keypoints0.size() == matches10.size(), 234728972980049);
+    rassert(keypoints1.size() == matches10.size(), 234728972980049);
 
 
     // TODO сделайте все то же самое что и выше (можете прямо скопипастить) просто аккуратно поменяйте все 0 и 1 наоборот
@@ -131,7 +131,7 @@ void test1() {
         }
         // TODO
         std::sort(distances10.begin(), distances10.end());
-        std::cout << "matches01 distances min/median/max: " << distances10[0] << "/" << distances10[distances10.size()/2] << "/" << distances[distances.size()-1] << std::endl;
+        std::cout << "matches01 distances min/median/max: " << distances10[0] << "/" << distances10[distances10.size()/2] << "/" << distances01[distances01.size()-1] << std::endl;
 
 
 
@@ -187,7 +187,8 @@ void test1() {
         // TODO: визуализация в 04goodMatches01.jpg покажет вам какие сопоставления остаются, какой из этих методов фильтрации оказался лучше всего?
         // TODO: попробуйте оставить каждый из них закомменьтировав два других, какой самый крутой?
         // TODO: попробуйте решить какую комбинацию этих методов вам хотелось бы использовать в результате?
-        // TODO: !!!ОБЯЗАТЕЛЬНО!!! ЗАПИШИТЕ СЮДА ВВИДЕ КОММЕНТАРИЯ СВОИ ОТВЕТЫ НА ЭТИ ВОПРОСЫ И СВОИ ВЫВОДЫ!!!
+        // TODO: !!!ОБЯЗАТЕЛЬНО!!! ЗАПИШИТЕ СЮДА ВВИДЕ КОММЕНТАРИЯ СВОИ ОТВЕТЫ НА ЭТИ ВОПРОСЫ И СВОИ ВЫВОДЫ!!
+
 
         if (isOk) {
             ++nmatchesGood;
@@ -199,7 +200,7 @@ void test1() {
     rassert(points0.size() == points1.size(), 3497282579850108);
     rassert(points0.size() == matchIsGood.size(), 3497282579850109);
     // TODO выведите сколько из скольки соответствий осталось после фильтрации:
-//    std::cout << TODO << "/" << TODO << " good matches left" << std::endl;
+    std::cout << nmatchesGood << "/" << matchIsGood.size() << " good matches left" << std::endl;
 
     {
         std::vector<cv::DMatch> goodMatches;
