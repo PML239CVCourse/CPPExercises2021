@@ -522,34 +522,22 @@ void test2() {
 
     cv::Mat H10 = H01.inv();
 
-    cv::Mat img0to1 = img1.clone();
-    cv::warpPerspective(img0, img0to1, H01, img1.size() + img0.size());
-    cv::imwrite(results + "hiking_final.jpg", img0to1);
+    //cv::Mat img0to1 = img1.clone();
+    //cv::warpPerspective(img0, img0to1, H01, img1.size() + img0.size());
+    //cv::imwrite(results + "hiking_final.jpg", img0to1);
 
-    cv::Mat img1to0 = img0.clone();
-    cv::warpPerspective(img1, img1to0, H10, img1.size() + img0.size());
-    cv::imwrite(results + "hiking_final2.jpg", img0to1);
-    /*cv::imwrite(results + "06img1.jpg", img1); // сохраняем вторую картинку
+    cv::Mat img1to0(img0.rows*2, img0.cols*2, CV_8UC3, cv::Scalar(0, 0, 0));
+    cv::imwrite(results + "hiking_not_final2.jpg", img1to0);
 
-    cv::Mat img0to1;
-    cv::warpPerspective(img0, img0to1, H01, img1.size()); // преобразуем первую картинку соответственно матрице преобразования
-    cv::imwrite(results + "07img0to1.jpg", img0to1);
-
-
-
-    cv::imwrite(results + "08img0.jpg", img0);*/
-
-    /*cv::Mat img1to0;
-    cv::warpPerspective(img1, img1to0, H10, img0.size());
-    cv::imwrite(results + "09img1to0.jpg", img1to0);
-
-    img1to0 = img0.clone(); // давайте теперь вторую картинку нарисуем не просто в пространстве первой картинки - но поверх нее!
-    cv::warpPerspective(img1, img1to0, H10, img1to0.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
-    cv::imwrite(results + "10img0with1to0.jpg", img1to0);
-
-    img1to0 = img0.clone();
-    cv::warpPerspective(img2, img1to0, H10, img1to0.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT); // сделайте то же самое что и в предыдущей визуализации но вместо второй картинки - наложите картинку с несквиком
-    cv::imwrite(results + "11img0withNesquik.jpg", img1to0);*/
+    cv::warpPerspective(img1, img1to0, H10, img1to0.size(),  cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+    cv::imwrite(results + "hiking_final2.jpg", img1to0);
+    for(int y = 0; y < img0.rows; y++){
+        for(int x = 0; x < img0.cols; x++){
+            cv::Vec3b color = img0.at<cv::Vec3b>(cv::Point(x,y));
+            img1to0.at<cv::Vec3b>(cv::Point(x, y)) = color;
+        }
+    }
+    cv::imwrite(results + "hiking_final2new.jpg", img1to0);
 }
 
 void test3() {
