@@ -34,6 +34,7 @@ void run() {
     std::cin >> nvertices;
     std::cin >> medges;
 
+    std::cout << "entered" << std::endl;
     std::vector<std::vector<Edge>> edges_by_vertex(nvertices);
     for (int i = 0; i < medges; ++i) {
         int ai, bi, w;
@@ -51,6 +52,7 @@ void run() {
 
         edges_by_vertex[bi].push_back(Edge(bi, ai, w)); // а тут - обратное ребро, можно конструировать объект прямо в той же строчке где он и потребовался
     }
+    std::cout << "edges completed" << std::endl;
 
     const int start = 0;
     const int finish = nvertices - 1;
@@ -58,21 +60,52 @@ void run() {
     const int INF = std::numeric_limits<int>::max();
 
     std::vector<int> distances(nvertices, INF);
+    distances[start] = 0;
+    std::vector<bool> isP(nvertices, false);
+    std::vector<int> parents(nvertices, -1);
     // TODO ...
 
-//    while (true) {
-//
-//    }
+    bool fine = false;
 
-//    if (...) {
-//        ...
-//        for (...) {
-//            std::cout << (path[i] + 1) << " ";
-//        }
-//        std::cout << std::endl;
-//    } else {
-//        std::cout << -1 << std::endl;
-//    }
+    while (true) {
+        int nv = finish;
+        for (int i = 0; i < distances.size(); ++i) {
+            if (distances[i] <= distances[nv] && !isP[i]){
+                nv = i;
+            }
+        }
+        if (nv == finish){
+            fine = true;
+        }
+        std::cout << nv << std::endl;
+        if (nv == INF){
+            break;
+        }
+        for (int i = 0; i < edges_by_vertex[nv].size(); ++i) {
+            std::cout << nv << " " << i << " " << edges_by_vertex[nv][i].v << " " << edges_by_vertex[nv][i].u << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << std::endl;
+            if (distances[edges_by_vertex[nv][i].v] > distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w){
+                distances[edges_by_vertex[nv][i].v] = distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w;
+                parents[edges_by_vertex[nv][i].v] = nv;
+                isP[i] = true;
+            }
+        }
+    }
+
+    if (fine) {
+        std::vector<int> path;
+        int a = finish;
+        path.push_back(a);
+        while (a != start){
+            a = parents[a];
+            path.push_back(a);
+        }
+        for (int i = path.size(); i > 0; i--) {
+            std::cout << (path[i] + 1) << " ";
+        }
+        std::cout << std::endl;
+    } else {
+        std::cout << -1 << std::endl;
+    }
 }
 
 int main() {
