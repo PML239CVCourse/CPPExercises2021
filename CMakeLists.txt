@@ -12,11 +12,16 @@ add_subdirectory(lesson03) # знакомимся с OpenCV, меняем кар
 add_subdirectory(lesson04) # морфология + СНМ = пытаемся сделать хорошее удаление фона по первому кадру без объекта
 add_subdirectory(lesson05) # преобразуем картинку в картинку границ (оператор Собеля)
 add_subdirectory(lesson06) # сглаживание картинки, блюр (свертка ядром Гаусса)
+
 add_subdirectory(lesson07) # обнаружение прямых: построение пространства Хафа
 add_subdirectory(lesson08) # обнаружение прямых: интерполяция отрезков голосов в пространстве Хафа + извлечение локальных экстремумов
 add_subdirectory(lesson09) # обнаружение прямых: отрисовка найденных прямых
+
 add_subdirectory(lesson10) # распознавание цифр/букв: построение HoG (Histogram Of Gradients) для цифр/букв
 add_subdirectory(lesson11) # распознавание цифр/букв: учимся разбивать картинку на цифры/буквы
+
 add_subdirectory(lesson12) # поиск прямой на базе точек
 add_subdirectory(lesson13) # сопоставление двух картинок для склейки "панорамы" (SIFT + K-ratio test + Left-Right check + RANSAC)
 add_subdirectory(lesson14) # накладывание картинки на другую в видеопотоке с веб. камеры (простой вариант AR)
+
+add_subdirectory(lesson15) # алгоритм поиска кратчайшего пути методом Дейкстры + поиск пути в лабиринте-картинке
