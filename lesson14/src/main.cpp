@@ -10,6 +10,47 @@
 #include <memory>
 
 #include <libutils/rasserts.h>
+#include <vector>
+
+
+void matching(std::vector<std::vector<cv::DMatch>>& matches, std::vector<cv::KeyPoint>& keypoints0, std::vector<cv::KeyPoint>& keypoints1,
+                 cv::Mat& descriptors0, cv::Mat& descriptors1, cv::Mat& img0, cv::Mat& img1, std::string results){
+    std::cout << "Matching " << keypoints0.size() << " points with " << keypoints1.size() << "..." << std::endl; // TODO
+    cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
+    matcher->knnMatch(descriptors0, descriptors1, matches, 2); // k: 2 - указывает что мы ищем ДВЕ ближайшие точки, а не ОДНУ САМУЮ БЛИЖАЙШУЮ
+    std::cout << "matching done" << std::endl;
+    // т.к. мы для каждой точки keypoints0 ищем ближайшую из keypoints1, то сопоставлений найдено столько же сколько точек в keypoints0:
+    rassert(keypoints0.size() == matches.size(), 234728972980049);
+    for (int i = 0; i < matches.size(); ++i) {
+        rassert(matches[i].size() == 2, 3427890347902051);
+        rassert(matches[i][0].queryIdx == i, 237812974128941); // queryIdx - это индекс ключевой точки в первом векторе точек, т.к. мы для всех точек keypoints0
+        rassert(matches[i][1].queryIdx == i, 237812974128942); // ищем ближайшую в keypoints1, queryIdx == i, т.е. равен индексу очередной точки keypoints0
+
+        rassert(matches[i][0].trainIdx < keypoints1.size(), 237812974128943); // trainIdx - это индекс точки в keypoints1 самой похожей на keypoints0[i]
+        rassert(matches[i][1].trainIdx < keypoints1.size(), 237812974128943); // а этот trainIdx - это индекс точки в keypoints1 ВТОРОЙ по похожести на keypoints0[i]
+
+        rassert(matches[i][0].distance <= matches[i][1].distance, 328493778); // давайте явно проверим что расстояние для этой второй точки - не меньше чем для первой точки
+    }
+
+    std::vector<double> distances01;
+    for (int i = 0; i < matches.size(); ++i) {
+        distances01.push_back((double)matches[i][0].distance);
+    }
+    std::sort(distances01.begin(), distances01.end()); // GOOGLE: "cpp how to sort vector"
+    std::cout << "matches01 distances min/median/max: " << distances01[0] << "/" << distances01[distances01.size()/2] << "/" << distances01[distances01.size()-1] << std::endl;
+
+    for (int k = 0; k < 2; ++k) {
+        std::vector<cv::DMatch> matchesK;
+        for (int i = 0; i < matches.size(); ++i) {
+            matchesK.push_back(matches[i][k]);
+        }
+        // давайте взглянем как выглядят сопоставления между точками (k - указывает на какие сопоставления мы сейчас смотрим, на ближайшие, или на вторые по близости)
+        cv::Mat imgWithMatches;
+        cv::drawMatches(img0, keypoints0, img1, keypoints1, matchesK, imgWithMatches);
+        cv::imwrite(results + "02matches01_k" + std::to_string(k) + ".jpg", imgWithMatches);
+    }
+}
+
 
 
 void drawText(cv::Mat img, std::string text, double fontScale, int &yOffset) {
@@ -22,11 +63,13 @@ void drawText(cv::Mat img, std::string text, double fontScale, int &yOffset) {
 
 
 void run() {
-    const bool useWebcam = true; // TODO попробуйте выставить в true, если у вас работает вебкамера - то и здорово! иначе - работайте хотя бы со статичными картинками
+    const bool useWebcam = false; // TODO попробуйте выставить в true, если у вас работает вебкамера - то и здорово! иначе - работайте хотя бы со статичными картинками
 
     bool drawOver = true; // рисовать ли поверх наложенную картинку (можно включить-включить чтобы мигнуть картинкой и проверить качество выравнивания)
     bool drawDebug = true; // рисовать ли поверх отладочную информацию (например красный кант вокруг нарисованной поверх картинки)
-    bool useSIFTDescriptor = true; // SIFT работает довольно медленно, попробуйте использовать ORB + не забудьте что тогда вам нужен другой DescriptorMatcher
+    bool useSIFTDescriptor = false; // SIFT работает довольно медленно, попробуйте использовать ORB + не забудьте что тогда вам нужен другой DescriptorMatcher
+    const std::string caseName = "1_box2";
+    const std::string results = "lesson13/resultsData/" + caseName + "/";
 
     cv::Mat imgFrame, imgForDetection, imgToDraw;
     // если у вас не работает через веб. камеру - будут использоваться заготовленные картинки
@@ -68,15 +111,30 @@ void run() {
                 matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::FLANNBASED);
             } else {
                 // TODO SIFT работает довольно медленно, попробуйте использовать ORB + не забудьте что тогда вам нужен другой DescriptorMatcher
-
+                detector = cv::ORB::create();
+                matcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
                 // TODO кроме того будет быстрее работать если вы будете использовать релизную сборку вместо Debug:
                 // см. "Как ускорить программу" - https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/10/05/lesson5-disjoint-set.html
             }
+            std::vector<cv::KeyPoint> keypointsToDraw_Frame, keypointsFrame_ToDraw;
+            cv::Mat descriptorToDraw_Frame, descriptorFrame_ToDraw;
+            detector->detectAndCompute(imgToDraw, cv::noArray(), keypointsToDraw_Frame,descriptorToDraw_Frame );
+            detector->detectAndCompute(imgFrame, cv::noArray(), keypointsFrame_ToDraw,descriptorFrame_ToDraw );
 
             // TODO детектируйте и постройте дескрипторы у ключевых точек
-            // std::cout << "Keypoints initially: " << keypoints0.size() << ", " << keypoints1.size() << "..." << std::endl;
+             std::cout << "Keypoints initially: " << keypointsToDraw_Frame.size() << ", " << keypointsFrame_ToDraw.size() << "..." << std::endl;
 
             // TODO сопоставьте ключевые точки
+
+            std::vector<std::vector<cv::DMatch>> matchesToDraw_Frame;
+            matching(matchesToDraw_Frame, keypointsToDraw_Frame, keypointsFrame_ToDraw
+                     , descriptorToDraw_Frame, descriptorFrame_ToDraw, imgToDraw, imgFrame, results);
+
+            std::vector<std::vector<cv::DMatch>> matchesFrame_ToDraw;
+            matching(matchesFrame_ToDraw, keypointsFrame_ToDraw, keypointsToDraw_Frame
+                    , descriptorFrame_ToDraw, descriptorToDraw_Frame, imgFrame, imgToDraw, results);
+
+
 
             // TODO пофильтруйте сопоставления, как минимум через K-ratio test, но лучше на ваш выбор
 //            std::vector<cv::Point2f> points0;
