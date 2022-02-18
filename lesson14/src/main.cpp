@@ -137,14 +137,16 @@ void run() {
 
 
             // TODO пофильтруйте сопоставления, как минимум через K-ratio test, но лучше на ваш выбор
-//            std::vector<cv::Point2f> points0;
-//            std::vector<cv::Point2f> points1;
-//            for (int i = 0; i < keypoints0.size(); ++i) {
-//                int fromKeyPoint0 = ....queryIdx;
-//                int toKeyPoint1Best = ....trainIdx;
-//                float distanceBest = ....distance;
-//                rassert(fromKeyPoint0 == i, 348723974920074);
-//                rassert(toKeyPoint1Best < keypoints1.size(), 347832974820076);
+            std::vector<cv::Point2f> points0;
+            std::vector<cv::Point2f> points1;
+            for (int i = 0; i < keypointsToDraw_Frame.size(); ++i) {
+                cv::DMatch match = matchesToDraw_Frame[i][0];
+
+                int fromKeyPoint0 = keypointsToDraw_Frame.queryIdx;
+                int toKeyPoint1Best = ....trainIdx;
+                float distanceBest = ....distance;
+                rassert(fromKeyPoint0 == i, 348723974920074);
+                rassert(toKeyPoint1Best < keypoints1.size(), 347832974820076);
 
 //                int toKeyPoint1SecondBest = ....trainIdx;
 //                float distanceSecondBest = ....distance;
