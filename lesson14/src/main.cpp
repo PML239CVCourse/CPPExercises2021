@@ -12,6 +12,23 @@
 #include <libutils/rasserts.h>
 #include <vector>
 
+bool k_ratio_test(int idx, std::vector<std::vector<cv::DMatch>>& matches01){
+    cv::DMatch match2 = matches01[idx][1];
+    const double k = 0.7;
+    if (matches01[idx][0].distance * 1.0 > match2.distance * k) {
+        return false;
+    }
+    return true;
+}
+
+bool left_right_check(int idx, std::vector<std::vector<cv::DMatch>>& matches01, std::vector<std::vector<cv::DMatch>>& matches10){
+    cv::DMatch match01 = matches01[idx][0];
+    cv::DMatch match10 = matches10[match01.trainIdx][0];
+    if (match10.trainIdx != match01.queryIdx) {
+        return false;
+    }
+    return true;
+}
 
 void matching(std::vector<std::vector<cv::DMatch>>& matches, std::vector<cv::KeyPoint>& keypoints0, std::vector<cv::KeyPoint>& keypoints1,
                  cv::Mat& descriptors0, cv::Mat& descriptors1, cv::Mat& img0, cv::Mat& img1, std::string results){
@@ -142,25 +159,19 @@ void run() {
             for (int i = 0; i < keypointsToDraw_Frame.size(); ++i) {
                 cv::DMatch match = matchesToDraw_Frame[i][0];
 
-                int fromKeyPoint0 = keypointsToDraw_Frame.queryIdx;
-                int toKeyPoint1Best = ....trainIdx;
-                float distanceBest = ....distance;
-                rassert(fromKeyPoint0 == i, 348723974920074);
-                rassert(toKeyPoint1Best < keypoints1.size(), 347832974820076);
+                bool isok = 1;
+                isok = isok && k_ratio_test(1, matchesToDraw_Frame);
+                isok = isok && left_right_check(1, matchesToDraw_Frame, matchesFrame_ToDraw);
 
-//                int toKeyPoint1SecondBest = ....trainIdx;
-//                float distanceSecondBest = ....distance;
-//                rassert(toKeyPoint1SecondBest < keypoints1.size(), 3482047920081);
-//                rassert(distanceBest <= distanceSecondBest, 34782374920082);
-
-//                if (TODO) {
-//                    points0.push_back(keypoints0[i].pt);
-//                    points1.push_back(keypoints1[toKeyPoint1Best].pt);
-//                }
-//            }
-//            rassert(points0.size() == points1.size(), 234723947289089);
+                if (isok) {
+                    points0.push_back(keypointsToDraw_Frame[i].pt);
+                    points1.push_back(keypointsFrame_ToDraw[match.trainIdx].pt);
+                }
+            }
+            rassert(points0.size() == points1.size(), 234723947289089);
             // TODO добавьте вывод в лог - сколько ключевых точек было изначально, и сколько осталось сопоставлений после фильтрации
-
+            std::cout << "ammount of pooints in the first place: " << keypointsToDraw_Frame.size() << "\n";
+            std::cout << "ammount of pooints at the end: " << points0.size() << "\n";
             // TODO findHomography(...) + рисование поверх:
 //            cv::Mat H01 = cv::findHomography(TODO);
 //            if (H01.empty()) {
