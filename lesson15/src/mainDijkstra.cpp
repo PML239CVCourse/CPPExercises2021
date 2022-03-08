@@ -2,6 +2,7 @@
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
+#include <queue>
 
 int debugPoint(int line) {
     if (line < 0)
@@ -58,21 +59,48 @@ void run() {
     const int INF = std::numeric_limits<int>::max();
 
     std::vector<int> distances(nvertices, INF);
+    distances[start] = 0;
+    std::vector<int> p(nvertices, -1);
     // TODO ...
 
-//    while (true) {
-//
-//    }
+    std::vector <bool> used(nvertices);
+    std::queue<int> q;
+    q.push(start);
 
-//    if (...) {
-//        ...
-//        for (...) {
-//            std::cout << (path[i] + 1) << " ";
-//        }
-//        std::cout << std::endl;
-//    } else {
-//        std::cout << -1 << std::endl;
-//    }
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        for(auto el: edges_by_vertex[v]){
+            if(el.w + distances[v] < distances[el.v]){
+                distances[el.v] = el.w + distances[v];
+                p[el.v] = v;
+                q.push(el.v);
+            }
+        }
+    }
+
+    for(auto it : p)
+        std::cout << it << " ";
+    std::cout << "\n";
+    if (!(p[finish] == -1)) {
+        std::vector<int> path;
+        path.emplace_back(finish);
+        int idx = finish;
+
+        while(idx != start){
+            idx = p[idx];
+            path.emplace_back(idx);
+        }
+        std::reverse(path.begin(), path.end());
+
+        for (auto it : path) {
+            std::cout << (it + 1) << " ";
+        }
+        std::cout << std::endl;
+    }
+    else {
+        std::cout << -1 << std::endl;
+    }
 }
 
 int main() {
