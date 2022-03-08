@@ -8,6 +8,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/types.hpp>
+#include <queue>
 
 const int INF = std::numeric_limits<int>::max();
 
@@ -103,12 +104,55 @@ void run(int mazeNumber) {
         rassert(false, 324289347238920081);
     }
 
-    const int INF = std::numeric_limits<int>::max();
 
     cv::Mat window = maze.clone(); // на этой картинке будем визуализировать до куда сейчас дошла прокладка маршрута
 
-    std::vector<int> distances(nvertices, INF);
+
     // TODO СКОПИРУЙТЕ СЮДА ДЕЙКСТРУ ИЗ ПРЕДЫДУЩЕГО ИСХОДНИКА
+
+    std::vector<int> distances(nvertices, INF);
+    distances[start] = 0;
+    std::vector<int> p(nvertices, -1);
+
+    std::vector <bool> used(nvertices);
+    std::queue<int> q;
+    q.push(start);
+
+    while (!q.empty()) {
+        int v = q.front();
+        q.pop();
+        for(auto el: edges_by_vertex[v]){
+            if(el.w + distances[v] < distances[el.v]){
+                distances[el.v] = el.w + distances[v];
+                p[el.v] = v;
+                q.push(el.v);
+            }
+        }
+        //cv::Vec3b color = window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols));
+        window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
+    }
+
+
+
+    if (!(p[finish] == -1)) {
+        std::vector<int> path;
+        path.emplace_back(finish);
+        int idx = finish;
+
+        while(idx != start){
+            idx = p[idx];
+            path.emplace_back(idx);
+        }
+        std::reverse(path.begin(), path.end());
+
+        for (auto it : path) {
+            std::cout << (it + 1) << " ";
+        }
+        std::cout << std::endl;
+    }
+    else {
+        std::cout << -1 << std::endl;
+    }
 
     // TODO в момент когда вершина становится обработанной - красьте ее на картинке window в зеленый цвет и показывайте картинку:
     //    cv::Point2i p = decodeVertex(the_chosen_one, maze.rows, maze.cols);
