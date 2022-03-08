@@ -9,6 +9,7 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/types.hpp>
 
+const int INF = std::numeric_limits<int>::max();
 
 struct Edge {
     int u, v; // номера вершин которые это ребро соединяет
@@ -30,8 +31,8 @@ int encodeVertex(int row, int column, int nrows, int ncolumns) {
 cv::Point2i decodeVertex(int vertexId, int nrows, int ncolumns) {
 
     // TODO: придумайте как найти номер строки и столбика пикселю по номеру вершины (просто поймите предыдущую функцию и эта функция не будет казаться сложной)
-    int row = -1;
-    int column = -1;
+    int row = vertexId / ncolumns;
+    int column = vertexId % ncolumns;
 
     // сверим что функция симметрично сработала:
     rassert(encodeVertex(row, column, nrows, ncolumns) == vertexId, 34782974923035);
@@ -47,7 +48,7 @@ void run(int mazeNumber) {
     rassert(maze.type() == CV_8UC3, 3447928472389020);
     std::cout << "Maze resolution: " << maze.cols << "x" << maze.rows << std::endl;
 
-    int nvertices = 0; // TODO
+    int nvertices = maze.cols * maze.rows; // TODO
 
     std::vector<std::vector<Edge>> edges_by_vertex(nvertices);
     for (int j = 0; j < maze.rows; ++j) {
@@ -57,6 +58,33 @@ void run(int mazeNumber) {
             unsigned char green = color[1];
             unsigned char red = color[2];
 
+            for(int itj = j - 1; itj <= j + 1; itj++){
+                for(int iti = i - 1; iti <= i + 1; iti++){
+                    if((itj == j - 1 && iti == i - 1) || (itj == j - 1 && iti == i + 1) ||
+                            (itj == j + 1 && iti == i - 1) || (itj == j + 1 && iti == i + 1))
+                        continue;
+
+                    if((i - 1 < 0) || (j - 1 < 0) || (i + 1 >= maze.cols) || (j + 1 >= maze.rows))
+                        continue;
+
+                    cv::Vec3b color_it = maze.at<cv::Vec3b>(itj, iti);
+                    unsigned char blue_it = color_it[0];
+                    unsigned char green_it = color_it[1];
+                    unsigned char red_it = color_it[2];
+
+                    int w = 1;
+                    if(blue == blue_it && red == red_it && green == green_it)
+                        w = 1;
+                    else
+                        w = INF;
+
+                    int ai = encodeVertex(j, i, maze.rows, maze.cols);
+                    int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
+                    edges_by_vertex[ai].push_back(Edge(ai, bi, w));
+                    edges_by_vertex[bi].push_back(Edge(bi, ai, w));
+
+                }
+            }
             // TODO добавьте соотвтетсвующие этому пикселю ребра
         }
     }

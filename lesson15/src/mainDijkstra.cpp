@@ -79,9 +79,9 @@ void run() {
         }
     }
 
-    for(auto it : p)
+    /*for(auto it : p)
         std::cout << it << " ";
-    std::cout << "\n";
+    std::cout << "\n";*/
     if (!(p[finish] == -1)) {
         std::vector<int> path;
         path.emplace_back(finish);
