@@ -62,10 +62,10 @@ void run(int mazeNumber) {
             for(int itj = j - 1; itj <= j + 1; itj++){
                 for(int iti = i - 1; iti <= i + 1; iti++){
                     if((itj == j - 1 && iti == i - 1) || (itj == j - 1 && iti == i + 1) ||
-                            (itj == j + 1 && iti == i - 1) || (itj == j + 1 && iti == i + 1))
+                            (itj == j + 1 && iti == i - 1) || (itj == j + 1 && iti == i + 1) || (iti == i && itj == j))
                         continue;
 
-                    if((i - 1 < 0) || (j - 1 < 0) || (i + 1 >= maze.cols) || (j + 1 >= maze.rows))
+                    if((iti < 0) || (itj < 0) || (iti >= maze.cols) || (itj >= maze.rows))
                         continue;
 
                     cv::Vec3b color_it = maze.at<cv::Vec3b>(itj, iti);
@@ -74,21 +74,23 @@ void run(int mazeNumber) {
                     unsigned char red_it = color_it[2];
 
                     int w = 1;
-                    if(blue == blue_it && red == red_it && green == green_it)
-                        w = 1;
-                    else
+                    if(!(blue == blue_it && red == red_it && green == green_it))
                         w = INF;
 
                     int ai = encodeVertex(j, i, maze.rows, maze.cols);
                     int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
                     edges_by_vertex[ai].push_back(Edge(ai, bi, w));
-                    edges_by_vertex[bi].push_back(Edge(bi, ai, w));
+                    //edges_by_vertex[bi].push_back(Edge(bi, ai, w));
 
                 }
             }
+            std::cout << edges_by_vertex[encodeVertex(j, i, maze.rows, maze.cols)].size() << " ";
             // TODO добавьте соотвтетсвующие этому пикселю ребра
         }
     }
+
+
+    std::cout << "\n";
 
     int start, finish;
     if (mazeNumber >= 1 && mazeNumber <= 3) { // Первые три лабиринта очень похожи но кое чем отличаются...
@@ -130,13 +132,13 @@ void run(int mazeNumber) {
             }
         }
 
-        /*cnt++;
+        cnt++;
         window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
         if(cnt % 1000 == 0){
             cnt = 0;
             cv::imshow("Maze", window);
-            //    cv::waitKey(1);
-        }*/
+                cv::waitKey(1);
+        }
     }
 
 
@@ -160,7 +162,7 @@ void run(int mazeNumber) {
             cv::Point2i p = decodeVertex(it, maze.rows, maze.cols);
             window.at<cv::Vec3b>(p) = cv::Vec3b(255, 0 , 0);
         }
-        std::string path_saving = "lesson15/data/results/maze";
+        std::string path_saving = "lesson15/data/results/maze_path.jpg";
         cv::imwrite(path_saving, window);
     }
     else {
