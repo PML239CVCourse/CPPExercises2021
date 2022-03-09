@@ -118,6 +118,7 @@ void run(int mazeNumber) {
     std::queue<int> q;
     q.push(start);
 
+    int cnt = 0;
     while (!q.empty()) {
         int v = q.front();
         q.pop();
@@ -129,7 +130,13 @@ void run(int mazeNumber) {
             }
         }
         //cv::Vec3b color = window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols));
+        cnt++;
         window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
+        if(cnt % 100 == 0){
+            cnt = 0;
+            cv::imshow("Maze", window);
+            //    cv::waitKey(1);
+        }
     }
 
 
@@ -145,10 +152,16 @@ void run(int mazeNumber) {
         }
         std::reverse(path.begin(), path.end());
 
-        for (auto it : path) {
+        /*for (auto it : path) {
             std::cout << (it + 1) << " ";
         }
-        std::cout << std::endl;
+        std::cout << std::endl;*/
+        for(auto it : path){
+            cv::Point2i p = decodeVertex(it, maze.rows, maze.cols);
+            window.at<cv::Vec3b>(p) = cv::Vec3b(255, 0 , 0);
+        }
+        std::string path_saving = "lesson15/data/results/maze";
+        cv::imwrite(path_saving, window);
     }
     else {
         std::cout << -1 << std::endl;
