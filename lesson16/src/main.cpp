@@ -15,6 +15,11 @@ bool isPixelEmpty(cv::Vec3b color) {
     // TODO 1 реализуйте isPixelEmpty(color):
     // - верните true если переданный цвет - полностью черный (такие пиксели мы считаем пустыми)
     // - иначе верните false
+    if (color[0] == 0 && color[1] == 0 && color[2] == 0) {
+        return true;
+    } else {
+        return false;
+    }
     rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
     return true;
 }
@@ -72,77 +77,96 @@ void run(std::string caseName) {
 
     // Находим матрицу преобразования второй картинки в систему координат первой картинки
     cv::Mat H10 = cv::findHomography(points1, points0, cv::RANSAC, 3.0);
-    rassert(H10.size() == cv::Size(3, 3), 3482937842900059); // см. документацию https://docs.opencv.org/4.5.1/d9/d0c/group__calib3d.html#ga4abc2ece9fab9398f2e560d53c8c9780
-                                                                             // "Note that whenever an H matrix cannot be estimated, an empty one will be returned."
+    rassert(H10.size() == cv::Size(3, 3),
+            3482937842900059); // см. документацию https://docs.opencv.org/4.5.1/d9/d0c/group__calib3d.html#ga4abc2ece9fab9398f2e560d53c8c9780
+            // "Note that whenever an H matrix cannot be estimated, an empty one will be returned."
 
-    // создаем папку в которую будем сохранять результаты - lesson16/resultsData/ИМЯ_НАБОРА/
-    std::string resultsDir = "lesson16/resultsData/";
-    if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
-        std::filesystem::create_directory(resultsDir); // то создаем ее
-    }
-    resultsDir += caseName + "/";
-    if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
-        std::filesystem::create_directory(resultsDir); // то создаем ее
-    }
+            // создаем папку в которую будем сохранять результаты - lesson16/resultsData/ИМЯ_НАБОРА/
+            std::string resultsDir = "lesson16/resultsData/";
+            if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
+                std::filesystem::create_directory(resultsDir); // то создаем ее
+            }
+            resultsDir += caseName + "/";
+            if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
+                std::filesystem::create_directory(resultsDir); // то создаем ее
+            }
 
-    cv::imwrite(resultsDir + "0img0.jpg", img0);
-    cv::imwrite(resultsDir + "1img1.jpg", img1);
+            cv::imwrite(resultsDir + "0img0.jpg", img0);
+            cv::imwrite(resultsDir + "1img1.jpg", img1);
 
-    // находим куда переходят углы второй картинки
-    std::vector<cv::Point2f> corners1(4);
-    corners1[0] = cv::Point(0, 0); // верхний левый
-    corners1[1] = cv::Point(img1.cols, 0); // верхний правый
-    corners1[2] = cv::Point(img1.cols, img1.rows); // нижний правый
-    corners1[3] = cv::Point(0, img1.rows); // нижний левый
-    std::vector<cv::Point2f> corners10(4);
-    perspectiveTransform(corners1, corners10, H10);
+            // находим куда переходят углы второй картинки
+            std::vector<cv::Point2f> corners1(4);
+            corners1[0] = cv::Point(0, 0); // верхний левый
+            corners1[1] = cv::Point(img1.cols, 0); // верхний правый
+            corners1[2] = cv::Point(img1.cols, img1.rows); // нижний правый
+            corners1[3] = cv::Point(0, img1.rows); // нижний левый
+            std::vector<cv::Point2f> corners10(4);
+            perspectiveTransform(corners1, corners10, H10);
 
-    // находим какой ширины и высоты наша панорама (как минимум - разрешение первой картинки, но еще нужно учесть куда перешли углы второй картинки)
-    int max_x = img0.cols;
-    int max_y = img0.rows;
-    for (int i = 0; i < 4; ++i) {
-        max_x = std::max(max_x, (int) corners10[i].x);
-        max_y = std::max(max_y, (int) corners10[i].y);
-    }
-    int pano_rows = max_y;
-    int pano_cols = max_x;
+            // находим какой ширины и высоты наша панорама (как минимум - разрешение первой картинки, но еще нужно учесть куда перешли углы второй картинки)
+            int max_x = img0.cols;
+            int max_y = img0.rows;
+            for (int i = 0; i < 4; ++i) {
+                max_x = std::max(max_x, (int) corners10[i].x);
+                max_y = std::max(max_y, (int) corners10[i].y);
+            }
+            int pano_rows = max_y;
+            int pano_cols = max_x;
 
-    // преобразуем обе картинки в пространство координат нашей искомой панорамы
-    cv::Mat pano0(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
-    cv::Mat pano1(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
-    rassert(img0.type() == CV_8UC3, 3423890003123093);
-    rassert(img1.type() == CV_8UC3, 3423890003123094);
-    // вторую картинку просто натягиваем в соответствии с ранее найденной матрицей Гомографии
-    cv::warpPerspective(img1, pano1, H10, pano1.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
-    // первую картинку надо положить без каких-то смещений, т.е. используя единичную матрицу:
-    cv::Mat identity_matrix = cv::Mat::eye(3, 3, CV_64FC1);
-    cv::warpPerspective(img0, pano0, identity_matrix, pano1.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+            // преобразуем обе картинки в пространство координат нашей искомой панорамы
+            cv::Mat pano0(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
+            cv::Mat pano1(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
+            rassert(img0.type() == CV_8UC3, 3423890003123093);
+            rassert(img1.type() == CV_8UC3, 3423890003123094);
+            // вторую картинку просто натягиваем в соответствии с ранее найденной матрицей Гомографии
+            cv::warpPerspective(img1, pano1, H10, pano1.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+            // первую картинку надо положить без каких-то смещений, т.е. используя единичную матрицу:
+            cv::Mat identity_matrix = cv::Mat::eye(3, 3, CV_64FC1);
+            cv::warpPerspective(img0, pano0, identity_matrix, pano1.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
 
-    cv::imwrite(resultsDir + "2pano0.jpg", pano0);
-    cv::imwrite(resultsDir + "3pano1.jpg", pano1);
+            cv::imwrite(resultsDir + "2pano0.jpg", pano0);
+            cv::imwrite(resultsDir + "3pano1.jpg", pano1);
 
-    // давайте сделаем наивную панораму - наложим вторую картинку на первую:
-    cv::Mat panoBothNaive = pano0.clone();
-    cv::warpPerspective(img1, panoBothNaive, H10, panoBothNaive.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
-    cv::imwrite(resultsDir + "4panoBothNaive.jpg", panoBothNaive);
+            // давайте сделаем наивную панораму - наложим вторую картинку на первую:
+            cv::Mat panoBothNaive = pano0.clone();
+            cv::warpPerspective(img1, panoBothNaive, H10, panoBothNaive.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+            cv::imwrite(resultsDir + "4panoBothNaive.jpg", panoBothNaive);
 
-    // TODO 1 реализуйте isPixelEmpty(color) объявленную в начале этого файла - она пригодится нам чтобы легко понять какие пиксели в панораме пустые, какие - нет
-    // (т.е. эта функция позволит дальше понимать в этот пиксель наложилась исходная картинка или же там все еще тьма)
+            // TODO 1 реализуйте isPixelEmpty(color) объявленную в начале этого файла - она пригодится нам чтобы легко понять какие пиксели в панораме пустые, какие - нет
+            // (т.е. эта функция позволит дальше понимать в этот пиксель наложилась исходная картинка или же там все еще тьма)
 
-    cv::Mat panoDiff(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
-    // TODO 2 вам надо заполнить panoDiff картинку так чтобы было четко ясно где pano0 картинка (объявлена выше) и pano1 картинка отличаются сильно, а где - слабо:
-    // сравните в этих двух картинках пиксели по одинаковым координатам (т.е. мы сверяем картинки) и покрасьте соответствующий пиксель panoDiff по этой логике:
-    // - если оба пикселя пустые - проверяйте это через isPixelEmpty(color) (т.е. цвета черные) - результат тоже пусть черный
-    // - если ровно один их пикселей пустой - результат пусть идеально белый
-    // - иначе пусть результатом будет оттенок серого - пусть он тем светлее, чем больше разница между цветами пикселей
-    // При этом сделайте так чтобы самый сильно отличающийся пиксель - всегда был идеально белым (255), т.е. выполните нормировку с учетом того какая максимальная разница яркости присутствует
-    // Напоминание - вот так можно выставить цвет в пикселе:
-    //  panoDiff.at<cv::Vec3b>(j, i) = cv::Vec3b(blueValue, greenValue, redValue);
+            cv::Mat panoDiff(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
+            // TODO 2 вам надо заполнить panoDiff картинку так чтобы было четко ясно где pano0 картинка (объявлена выше) и pano1 картинка отличаются сильно, а где - слабо:
+            // сравните в этих двух картинках пиксели по одинаковым координатам (т.е. мы сверяем картинки) и покрасьте соответствующий пиксель panoDiff по этой логике:
+            // - если оба пикселя пустые - проверяйте это через isPixelEmpty(color) (т.е. цвета черные) - результат тоже пусть черный
+            // - если ровно один их пикселей пустой - результат пусть идеально белый
+            // - иначе пусть результатом будет оттенок серого - пусть он тем светлее, чем больше разница между цветами пикселей
+            // При этом сделайте так чтобы самый сильно отличающийся пиксель - всегда был идеально белым (255), т.е. выполните нормировку с учетом того какая максимальная разница яркости присутствует
+            // Напоминание - вот так можно выставить цвет в пикселе:
+            for (int i = 0; i < pano_rows; i++) {
+                for (int j = 0; j < pano_cols; j++) {
+                    if (!isPixelEmpty(pano0.at<cv::Vec3b>(i, j)) && !isPixelEmpty(pano1.at<cv::Vec3b>(i, j))) {
+                        cv::Vec3b color1;
+                        color1[0] = abs(pano0.at<cv::Vec3b>(i, j)[0] - pano1.at<cv::Vec3b>(i, j)[0]);
+                        color1[1] = abs(pano0.at<cv::Vec3b>(i, j)[1] - pano1.at<cv::Vec3b>(i, j)[1]);
+                        color1[2] = abs(pano0.at<cv::Vec3b>(i, j)[2] - pano1.at<cv::Vec3b>(i, j)[2]);
+                        panoDiff.at<cv::Vec3b>(i, j) = color1;
+                    }
+                    if (isPixelEmpty(pano0.at<cv::Vec3b>(i, j)) && isPixelEmpty(pano1.at<cv::Vec3b>(i, j))) {
+                        panoDiff.at<cv::Vec3b>(i, j) = cv::Vec3b(0, 0, 0);
+                    }
+                    if ((!isPixelEmpty(pano0.at<cv::Vec3b>(i, j)) &&
+                    isPixelEmpty(pano1.at<cv::Vec3b>(i, j))) || (isPixelEmpty(pano0.at<cv::Vec3b>(i, j)) &&
+                    !isPixelEmpty(pano1.at<cv::Vec3b>(i, j)))) {
+                        panoDiff.at<cv::Vec3b>(i, j) = cv::Vec3b(255, 255, 255);
+                    }
+                }
+                //  panoDiff.at<cv::Vec3b>(j, i) = cv::Vec3b(blueValue, greenValue, redValue);
 
-    cv::imwrite(resultsDir + "5panoDiff.jpg", panoDiff);
+                cv::imwrite(resultsDir + "5panoDiff.jpg", panoDiff);
+            }
+
 }
-
-
 int main() {
     try {
         run("1_hanging"); // TODO 3 проанализируйте результаты по фотографиям с дрона - где различие сильное, где малое? почему так?
