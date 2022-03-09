@@ -65,9 +65,10 @@ void run() {
     std::vector<int> parents(nvertices, -1);
     // TODO ...
 
-    bool fine = false;
+    bool fine = false, fin = true;
+    int q = 0;
 
-    while (true) {
+    while (fin) {
         int nv = finish;
         for (int i = 0; i < distances.size(); ++i) {
             if (distances[i] <= distances[nv] && !isP[i]){
@@ -76,17 +77,21 @@ void run() {
         }
         if (nv == finish){
             fine = true;
+            q++;
+            if (q == 5){
+                fin = false;
+            }
         }
-        std::cout << nv << std::endl;
+//        std::cout << nv << std::endl;
         if (nv == INF){
-            break;
+            fin = false;
         }
         for (int i = 0; i < edges_by_vertex[nv].size(); ++i) {
-            std::cout << nv << " " << i << " " << edges_by_vertex[nv][i].v << " " << edges_by_vertex[nv][i].u << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << std::endl;
+//            std::cout << nv << " " << i << " " << edges_by_vertex[nv][i].v << " " << edges_by_vertex[nv][i].u << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << std::endl;
             if (distances[edges_by_vertex[nv][i].v] > distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w){
                 distances[edges_by_vertex[nv][i].v] = distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w;
                 parents[edges_by_vertex[nv][i].v] = nv;
-                isP[i] = true;
+                isP[nv] = true;
             }
         }
     }
@@ -96,10 +101,11 @@ void run() {
         int a = finish;
         path.push_back(a);
         while (a != start){
+//            std::cout << a;
             a = parents[a];
             path.push_back(a);
         }
-        for (int i = path.size(); i > 0; i--) {
+        for (int i = path.size()-1; i >= 0; i--) {
             std::cout << (path[i] + 1) << " ";
         }
         std::cout << std::endl;

@@ -14,7 +14,15 @@
 
 
 bool isPixelEmpty(cv::Vec3b color) {
-    return false; // TODO скопируйте эту функцию из прошлого задания про построение картинки-визуализации разницы картинок
+    // TODO 1 реализуйте isPixelEmpty(color):
+    // - верните true если переданный цвет - полностью черный (такие пиксели мы считаем пустыми)
+    // - иначе верните false
+    if (color[0]+color[1]+color[2] == 0){
+        return true;
+    }
+    return false;
+    rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
+    return true;
 }
 
 // Эта функция построит лабиринт - в каждом пикселе будет число которое говорит насколько длинное или короткое ребро выходит из пикселя
@@ -55,8 +63,10 @@ struct Edge {
 };
 
 int encodeVertex(int row, int column, int nrows, int ncolumns) {
-    // TODO скопируйте эту функцию из задания про Дейкстру на картинке лабиринта
-    return 0;
+    rassert(row < nrows, 348723894723980017);
+    rassert(column < ncolumns, 347823974239870018);
+    int vertexId = row * ncolumns + column;
+    return vertexId;
 }
 
 cv::Point2i decodeVertex(int vertexId, int nrows, int ncolumns) {
@@ -78,7 +88,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     for (int j = 0; j < maze.rows; ++j) {
         for (int i = 0; i < maze.cols; ++i) {
             int w = maze.at<int>(j, i);
-
+            
             // TODO добавьте в edges_by_vertex ребро вправо и вверх с длинной w
         }
     }

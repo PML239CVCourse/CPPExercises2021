@@ -15,6 +15,10 @@ bool isPixelEmpty(cv::Vec3b color) {
     // TODO 1 реализуйте isPixelEmpty(color):
     // - верните true если переданный цвет - полностью черный (такие пиксели мы считаем пустыми)
     // - иначе верните false
+    if (color[0]+color[1]+color[2] == 0){
+        return true;
+    }
+    return false;
     rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
     return true;
 }
@@ -139,6 +143,20 @@ void run(std::string caseName) {
     // Напоминание - вот так можно выставить цвет в пикселе:
     //  panoDiff.at<cv::Vec3b>(j, i) = cv::Vec3b(blueValue, greenValue, redValue);
 
+    for (int i = 0; i < pano_cols; ++i) {
+        for (int j = 0; j < pano_rows; ++j) {
+            cv::Vec3b color0 = pano0.at<cv::Vec3b>(j,i);
+            cv::Vec3b color1 = pano1.at<cv::Vec3b>(j,i);
+            int blueValue = sqrt(((color0[0]-color1[0])*(color0[0]-color1[0])+(color0[1]-color1[1])*(color0[1]-color1[1])+(color0[2]-color1[2])*(color0[2]-color1[2]))/3);
+            if (isPixelEmpty(color0)&& isPixelEmpty(color1)){
+                blueValue = 0;
+            }
+            else if(isPixelEmpty(color0) || isPixelEmpty(color1)){
+                blueValue = 255;
+            }
+            panoDiff.at<cv::Vec3b>(j,i) = cv::Vec3b(blueValue, blueValue, blueValue);
+        }
+    }
     cv::imwrite(resultsDir + "5panoDiff.jpg", panoDiff);
 }
 
