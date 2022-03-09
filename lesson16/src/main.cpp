@@ -15,8 +15,11 @@ bool isPixelEmpty(cv::Vec3b color) {
     // TODO 1 реализуйте isPixelEmpty(color):
     // - верните true если переданный цвет - полностью черный (такие пиксели мы считаем пустыми)
     // - иначе верните false
-    rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
-    return true;
+
+    //rassert(false, "325235141242153: You should do TODO 1 - implement isPixelEmpty(color)!");
+    if(color[0] == 0 && color[1] == 0 && color[2] == 0)
+        return true;
+    return false;
 }
 
 void run(std::string caseName) {
@@ -130,6 +133,30 @@ void run(std::string caseName) {
     // (т.е. эта функция позволит дальше понимать в этот пиксель наложилась исходная картинка или же там все еще тьма)
 
     cv::Mat panoDiff(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
+   // cv::Mat img1_diff;
+    //cv::warpPerspective(img1, img1_diff, H10, panoBothNaive.size(), cv::INTER_LINEAR, cv::BORDER_TRANSPARENT);
+
+    for(int j = 0; j < panoDiff.rows; j++){
+        for(int i = 0; i < panoDiff.cols; i++){
+            cv::Vec3b color0 = pano0.at<cv::Vec3b>(j, i);
+            cv::Vec3b color1 = pano1.at<cv::Vec3b>(j, i);
+            bool is_empty0 = isPixelEmpty(color0);
+            bool is_empty1 = isPixelEmpty(color1);
+            cv::Vec3b res_color = cv::Vec3b(0 , 0, 0);
+            if(!(is_empty0 && is_empty1)){
+                if(is_empty1 || is_empty0)
+                    res_color = cv::Vec3b(255, 255, 255);
+                else{
+                    double diff = sqrt(pow(color0[0] - color1[0], 2) + pow(color0[1] - color1[1], 2) +
+                                               pow(color0[2] - color1[2], 2));
+                    double complete_diff = sqrt(3)*255;
+                    double each_color = (diff / complete_diff) * 255;
+
+                    panoDiff.at<cv::Vec3b>(j, i) = cv::Vec3b(each_color, each_color, each_color);
+                }
+            }
+        }
+    }
     // TODO 2 вам надо заполнить panoDiff картинку так чтобы было четко ясно где pano0 картинка (объявлена выше) и pano1 картинка отличаются сильно, а где - слабо:
     // сравните в этих двух картинках пиксели по одинаковым координатам (т.е. мы сверяем картинки) и покрасьте соответствующий пиксель panoDiff по этой логике:
     // - если оба пикселя пустые - проверяйте это через isPixelEmpty(color) (т.е. цвета черные) - результат тоже пусть черный

@@ -129,14 +129,14 @@ void run(int mazeNumber) {
                 q.push(el.v);
             }
         }
-        //cv::Vec3b color = window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols));
-        cnt++;
+
+        /*cnt++;
         window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
-        if(cnt % 100 == 0){
+        if(cnt % 1000 == 0){
             cnt = 0;
             cv::imshow("Maze", window);
             //    cv::waitKey(1);
-        }
+        }*/
     }
 
 
