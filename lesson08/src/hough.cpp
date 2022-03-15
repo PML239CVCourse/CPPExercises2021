@@ -64,6 +64,8 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 if (r1 < 0 || r1 >= max_r)
                     continue;
 
+//                std::cout << theta0 << std::endl;
+
                 int from = std::min(r1,r0), to = std::max(r1,r0);
 //                if (theta0 == 76 || theta0 == 120){
 //                    std::cout << theta0 << " " << theta1 << std::endl;
@@ -72,9 +74,13 @@ cv::Mat buildHough(cv::Mat sobel) {// единственный аргумент 
                 float a, b;
                 for (int i = from; i < to; ++i) {
                     a = (float )i/(float )h*strength;
+//                    std::cout << a << std::endl;
                     b = strength - a;
-                    accumulator.at<float>((int)theta0, i) += a;
-                    accumulator.at<float>((int)theta1, i) += b;
+                    if (theta0 == 299){
+
+                    }
+                    accumulator.at<float>(i,(int)theta0) += a;
+                    accumulator.at<float>(i,(int)theta1) += b;
                 }
                 // TODO надо определить в какие пиксели i,j надо внести наш голос с учетом проблемы "Почему два экстремума?" обозначенной на странице:
                 // https://www.polarnick.com/blogs/239/2021/school239_11_2021_2022/2021/11/09/lesson9-hough2-interpolation-extremum-detection.html
@@ -110,13 +116,13 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
 
     for (int theta = 0; theta < max_theta; ++theta) {
         for (int r = 0; r < max_r; ++r) {
-            bool ok = false;
+            bool ok = true;
             int x0 = theta-1,x1 = theta+1,y0 = r-1,y1 = r+1, votes = 0;
             if (theta == 0){
-                x0 = max_theta-1;
+                x0 = 0;
             }
             if (theta == max_theta-1){
-                x1 = 0;
+                x1 = max_theta-1;
             }
             if (r == 0){
                 y0 = 0;
@@ -124,17 +130,23 @@ std::vector<PolarLineExtremum> findLocalExtremums(cv::Mat houghSpace)
             if (r == max_r - 1){
                 y1 = r;
             }
+//            std::cout << theta << std::endl;
             for (int i = y0; i <= y1; ++i) {
                 for (int j = x0; j <= x1; ++j) {
-                    if (houghSpace.at<float>(r,theta) >= houghSpace.at<float>(j,i)){
-                        ok = true;
+//                    std::cout << "Упал" << std::endl;
+                    if ((houghSpace.at<float>(r,theta) <= houghSpace.at<float>(i,j) && !(i == r && j == theta)) || houghSpace.at<float>(r,theta) <= 0){
+//                        std::cout << r << " " << theta << " r=" << i << " theta=" << j << " votes=" << houghSpace.at<float>(i,j) << std::endl;
+                        ok = false;
+                    }
+                    else{
+//                        std::cout << "Find=" << houghSpace.at<float>(r,theta) << " r=" << r << " theta=" << theta << " " << (int)(houghSpace.at<float>(r,theta)<=0) << std::endl;
+//                        std::cout << r << " " << theta << " r=" << i << " theta=" << j << " votes=" << houghSpace.at<float>(i,j) << std::endl;
                     }
                 }
             }
-            // TODO
-            // ...
              if (ok) {
-                 PolarLineExtremum line(theta, r, 0.0f);
+//                 std::cout<< "theta=" << theta << " r=" << r << " votes=" << houghSpace.at<float>(r,theta) << std::endl;
+                 PolarLineExtremum line(theta, r, houghSpace.at<float>(r,theta));
                  winners.push_back(line);
              }
         }
@@ -150,6 +162,17 @@ std::vector<PolarLineExtremum> filterStrongLines(std::vector<PolarLineExtremum> 
     // Эта функция по множеству всех найденных локальных экстремумов (прямых) находит самую популярную прямую
     // и возвращает только вектор из тех прямых, что не сильно ее хуже (набрали хотя бы thresholdFromWinner голосов от победителя, т.е. например половину)
 
+    float max = 0.0f;
+    for (int i = 0; i < allLines.size(); ++i) {
+        if (allLines[i].votes > max){
+            max = allLines[i].votes;
+        }
+    }
+    for (int i = 0; i < allLines.size(); ++i) {
+        if (allLines[i].votes >= thresholdFromWinner*max){
+            strongLines.push_back(allLines[i]);
+        }
+    }
     // TODO
 
     return strongLines;

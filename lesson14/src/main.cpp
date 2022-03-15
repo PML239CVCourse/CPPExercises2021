@@ -74,7 +74,7 @@ void run() {
             }
 
             // TODO детектируйте и постройте дескрипторы у ключевых точек
-            // std::cout << "Keypoints initially: " << keypoints0.size() << ", " << keypoints1.size() << "..." << std::endl;
+//            std::cout << "Keypoints initially: " << keypoints0.size() << ", " << keypoints1.size() << "..." << std::endl;
 
             // TODO сопоставьте ключевые точки
 

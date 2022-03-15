@@ -66,20 +66,16 @@ void run() {
     // TODO ...
 
     bool fine = false, fin = true;
-    int q = 0;
 
     while (fin) {
         int nv = finish;
         for (int i = 0; i < distances.size(); ++i) {
             if (distances[i] <= distances[nv] && !isP[i]){
                 nv = i;
-            }
-        }
-        if (nv == finish){
-            fine = true;
-            q++;
-            if (q == 5){
-                fin = false;
+                if (nv == finish){
+                    fine = true;
+                    fin = false;
+                }
             }
         }
 //        std::cout << nv << std::endl;
@@ -87,21 +83,21 @@ void run() {
             fin = false;
         }
         for (int i = 0; i < edges_by_vertex[nv].size(); ++i) {
-//            std::cout << nv << " " << i << " " << edges_by_vertex[nv][i].v << " " << edges_by_vertex[nv][i].u << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << std::endl;
+//            std::cout << edges_by_vertex[nv][i].u << " --> " << edges_by_vertex[nv][i].v << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << " " << parents[edges_by_vertex[nv][i].u] << std::endl;
             if (distances[edges_by_vertex[nv][i].v] > distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w){
                 distances[edges_by_vertex[nv][i].v] = distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w;
                 parents[edges_by_vertex[nv][i].v] = nv;
-                isP[nv] = true;
             }
+            isP[edges_by_vertex[nv][i].u] = true;
         }
     }
+//    std::cout << "fine maze" << std::endl;
 
     if (fine) {
         std::vector<int> path;
         int a = finish;
         path.push_back(a);
         while (a != start){
-//            std::cout << a;
             a = parents[a];
             path.push_back(a);
         }

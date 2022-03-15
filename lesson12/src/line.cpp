@@ -116,6 +116,19 @@ Line fitLineFromNPoints(std::vector<cv::Point2f> points)
     // TODO 05 реализуйте построение прямой по многим точкам (такое чтобы прямая как можно лучше учитывала все точки)
     double maxa = 0, maxb = 0, maxc = 0;
     double mina = 999, minb = 0, minc = 0;
+    for (int i = 0; i < points.size()-1; i++){
+        for (int j = 0; j < points.size()-1-i; j++){
+            if(points[j].x > points[j+1].x){
+                float a = 0, b = 0;
+                a = points[j].x;
+                b = points[j].y;
+                points[j].x = points[j+1].x;
+                points[j].y = points[j+1].y;
+                points[j+1].x = a;
+                points[j+1].y = b;
+            }
+        }
+    }
     for (int i = 0; i < points.size()/2; ++i) {
         for (int j = 0; j < points.size()/2; ++j) {
             std::cout << i << " " << points.size()-j-1 << std::endl;
@@ -136,7 +149,7 @@ Line fitLineFromNPoints(std::vector<cv::Point2f> points)
             }
         }
     }
-    return Line(maxa/*+mina)/2*/, -1.0, maxc/*+minc)/2*/);
+    return Line((maxa+mina)/2, -1.0, (maxc+minc)/2);
 }
 
 Line fitLineFromNNoisyPoints(std::vector<cv::Point2f> points)

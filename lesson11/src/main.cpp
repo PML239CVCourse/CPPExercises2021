@@ -3,6 +3,7 @@
 #include <libutils/rasserts.h>
 
 #include "parseSymbols.h"
+#include "hog.h"
 
 #include <opencv2/imgproc.hpp>
 
