@@ -63,20 +63,24 @@ void run() {
     std::vector<int> p(nvertices, -1);
     // TODO ...
 
-    std::vector <bool> used(nvertices);
-    std::queue<int> q;
+    std::vector <bool> used(nvertices, false);
+    std::priority_queue<int> q;
     q.push(start);
+    used[start] = true;
 
     while (!q.empty()) {
-        int v = q.front();
+        int v = q.top();
         q.pop();
         for(auto el: edges_by_vertex[v]){
+            //if(used[el.v])
+                //continue;
             if(el.w + distances[v] < distances[el.v]){
                 distances[el.v] = el.w + distances[v];
                 p[el.v] = v;
                 q.push(el.v);
             }
         }
+        //used[v] = true;
     }
 
     /*for(auto it : p)

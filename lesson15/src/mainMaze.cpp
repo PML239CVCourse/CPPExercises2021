@@ -133,11 +133,11 @@ void run(int mazeNumber) {
         }
 
         cnt++;
-        window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
+        //window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
         if(cnt % 1000 == 0){
             cnt = 0;
             cv::imshow("Maze", window);
-                cv::waitKey(1);
+                cv::waitKey(10);
         }
     }
 
