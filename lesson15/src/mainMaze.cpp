@@ -85,7 +85,7 @@ void run(int mazeNumber) {
 
                 }
             }
-            std::cout << edges_by_vertex[encodeVertex(j, i, maze.rows, maze.cols)].size() << " ";
+            //std::cout << edges_by_vertex[encodeVertex(j, i, maze.rows, maze.cols)].size() << " ";
             // TODO добавьте соотвтетсвующие этому пикселю ребра
         }
     }
@@ -192,11 +192,13 @@ void run(int mazeNumber) {
             cv::Point2i p = decodeVertex(it, maze.rows, maze.cols);
             window.at<cv::Vec3b>(p) = cv::Vec3b(255, 0 , 0);
         }
-        std::string path_saving = "lesson15/data/results/maze_path.jpg";
+        std::string path_saving = "lesson15/results/maze_path" + std::to_string(mazeNumber) + ".jpg";
         cv::imwrite(path_saving, window);
     }
     else {
-        std::cout << -1 << std::endl;
+        std::cout << "No path to this point" << std::endl;
+        std::string path_saving = "lesson15/results/maze_path" + std::to_string(mazeNumber) + ".jpg";
+        cv::imwrite(path_saving, window);
     }
 
     // TODO в момент когда вершина становится обработанной - красьте ее на картинке window в зеленый цвет и показывайте картинку:
@@ -220,7 +222,7 @@ void run(int mazeNumber) {
 
 int main() {
     try {
-        int mazeNumber = 1;
+        int mazeNumber = 3;
         run(mazeNumber);
 
         return 0;
