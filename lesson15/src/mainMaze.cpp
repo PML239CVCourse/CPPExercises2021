@@ -75,7 +75,8 @@ void run(int mazeNumber) {
 
                     int w = 1;
                     if(!(blue == blue_it && red == red_it && green == green_it))
-                        w = INF;
+                        //w = INF;
+                        continue;
 
                     int ai = encodeVertex(j, i, maze.rows, maze.cols);
                     int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
@@ -116,13 +117,13 @@ void run(int mazeNumber) {
     distances[start] = 0;
     std::vector<int> p(nvertices, -1);
 
-    std::vector <bool> used(nvertices);
-    std::queue<int> q;
+    /*std::vector <bool> used(nvertices);
+    std::priority_queue<int> q;
     q.push(start);
 
     int cnt = 0;
     while (!q.empty()) {
-        int v = q.front();
+        int v = q.top();
         q.pop();
         for(auto el: edges_by_vertex[v]){
             if(el.w + distances[v] < distances[el.v]){
@@ -139,8 +140,37 @@ void run(int mazeNumber) {
             cv::imshow("Maze", window);
                 cv::waitKey(10);
         }
-    }
+    }*/
 
+
+    std::vector <bool> used(nvertices, false);
+    std::priority_queue<int> q;
+    q.push(start);
+    used[start] = true;
+    int cnt = 0;
+
+    while (!q.empty()) {
+        int v = q.top();
+        q.pop();
+        for(auto el: edges_by_vertex[v]){
+            //if(used[el.v])
+            //continue;
+            if(el.w + distances[v] < distances[el.v]){
+                distances[el.v] = el.w + distances[v];
+                p[el.v] = v;
+                q.push(el.v);
+            }
+        }
+
+        cnt++;
+        window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
+        if(cnt % 1000 == 0){
+            cnt = 0;
+            cv::imshow("Maze", window);
+            cv::waitKey(10);
+        }
+        //used[v] = true;
+    }
 
 
     if (!(p[finish] == -1)) {
