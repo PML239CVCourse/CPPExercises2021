@@ -44,7 +44,9 @@ cv::Mat buildTheMaze(cv::Mat pano0, cv::Mat pano1) {
             cv::Vec3b color1 = pano1.at<cv::Vec3b>(j, i);
 
             int penalty = 0; // TODO найдите насколько плохо идти через этот пиксель:
-            if (isPixelEmpty(color0)|| isPixelEmpty(color1)){
+            if (isPixelEmpty(color0) && isPixelEmpty(color1)){
+                penalty = MIN_PENALTY;
+            } else if(isPixelEmpty(color0) || isPixelEmpty(color1)){
                 penalty = BIG_PENALTY;
             }
             else{
@@ -94,6 +96,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     rassert(!maze.empty(), 324783479230019);
     rassert(maze.type() == CV_32SC1, 3447928472389020);
     std::cout << "Maze resolution: " << maze.cols << "x" << maze.rows << std::endl;
+    cv::Mat window(maze.rows, maze.cols, CV_8UC3, cv::Scalar(0, 0, 0));
 
     int nvertices = maze.cols * maze.rows;
 
@@ -101,20 +104,24 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     for (int j = 0; j < maze.rows; ++j) {
         for (int i = 0; i < maze.cols; ++i) {
             int w = maze.at<int>(j, i);
-            int w1 = 0, w2 = 1, h1 = 0, h2 = 1, wo = maze.rows - 1, h = maze.cols - 1;
-            if (j == wo) {
+            int w1 = -1, w2 = 1, h1 = -1, h2 = 1, wo = maze.rows-1, h = maze.cols-1;
+            if(j == 0){
+                w1 = 0;
+            }
+            if (j == wo){
                 w2 = 0;
             }
-            if (i == h) {
+            if (i == 0){
+                h1 = 0;
+            }
+            if (i == h){
                 h2 = 0;
             }
             int bi = encodeVertex(j, i, maze.rows, maze.cols);
             for (int k = w1; k <= w2; ++k) {
                 for (int l = h1; l <= h2; ++l) {
-                    int ai = encodeVertex(j + k, i + l, maze.rows, maze.cols);
-                    cv::Vec3b color1 = maze.at<cv::Vec3b>(j + k, i + l);
                     int delta = w;
-
+                    int ai = encodeVertex(j+k, i+l, maze.rows, maze.cols);
                     edges_by_vertex[bi].push_back(Edge(bi, ai, delta));
                 }
             }
@@ -144,10 +151,10 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     bool fine = false, fin = true;
 
     int q = 0, w = 0;
-    std::cout << "start maze" << std::endl;
+    std::cout << "start maze     " << nvertices << std::endl;
     while (fin) {
         q++;
-//        std::cout << 1 << std::endl;
+        //        std::cout << 1 << std::endl;
         int nv = finish;
         for (int i = 0; i < distances.size(); ++i) {
             if (distances[i] < distances[nv] && !isP[i]) {
@@ -161,41 +168,46 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             }
             w++;
         }
-//        std::cout << 1 << std::endl;
-//        std::cout << nv << std::endl;
+        //        std::cout << 1 << std::endl;
+        //        std::cout << nv << std::endl;
         if (nv == INF) {
             fin = false;
         }
         for (int i = 0; i < edges_by_vertex[nv].size(); ++i) {
-//            std::cout << edges_by_vertex[nv][i].u << " --> " << edges_by_vertex[nv][i].v << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << " " << parents[edges_by_vertex[nv][i].u] << std::endl;
+            //            std::cout << edges_by_vertex[nv][i].u << " --> " << edges_by_vertex[nv][i].v << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << " " << parents[edges_by_vertex[nv][i].u] << std::endl;
             if (distances[edges_by_vertex[nv][i].v] > distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w) {
                 distances[edges_by_vertex[nv][i].v] = distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w;
                 parents[edges_by_vertex[nv][i].v] = nv;
             }
             isP[edges_by_vertex[nv][i].u] = true;
         }
-//        std::cout << 1 << std::endl;
-//        if (q % 10 == 0) {
-//            cv::Point2i p = decodeVertex(nv, maze.rows, maze.cols);
-//            window.at<cv::Vec3b>(p.y, p.x) = cv::Vec3b(0, 255, 0);
-//            cv::imshow("Maze", window);
-//            cv::waitKey(1);
+//        std::cout << nv << std::endl;
+        //        std::cout << 1 << std::endl;
+        if (q % 1 == 0) {
+            cv::Point2i p = decodeVertex(nv, maze.rows, maze.cols);
+//            std::cout << p.x << " " << p.y << std::endl;
+            window.at<cv::Vec3b>(p.y, p.x) = cv::Vec3b(0, 255, 0);
+            cv::imshow("Maze", window);
+            cv::waitKey(1);
         }
+    }
+    rassert(fine, 12412412);
         // убеждаемся что мы добрались до финиша
 //    rassert(processed[finish], 3478289374239000163);
-
+        std::cout << "finish" << std::endl;
         // TODO извлекаем вершины через которые прошел кратчайший путь:
-        // std::vector<int> path;
-        //int cur = finish;
-        //while (cur != -1) {
-        //    path.push_back(cur);
-        //    cur = parent[cur];
-        //}
+         std::vector<int> path;
+        int cur = finish;
+        while (cur != -1) {
+//            std::cout << cur << std::endl;
+            path.push_back(cur);
+            cur = parents[cur];
+        }
         std::vector<cv::Point2i> pathPoints;
-        //for (int i = path.size() - 1; i >= 0; --i) {
-        //    cv::Point2i p = decodeVertex(path[i], maze.rows, maze.cols);
-        //    pathPoints.push_back(p);
-        //}
+        for (int i = path.size() - 1; i >= 0; --i) {
+            cv::Point2i p = decodeVertex(path[i], maze.rows, maze.cols);
+            pathPoints.push_back(p);
+        }
         return pathPoints;
     }
 

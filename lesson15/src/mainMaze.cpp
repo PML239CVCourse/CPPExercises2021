@@ -8,6 +8,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core/types.hpp>
+#include <filesystem>
 
 
 struct Edge {
@@ -43,6 +44,10 @@ cv::Point2i decodeVertex(int vertexId, int nrows, int ncolumns) {
 }
 
 void run(int mazeNumber) {
+    std::string resultsDir = "lesson15/resultsData/";
+    if (!std::filesystem::exists(resultsDir)) { // если папка еще не создана
+        std::filesystem::create_directory(resultsDir); // то создаем ее
+    }
     cv::Mat maze = cv::imread("lesson15/data/mazesImages/maze" + std::to_string(mazeNumber) + ".png");
     rassert(!maze.empty(), 324783479230019);
     rassert(maze.type() == CV_8UC3, 3447928472389020);
@@ -157,7 +162,7 @@ void run(int mazeNumber) {
             isP[edges_by_vertex[nv][i].u] = true;
         }
 //        std::cout << 1 << std::endl;
-        if (q % 10 == 0) {
+        if (q % 1 == 0) {
             cv::Point2i p = decodeVertex(nv, maze.rows, maze.cols);
             window.at<cv::Vec3b>(p.y, p.x) = cv::Vec3b(0, 255, 0);
             cv::imshow("Maze", window);
@@ -189,7 +194,10 @@ void run(int mazeNumber) {
 
     std::cout << "Finished!" << std::endl;
 
+    resultsDir+= std::to_string(mazeNumber);
     // Показываем результат пока пользователь не насладиться до конца и не нажмет Escape
+    cv::imwrite(resultsDir + "maze.jpg", window);
+    std::cout << "save";
     while (cv::waitKey(10) != 27) {
         cv::imshow("Maze", window);
     }
