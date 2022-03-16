@@ -39,13 +39,13 @@ cv::Mat buildTheMaze(cv::Mat pano0, cv::Mat pano1) {
             cv::Vec3b color0 = pano0.at<cv::Vec3b>(j, i);
             cv::Vec3b color1 = pano1.at<cv::Vec3b>(j, i);
 
-            double diff = (pow(color0[0] - color1[0], 2) + pow(color0[1] - color1[1], 2)
-                    + pow(color0[2] - color1[2], 2)) * MIN_PENALTY / 3;
+            double diff = (abs(color0[0] - color1[0]) + abs(color0[1] - color1[1])
+                    + abs(color0[2] - color1[2])) * MIN_PENALTY;
             int penalty = 0; // TODO найдите насколько плохо идти через этот пиксель:
             if(color0[0] + color0[1] + color0[2] == 0 || color1[0] + color1[1] + color1[2] == 0)
                 penalty = BIG_PENALTY;
             else
-                penalty - static_cast<int>(diff);
+                penalty = static_cast<int>(diff);
             // BIG_PENALTY - если этот пиксель отсутствует в pano0 или в pano1
             // разница между цветами этого пикселя в pano0 и в pano1 (но не меньше MIN_PENALTY)
 
@@ -108,6 +108,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
                     int ai = encodeVertex(j, i, maze.rows, maze.cols);
                     int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
                     edges_by_vertex[ai].push_back(Edge(ai, bi, w));
+                    std::cout << edges_by_vertex[ai].size() << " ";
                 }
             }
             // TODO добавьте в edges_by_vertex ребро вправо и вверх с длинной w
@@ -130,38 +131,24 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     std::vector<int> p(nvertices, -1);
 
 
-    //std::vector <bool> used(nvertices, false);
     std::priority_queue<int> q;
     q.push(start);
-    //used[start] = true;
-    int cnt = 0;
 
     while (!q.empty()) {
         int v = q.top();
         q.pop();
         for(auto el: edges_by_vertex[v]){
-            //if(used[el.v])
-            //continue;
-            if(el.w + distances[v] < distances[el.v]){
+            if(el.w + distances[v] <= distances[el.v]){
                 distances[el.v] = el.w + distances[v];
                 p[el.v] = v;
                 q.push(el.v);
             }
         }
-
-        cnt++;
-        /*window.at<cv::Vec3b>(decodeVertex(v, maze.rows, maze.cols)) = cv::Vec3b(0, 255, 0);
-        if(cnt % 1000 == 0){
-            cnt = 0;
-            cv::imshow("Maze", window);
-            cv::waitKey(10);
-        }*/
-        //used[v] = true;
     }
 
 
     // убеждаемся что мы добрались до финиша
-    rassert(p[finish] == -1, 3478289374239000163);
+    rassert(p[finish] != -1, 3478289374239000163);
 
     // TODO извлекаем вершины через которые прошел кратчайший путь:
      std::vector<int> path;
