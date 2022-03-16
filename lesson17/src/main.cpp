@@ -99,8 +99,8 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             int w = maze.at<int>(j, i);
 
 
-            for(int itj = j; itj <= j + 1; itj++){
-                for(int iti = i; iti <= i + 1; iti++) {
+            for(int itj = j; itj <= std::min(j + 1, maze.rows - 1); itj++){
+                for(int iti = i; iti <= std::min(i + 1, maze.cols - 1); iti++) {
                     if((itj == j && iti == i) || (iti == i + 1 && itj == j + 1))
                         continue;
 
@@ -295,9 +295,9 @@ void run(std::string caseName) {
     std::cout << "Searching for optimal seam..." << std::endl;
     std::vector<cv::Point2i> seam = findBestSeam(maze, start, finish); // TODO реализуйте в этой функции Дейкстру
     for (int i = 0; i < seam.size(); ++i) {
-        // cv::Point2i pointOnSeam = seam[i];
+         cv::Point2i pointOnSeam = seam[i];
         // TODO рисуем красный шов там где мы нашли наш лучший шов
-        // panoBothNaive.at<cv::Vec3b>(???, ???) = cv::Vec3b(0, 0, 255);
+         panoBothNaive.at<cv::Vec3b>(pointOnSeam.y, pointOnSeam.x) = cv::Vec3b(0, 0, 255);
     }
     std::cout << "Length of optimal seam: " << seam.size() << " pixels" << std::endl;
     cv::imwrite(resultsDir + "5panoOptimalSeam.jpg", panoBothNaive);
@@ -354,8 +354,8 @@ void run(std::string caseName) {
 int main() {
     try {
         run("1_hanging");
-        run("2_hiking");
-        run("3_aero");
+        //run("2_hiking");
+        //run("3_aero");
 //        run("4_your_data"); // TODO сфотографируйте что-нибудь сами при этом на второй картинке что-то изменив, см. иллюстрацию на сайте
 
         return 0;
