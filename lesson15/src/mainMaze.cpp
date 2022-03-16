@@ -222,7 +222,7 @@ void run(int mazeNumber) {
 
 int main() {
     try {
-        int mazeNumber = 3;
+        int mazeNumber = 5;
         run(mazeNumber);
 
         return 0;
