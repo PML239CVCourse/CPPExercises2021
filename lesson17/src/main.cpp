@@ -44,13 +44,16 @@ cv::Mat buildTheMaze(cv::Mat pano0, cv::Mat pano1) {
             cv::Vec3b color1 = pano1.at<cv::Vec3b>(j, i);
 
             int penalty = 0; // TODO найдите насколько плохо идти через этот пиксель:
-            if(isPixelEmpty(color0) || isPixelEmpty(color1)){
+            if (isPixelEmpty(color0) && isPixelEmpty(color1)){
                 penalty = BIG_PENALTY;
+            }
+            else if(isPixelEmpty(color0) || isPixelEmpty(color1)){
+                penalty = BIG_PENALTY*BIG_PENALTY;
             }
             else{
                 penalty = MIN_PENALTY+(abs(color0[0]-color1[0])+abs(color0[2]-color1[2])+abs(color0[2]-color1[2]));
             }
-            // BIG_PENALTY - если этот пиксель отсутствует в pano0 или в pano1
+            // BIG_PENALTY - если этот пиксель отсутствует в pano0 или в pano1   MIN_PENALTY+(abs(color0[0]-color1[0])+abs(color0[2]-color1[2])+abs(color0[2]-color1[2]))
             // разница между цветами этого пикселя в pano0 и в pano1 (но не меньше MIN_PENALTY)
 
             maze.at<int>(j, i) = penalty;
@@ -119,8 +122,13 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             for (int k = w1; k <= w2; ++k) {
                 for (int l = h1; l <= h2; ++l) {
                     int delta = w;
-                    int ai = encodeVertex(j+k, i+l, maze.rows, maze.cols);
-                    edges_by_vertex[bi].push_back(Edge(bi, ai, delta));
+                    if (k != 0 && l != 0){
+                        delta *= sqrt(2);
+                    }
+                    if (!(k == 0 && l == 0)){
+                        int ai = encodeVertex(j+k, i+l, maze.rows, maze.cols);
+                        edges_by_vertex[bi].push_back(Edge(bi, ai, delta));
+                    }
                 }
             }
             // TODO добавьте в edges_by_vertex ребро вправо и вверх с длинной w
@@ -160,28 +168,33 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             }
         }
         if (nv == finish) {
-            if (w == 100) {
-                fine = true;
-                fin = false;
-            }
+            fine = true;
+            fin = false;
+
             w++;
+            break;
         }
         //        std::cout << 1 << std::endl;
         //        std::cout << nv << std::endl;
         if (nv == INF) {
             fin = false;
         }
+        rassert(!isP[nv], 1294845446)
         for (int i = 0; i < edges_by_vertex[nv].size(); ++i) {
+            if (edges_by_vertex[nv][i].v == 701 || edges_by_vertex[nv][i].v == 939){
+                std::cout << edges_by_vertex[nv][i].v << "      " << nv << std::endl;
+            }
             //            std::cout << edges_by_vertex[nv][i].u << " --> " << edges_by_vertex[nv][i].v << " " << distances[edges_by_vertex[nv][i].v] << " " << distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w << " " << parents[edges_by_vertex[nv][i].u] << std::endl;
             if (distances[edges_by_vertex[nv][i].v] > distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w) {
                 distances[edges_by_vertex[nv][i].v] = distances[edges_by_vertex[nv][i].u] + edges_by_vertex[nv][i].w;
                 parents[edges_by_vertex[nv][i].v] = nv;
             }
+            rassert(edges_by_vertex[nv][i].u == nv, 1294886)
             isP[edges_by_vertex[nv][i].u] = true;
         }
 //        std::cout << nv << std::endl;
         //        std::cout << 1 << std::endl;
-//        if (q % 100 == 0) {
+//        if (q % 10 == 0) {
 //            cv::Point2i p = decodeVertex(nv, maze.rows, maze.cols);
 ////            std::cout << p.x << " " << p.y << std::endl;
 //            window.at<cv::Vec3b>(p.y, p.x) = cv::Vec3b(0, 255, 0);
@@ -201,7 +214,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
          std::vector<int> path;
         int cur = finish;
         while (cur != -1) {
-//            std::cout << cur << std::endl;
+            std::cout << cur << std::endl;
             path.push_back(cur);
             cur = parents[cur];
         }
@@ -331,8 +344,11 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
         cv::Point2i finish(pano_cols - 1, 0); // в верхний правый угол
         std::cout << "Searching for optimal seam..." << std::endl;
         std::vector<cv::Point2i> seam = findBestSeam(maze, start, finish, panoBothNaive); // TODO реализуйте в этой функции Дейкстру
+
+        std::cout << 1 << std::endl;
         for (int i = 0; i < seam.size(); ++i) {
              cv::Point2i pointOnSeam = seam[i];
+             std::cout << 1 << std::endl;
             // TODO рисуем красный шов там где мы нашли наш лучший шов
              panoBothNaive.at<cv::Vec3b>(pointOnSeam.y, pointOnSeam.x) = cv::Vec3b(0, 0, 255);
         }
@@ -350,9 +366,9 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             cv::Point2i pointOnSeam = seam[i];
             // TODO заполните писели лежащие на шве, чтобы легко было понять что через них перешагивать нельзя:
              sourceId.at<unsigned char>(pointOnSeam.y, pointOnSeam.x) = PIXEL_IS_ON_SEAM;
-             window.at<cv::Vec3b>(pointOnSeam.y, pointOnSeam.x) = cv::Vec3b (0,0,255);
-             cv::imshow("Maze", window);
-             cv::waitKey(1);
+//             window.at<cv::Vec3b>(pointOnSeam.y, pointOnSeam.x) = cv::Vec3b (0,0,255);
+//             cv::imshow("Maze", window);
+//             cv::waitKey(1);
         }
 
         // TODO левый верхний угол - точно из первой картинки - отмечаем его и добавляем в текущую волну для обработки
@@ -365,7 +381,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
             std::vector<cv::Point2i> nextWave;
             for (int i = 0; i < curWave.size(); ++i) {
                 cv::Point2i p = curWave[i];
-                std::cout << i << std::endl;
+//                std::cout << i << std::endl;
 
                 // кодируем сдвиг координат всех четырех соседей:
                 //            слева (dx=-1, dy=0), сверху (dx=0, dy=-1), справа (dx=1, dy=0), снизу (dx=0, dy=1)
@@ -373,24 +389,24 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
                 int dys[4] = {0, -1, 0, 1};
 
                 for (int k = 0; k < 4; ++k) { // смотрим на четырех соседей
-//                    if (p.x + dxs[k] < 0 || p.y + dys[k] < 0){
-//                        k++;
-//                    }
-//                    if (p.x + dxs[k] < 0 || p.y + dys[k] < 0){
-//                        k++;
-//                    }
+                    if (p.x + dxs[k] < 0 || p.y + dys[k] < 0){
+                        k++;
+                    }
+                    if (p.x + dxs[k] < 0 || p.y + dys[k] < 0){
+                        k++;
+                    }
                     int nx = p.x + dxs[k];
                     int ny = p.y + dys[k];
-                    std::cout << nx << " " << ny << std::endl;
+//                    std::cout << nx << " " << ny << std::endl;
 //                    rassert(nx >= 0, 1231231231);
 //                    rassert(ny >= 0, 12357612934)
 //                    rassert(nx < pano_cols, 1231231231);
 //                    rassert(ny < pano_rows, 12357612934)
                     // TODO посмотрите на соседний пиксель (nx, ny) и либо отметьте его как покрытый первой картинкой и добавьте в следующую волну, либо проигнорируйте
                     // см. описание на сайте
-                    if (sourceId.at<unsigned char>(leftUpCorner.y, leftUpCorner.x) == PIXEL_NO_DATA){
-                        sourceId.at<unsigned char>(leftUpCorner.y, leftUpCorner.x) = PIXEL_FROM_PANO0;
-//                        window.at<cv::Vec3b>(leftUpCorner.y, leftUpCorner.x) = pano0.at<cv::Vec3b>(leftUpCorner.y, leftUpCorner.x);
+                    if (sourceId.at<unsigned char>(ny, nx) == PIXEL_NO_DATA){
+                        sourceId.at<unsigned char>(ny, nx) = PIXEL_FROM_PANO0;
+//                        window.at<cv::Vec3b>(ny, nx) = pano0.at<cv::Vec3b>(ny, nx);
 //                        cv::imshow("Maze", window);
 //                        cv::waitKey(10);
                         nextWave.push_back(cv::Point2i(nx, ny));
@@ -401,9 +417,9 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
         }
         for (int j = 0; j < pano_rows; ++j) {
             for (int i = 0; i < pano_cols; ++i) {
-                if (sourceId.at<unsigned char>(leftUpCorner.y, leftUpCorner.x) == PIXEL_NO_DATA){
-                    sourceId.at<unsigned char>(leftUpCorner.y, leftUpCorner.x) = PIXEL_FROM_PANO1;
-//                    window.at<cv::Vec3b>(leftUpCorner.y, leftUpCorner.x) = pano1.at<cv::Vec3b>(leftUpCorner.y, leftUpCorner.x);
+                if (sourceId.at<unsigned char>(j, i) == PIXEL_NO_DATA){
+                    sourceId.at<unsigned char>(j, i) = PIXEL_FROM_PANO1;
+//                    window.at<cv::Vec3b>(j, i) = pano1.at<cv::Vec3b>(j, i);
 //                    cv::imshow("Maze", window);
 //                    cv::waitKey(1);
                 }
