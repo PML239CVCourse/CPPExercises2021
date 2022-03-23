@@ -42,7 +42,7 @@ cv::Mat buildTheMaze(cv::Mat pano0, cv::Mat pano1) {
             double diff = (abs(color0[0] - color1[0]) + abs(color0[1] - color1[1])
                     + abs(color0[2] - color1[2])) * MIN_PENALTY;
             int penalty = 0; // TODO найдите насколько плохо идти через этот пиксель:
-            if(color0[0] + color0[1] + color0[2] == 0 || color1[0] + color1[1] + color1[2] == 0)
+            if((color0[0] + color0[1] + color0[2] == 0) || (color1[0] + color1[1] + color1[2] == 0))
                 penalty = BIG_PENALTY;
             else
                 penalty = static_cast<int>(diff);
@@ -70,7 +70,6 @@ int encodeVertex(int row, int column, int nrows, int ncolumns) {
     int vertexId = row * ncolumns + column;
     return vertexId;
     // TODO скопируйте эту функцию из задания про Дейкстру на картинке лабиринта
-    return 0;
 }
 
 cv::Point2i decodeVertex(int vertexId, int nrows, int ncolumns) {
@@ -108,9 +107,23 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
                     int ai = encodeVertex(j, i, maze.rows, maze.cols);
                     int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
                     edges_by_vertex[ai].push_back(Edge(ai, bi, w));
-                    std::cout << edges_by_vertex[ai].size() << " ";
+                    //std::cout << edges_by_vertex[ai].back().w << " ";
                 }
             }
+
+            /*for(int itj = std::max(j - 1, 0); itj <= std::min(j + 1, maze.rows - 1); itj++){
+                for(int iti = std::max(i - 1, 0); iti <= std::min(i + 1, maze.cols - 1); iti++) {
+                    if((itj == j && iti == i) || (iti == i + 1 && itj == j + 1) || (iti == i - 1 && itj == j- 1)
+                    || (iti == i + 1 && itj == j - 1) || (iti == i - 1 && itj == j + 1))
+                        continue;
+
+                    //int w_it = maze.at<int>(itj, iti);
+                    int ai = encodeVertex(j, i, maze.rows, maze.cols);
+                    int bi = encodeVertex(itj, iti, maze.rows, maze.cols);
+                    edges_by_vertex[ai].push_back(Edge(ai, bi, w));
+                    //std::cout << edges_by_vertex[ai].back().w << " ";
+                }
+            }*/
             // TODO добавьте в edges_by_vertex ребро вправо и вверх с длинной w
         }
     }
@@ -120,19 +133,24 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
     rassert(start >= 0 && start < nvertices, 348923840234200127);
     rassert(finish >= 0 && finish < nvertices, 348923840234200128);
 
-    const int INF = std::numeric_limits<int>::max();
+    const long INF = std::numeric_limits<long>::max();
 
     //std::vector<int> distances(nvertices, INF);
     // TODO СКОПИРУЙТЕ СЮДА ДЕЙКСТРУ ИЗ ПРЕДЫДУЩЕГО ИСХОДНИКА - mainMaze.cpp
     // ...
 
-    std::vector<int> distances(nvertices, INF);
+    std::vector<long long> distances(nvertices, INF);
     distances[start] = 0;
     std::vector<int> p(nvertices, -1);
 
 
+    int cnt = 0;
     std::priority_queue<int> q;
     q.push(start);
+
+    cv::Mat window_wrong_type = maze.clone();
+    cv::Mat window;
+    window_wrong_type.convertTo(window, CV_8UC3);
 
     while (!q.empty()) {
         int v = q.top();
@@ -143,6 +161,17 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
                 p[el.v] = v;
                 q.push(el.v);
             }
+        }
+
+        cnt++;
+        window.at<cv::Vec3b>(decodeVertex(v, window.rows, window.cols)) = cv::Vec3b(0, 255, 0);
+        if(cnt % 1 == 0){
+            cnt = 0;
+            cv::imshow("Maze", window);
+            cv::waitKey(10);
+            std::cout << v << " ";
+            std::cout << decodeVertex(v, maze.rows, maze.cols).y << " "
+            << decodeVertex(v, maze.rows, maze.cols).y << "\n";
         }
     }
 
@@ -277,8 +306,11 @@ void run(std::string caseName) {
     cv::Mat maze = buildTheMaze(pano0, pano1); // TODO реализуйте построение лабиринта на базе похожести наложенных друг на друга картинок
 
     // найдем оптимальный шов разделяющий обе картинки (кратчайший путь в лабиринте)
-    cv::Point2i start(0, pano_rows - 1); // из нижнего левого угла
-    cv::Point2i finish(pano_cols - 1, 0); // в верхний правый угол
+    //cv::Point2i start(0, pano_rows - 1); // из нижнего левого угла
+   //cv::Point2i finish(pano_cols - 1, 0); // в верхний правый угол
+    cv::Point2i start(0, 0); // из нижнего левого угла
+    cv::Point2i finish(pano_cols - 1, pano_rows - 1); // в верхний правый угол
+
     std::cout << "Searching for optimal seam..." << std::endl;
     std::vector<cv::Point2i> seam = findBestSeam(maze, start, finish); // TODO реализуйте в этой функции Дейкстру
     for (int i = 0; i < seam.size(); ++i) {

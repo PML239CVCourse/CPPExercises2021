@@ -58,29 +58,31 @@ void run() {
 
     const int INF = std::numeric_limits<int>::max();
 
-    std::vector<int> distances(nvertices, INF);
+    std::vector<int> distances(nvertices, -INF);
     distances[start] = 0;
     std::vector<int> p(nvertices, -1);
     // TODO ...
 
-    std::vector <bool> used(nvertices, false);
-    std::priority_queue<int> q;
-    q.push(start);
-    used[start] = true;
+
+    std::priority_queue<std::pair<int, int>> q;
+    q.push(std::make_pair(distances[start], start));
 
     while (!q.empty()) {
-        int v = q.top();
+        std::pair pair_top = q.top();
+        int v = pair_top.second;
+        int dist = pair_top.first;
+        distances[v] = dist;
+
         q.pop();
-        for(auto el: edges_by_vertex[v]){
-            //if(used[el.v])
-                //continue;
-            if(el.w + distances[v] < distances[el.v]){
-                distances[el.v] = el.w + distances[v];
+        for(auto el: edges_by_vertex[v]) {
+            int to_v = el.v;
+
+            if (el.w + dist > distances[to_v]) {
+                distances[to_v] = el.w + dist;
                 p[el.v] = v;
-                q.push(el.v);
+                q.push(std::make_pair(distances[to_v], to_v));
             }
         }
-        //used[v] = true;
     }
 
     /*for(auto it : p)
