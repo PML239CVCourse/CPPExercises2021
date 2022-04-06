@@ -20,8 +20,22 @@ bool isPixelMasked(cv::Mat mask, int j, int i) {
     rassert(i >= 0 && i < mask.cols, 372489347280018);
     rassert(mask.type() == CV_8UC3, 2348732984792380019);
 
+    if (mask.at<cv::Vec3b>(j,i)[0] + mask.at<cv::Vec3b>(j,i)[1] + mask.at<cv::Vec3b>(j,i)[2] >= 254*3){
+        return true;
+    }
     // TODO проверьте белый ли пиксель
     return false;
+}
+
+double estimateQuality(cv::Mat image, int j, int i, int nx, int ny, int w, int h){
+    int w1 = -2, w2 = 2, h1 = -2, h2 = 2, sum1 = 0, sum2 = 0;
+    for (int k = w1; k <= w2; ++k) {
+        for (int q = h1; q <= h2; ++q) {
+            sum2 += image.at<cv::Vec3b>(k+nx,q+ny)[0]*image.at<cv::Vec3b>(k+nx,q+ny)[0]+image.at<cv::Vec3b>(k+nx,q+ny)[1]*image.at<cv::Vec3b>(k+nx,q+ny)[1]+image.at<cv::Vec3b>(k+nx,q+ny)[2]*image.at<cv::Vec3b>(k+nx,q+ny)[2];
+            sum1 += image.at<cv::Vec3b>(k+j,q+i)[0]*image.at<cv::Vec3b>(k+j,q+i)[0]+image.at<cv::Vec3b>(k+j,q+i)[1]*image.at<cv::Vec3b>(k+j,q+i)[1]+image.at<cv::Vec3b>(k+j,q+i)[2]*image.at<cv::Vec3b>(k+j,q+i)[2];
+        }
+    }
+    return sqrt(abs(sum2-sum1));
 }
 
 void run(int caseNumber, std::string caseName) {
@@ -32,9 +46,11 @@ void run(int caseNumber, std::string caseName) {
     rassert(!original.empty(), 324789374290018);
     rassert(!mask.empty(), 378957298420019);
 
+    rassert(original.cols == mask.cols, 9081777743)
+    rassert(original.rows == mask.rows,32598535353539)
     // TODO напишите rassert сверяющий разрешение картинки и маски
     // TODO выведите в консоль это разрешение картинки
-    // std::cout << "Image resolution: " << ... << std::endl;
+    std::cout << "Image resolution: " << mask.cols << " " << mask.rows << std::endl;
 
     // создаем папку в которую будем сохранять результаты - lesson18/resultsData/ИМЯ_НАБОРА/
     std::string resultsDir = "lesson18/resultsData/";
@@ -54,6 +70,13 @@ void run(int caseNumber, std::string caseName) {
     // TODO сохраните в папку с результатами то что получилось под названием "2_original_cleaned.png"
     // TODO посчитайте и выведите число отмаскированных пикселей (числом и в процентах) - в таком формате:
     // Number of masked pixels: 7899/544850 = 1%
+    for (int i = 0; i < original.cols; ++i) {
+        for (int j = 0; j < original.rows; ++j) {
+            if (isPixelMasked(mask, j, i)){
+                mask.at<cv::Vec3b>(j,i) = cv::Vec3b(255,255,255);
+            }
+        }
+    }
 
     FastRandom random(32542341); // этот объект поможет вам генерировать случайные гипотезы
 
@@ -65,10 +88,26 @@ void run(int caseNumber, std::string caseName) {
     // TODO 15 теперь давайте заменять значение относительного смещения на новой только если новая случайная гипотеза - лучше старой, добавьте оценку "насколько смещенный патч 5х5 похож на патч вокруг пикселя если их наложить"
     //
     // Ориентировочный псевдокод-подсказка получившегося алгоритма:
-    // cv::Mat shifts(...); // матрица хранящая смещения, изначально заполнена парами нулей
-    // cv::Mat image = original; // текущая картинка
-    // for (100 раз) {
-    //     for (пробегаем по всем пикселям j,i) {
+    cv::Mat shifts(original.rows, original.cols, CV_32SC2, cv::Scalar(0, 0)); // матрица хранящая смещения, изначально заполнена парами нулей
+     cv::Mat image = original; // текущая картинка
+     for (int q = 0; q < 100; q++) {
+         for (int i = 0; i < original.rows; i++) {
+             for (int j = 0; j < original.cols; ++j) {
+                 if (isPixelMasked(mask,j,i)){
+                     continue;
+                 }
+                 cv::Vec2i dxy = shifts.at<cv::Vec2b>(j,i);
+                 int nx = i + dxy[0], ny = j + dxy[1];
+                 double currentQuality = estimateQuality(image, j, i, ny, nx, 5, 5);
+                 int rx = random.next(-i+4, -i+original.rows-4);
+                 int ry = random.next(-j+4, -j+original.cols-4);
+                 double randomQuality = estimateQuality(image, j, i, j+ry, i+rx, 5, 5);
+                 if (randomQuality < currentQuality){
+                     shifts.at<cv::Vec2b>(j,i) = cv::Vec2i(rx, ry);
+                     image.at<cv::Vec3b>(j,i) = image.at<cv::Vec3b>(j+ry, i+rx);
+                 }
+             }
+         }
     //         if (если этот пиксель не отмаскирован)
     //             continue; // пропускаем т.к. его менять не надо
     //         cv::Vec2i dxy = смотрим какое сейчас смещение для этого пикселя в матрице смещения
@@ -90,7 +129,7 @@ void run(int caseNumber, std::string caseName) {
     //     }
     //     не забываем сохранить на диск текущую картинку
     //     а как численно оценить насколько уже хорошую картинку мы смогли построить? выведите в консоль это число
-    // }
+     }
 }
 
 

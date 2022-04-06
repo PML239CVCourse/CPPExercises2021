@@ -428,6 +428,7 @@ std::vector<cv::Point2i> findBestSeam(cv::Mat maze, cv::Point2i startPoint, cv::
         }
         cv::imwrite(resultsDir + "6sourceId.jpg", sourceId);
 
+        cv::imwrite(resultsDir + "10pano1.jpg", pano1);
         cv::Mat newPano(pano_rows, pano_cols, CV_8UC3, cv::Scalar(0, 0, 0));
         for (int j = 0; j < newPano.rows; ++j) {
             for (int i = 0; i < newPano.cols; ++i) {
