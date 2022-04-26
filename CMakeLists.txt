@@ -29,3 +29,4 @@ add_subdirectory(lesson16) # панорама и визуализация кач
 add_subdirectory(lesson17) # выбор линии разреза в панораме методом Дейкстры по метрике похожести
 
 add_subdirectory(lesson18) # ретуширование фотографии, заполнение удаленной пустой зоны
+add_subdirectory(lesson19) # примеры с OpenMP (поэлементно, sum-reduction, поиск двух наибольших элементов)
