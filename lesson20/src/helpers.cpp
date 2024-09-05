@@ -233,7 +233,7 @@ Line fitLineFromPixels(const std::vector<cv::Point2i> &pixels, const cv::Mat &gr
         float lineTotalDist = 0.0f;
 
         for (int pj = 0; pj < pixels.size(); ++pj) {
-            cv::Point2i p = pixels[pi];
+            cv::Point2i p = pixels[pj];
             float distance = line.distanceFromPoint(p.x, p.y); // каждая точка смотрит насколько она далеко от предлагаемой прямой
             float distance2 = line.distance2FromPoint(p.x, p.y);
 
